@@ -15,35 +15,43 @@ import { map, switchMap, catchError } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'
 })
+
 export class AuthService {
 
-  currentUser = user(this.auth);
-  isLoggedIn = authState(this.auth).pipe(map(user => !!user));
+  private auth: Auth;
+  currentUser: Observable<any>;
+  isLoggedIn: Observable<boolean>;
 
-  constructor(private auth: Auth) { }
+  constructor(auth: Auth) {
+    this.auth = auth;
+    this.currentUser = authState(this.auth);
+    this.isLoggedIn = this.currentUser.pipe(
+      map(user => !!user)
+    );
+  }
 
-  // inscription avec mail
-  register(email: string, password: string,): Observable<UserCredential> {
+  // Inscription avec email et mot de passe
+  register(email: string, password: string): Observable<UserCredential> {
     return from(createUserWithEmailAndPassword(this.auth, email, password));
   }
 
-  // connexion avec mail
+  // Connexion avec email et mot de passe
   login(email: string, password: string): Observable<UserCredential> {
     return from(signInWithEmailAndPassword(this.auth, email, password));
   }
 
-  // deconnexion
-  logOut(): Observable<void> {
+  // Déconnexion
+  logout(): Observable<void> {
     return from(signOut(this.auth));
   }
 
-  // reset password
+  // Réinitialisation du mot de passe
   resetPassword(email: string): Observable<void> {
     return from(sendPasswordResetEmail(this.auth, email));
   }
 
-  // verifier si l'utilisateur est connecté
-  ckecAuthState(): Observable<boolean> {
+  // Vérifier si l'utilisateur est connecté
+  checkAuthState(): Observable<boolean> {
     return authState(this.auth).pipe(
       switchMap(user => {
         if (user) {
@@ -52,8 +60,8 @@ export class AuthService {
           return of(false);
         }
       }),
-      catchError(() => of(false)),
-    )
+      catchError(() => of(false))
+    );
   }
 
   // Obtenir l'ID de l'utilisateur actuel

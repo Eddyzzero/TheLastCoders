@@ -1,2 +1,13 @@
 @import "tailwindcss";
 /* You can add global styles to this file, and also import other style files */
+
+/* creation of color palette */
+@theme {
+
+    --color-black: #0D0A0B;
+    --color-deep-blue: #22333B;
+    --color-deep-green: #3F7D20;
+    --color-apple-green: #72B01D;
+    --color-soft-white: #EAE0D5;
+
+}
