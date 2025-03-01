@@ -1,7 +1,14 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Athiti:wght@200;300;400;500;600;700&family=Delius&display=swap');
 /* You can add global styles to this file, and also import other style files */
 
 /* creation of color palette */
+:root {
+    --font-primary: 'Amatic SC', sans-serif;
+    --font-secondary: 'athiti', sans-serif;
+    --font-tertiary: 'Delius', sans-serif;
+}
+
 @theme {
 
     --color-black: #0D0A0B;
@@ -10,4 +17,8 @@
     --color-apple-green: #72B01D;
     --color-soft-white: #EAE0D5;
 
+}
+
+.font-primary {
+    font-family: var(--font-primary);
 }

@@ -6,8 +6,7 @@ import {
   signOut,
   sendPasswordResetEmail,
   UserCredential,
-  user,
-  authState
+  authState,
 } from '@angular/fire/auth'
 import { Observable, from, of } from 'rxjs';
 import { map, switchMap, catchError } from 'rxjs/operators';
