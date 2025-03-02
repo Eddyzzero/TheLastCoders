@@ -5,13 +5,27 @@
     </section>
 
     <section>
-        <form class="flex flex-col items-center gap-5">
-            <input type=" text" formControlName="username" placeholder="Nom d'utilisateur" class="input" />
-            <input type="email" formControlName="email" placeholder="Email" class="input" />
-            <input type="password" formControlName="password" placeholder="Mot de passe" class="input" />
-            <input type="password" formControlName="confirmPassword" placeholder="Confirmer le mot de passe"
-                class="input" />
-            <button type="submit" class="btn">S'enregistrer</button>
+        @if (errorMessage) {
+        <div class="font-primary text-3xl flex justify-center items-center py-4 bg-red-600 rounded-2xl">
+            <p>Il s'est produit une error </p>
+        </div>
+        }
+    </section>
+
+    <section>
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col items-center gap-5">
+            <div>
+                <input type=" text" formControlName="userName" placeholder="Nom d'utilisateur" class="input" />
+            </div>
+            <div>
+                <input type="email" formControlName="email" placeholder="Email" class="input" />
+            </div>
+
+            <div>
+                <input type="password" formControlName="password" placeholder="Mot de passe" class="input" />
+            </div>
+            <button type="submit"
+                class="text-2xl bg-deep-green transition-colors hover:bg-apple-green px-4 py-1.5 rounded-xl cursor-pointer font-primary btn">S'enregistrer</button>
         </form>
     </section>
 </section>

@@ -1,72 +1,36 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {
   Auth,
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  sendPasswordResetEmail,
-  UserCredential,
-  authState,
 } from '@angular/fire/auth'
+import { response } from 'express';
+import { signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { Observable, from, of } from 'rxjs';
-import { map, switchMap, catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class AuthService {
+  firebaseAuth = inject(Auth);
 
-  private auth: Auth;
-  currentUser: Observable<any>;
-  isLoggedIn: Observable<boolean>;
+  register(email: string, userName: string, password: string): Observable<void> {
+    const promise = createUserWithEmailAndPassword(
+      this.firebaseAuth,
+      email,
+      password,
+    ).then(response => {
+      updateProfile(response.user, { displayName: userName });
+    });
 
-  constructor(auth: Auth) {
-    this.auth = auth;
-    this.currentUser = authState(this.auth);
-    this.isLoggedIn = this.currentUser.pipe(
-      map(user => !!user)
-    );
+    return from(promise);
   }
 
-  // Inscription avec email et mot de passe
-  register(email: string, password: string): Observable<UserCredential> {
-    return from(createUserWithEmailAndPassword(this.auth, email, password));
-  }
-
-  // Connexion avec email et mot de passe
-  login(email: string, password: string): Observable<UserCredential> {
-    return from(signInWithEmailAndPassword(this.auth, email, password));
-  }
-
-  // Déconnexion
-  logout(): Observable<void> {
-    return from(signOut(this.auth));
-  }
-
-  // Réinitialisation du mot de passe
-  resetPassword(email: string): Observable<void> {
-    return from(sendPasswordResetEmail(this.auth, email));
-  }
-
-  // Vérifier si l'utilisateur est connecté
-  checkAuthState(): Observable<boolean> {
-    return authState(this.auth).pipe(
-      switchMap(user => {
-        if (user) {
-          return of(true);
-        } else {
-          return of(false);
-        }
-      }),
-      catchError(() => of(false))
-    );
-  }
-
-  // Obtenir l'ID de l'utilisateur actuel
-  getCurrentUserId(): Observable<string | null> {
-    return this.currentUser.pipe(
-      map(user => user ? user.uid : null)
-    );
-  }
+  // login(email: string, password: string): Observable<void> {
+  //   const promise = signInWithEmailAndPassword(
+  //     this.firebaseAuth,
+  //     email,
+  //     password,
+  //   ).then(() => { })
+  // }
 }
