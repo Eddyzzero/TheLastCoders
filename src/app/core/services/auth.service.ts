@@ -25,12 +25,13 @@ export class AuthService {
 
     return from(promise);
   }
-
-  // login(email: string, password: string): Observable<void> {
-  //   const promise = signInWithEmailAndPassword(
-  //     this.firebaseAuth,
-  //     email,
-  //     password,
-  //   ).then(() => { })
-  // }
+  //TODO: creer le login pour l'utilisateur.
+  login(email: string, password: string): Observable<void> {
+    const promise = signInWithEmailAndPassword(
+      this.firebaseAuth,
+      email,
+      password,
+    ).then(() => { });
+    return from(promise);
+  }
 }

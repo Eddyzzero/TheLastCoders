@@ -1,11 +1,13 @@
 import { Component, inject } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../../../core/services/auth.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { catchError, finalize, of } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
+  imports: [
+    ReactiveFormsModule
+  ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
@@ -13,4 +15,28 @@ import { catchError, finalize, of } from 'rxjs';
 //creer le composant login qui permettra de se connecter
 export class LoginComponent {
 
+  fb = inject(FormBuilder);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
+  form = this.fb.nonNullable.group({
+    email: ['', Validators.required],
+    password: ['', Validators.required],
+  });
+
+  errorMessage: string | null = null;
+
+  onSubmit(): void {
+    const rawForm = this.form.getRawValue();
+    this.authService
+      .login(rawForm.email, rawForm.password)
+      .subscribe({
+        next: () => {
+          this.router.navigateByUrl('/');
+        },
+        error: (err) => {
+          this.errorMessage = err.code;
+        }
+      });
+  }
 }
