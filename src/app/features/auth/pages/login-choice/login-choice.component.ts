@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { ReactiveFormsModule } from '@angular/forms';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-login-choice',
@@ -11,5 +11,24 @@ import { ReactiveFormsModule } from '@angular/forms';
   styleUrl: './login-choice.component.css'
 })
 export class LoginChoiceComponent {
+  authService = inject(AuthService);
 
+  ngOnInit(): void {
+    this.authService.user$.subscribe(user => {
+      if (user) {
+        this.authService.currentUserSignal.set({
+          email: user.email!,
+          name: user.displayName!,
+        })
+      } else {
+        this.authService.currentUserSignal.set(null);
+      }
+      console.log(this.authService.currentUserSignal())
+    })
+  }
+
+  //if the user press logout === index
+  logOut(): void {
+    this.authService.logOut();
+  }
 }

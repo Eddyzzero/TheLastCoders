@@ -1,12 +1,13 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../../../core/services/auth.service';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-login',
   imports: [
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    RouterModule,
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
@@ -18,6 +19,7 @@ export class LoginComponent {
   fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
+
 
   form = this.fb.nonNullable.group({
     email: ['', Validators.required],
