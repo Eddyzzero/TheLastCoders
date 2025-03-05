@@ -29,7 +29,8 @@ export class AuthService {
 
     return from(promise);
   }
-  //TODO: creer le login pour l'utilisateur.
+
+  // login foncion
   login(email: string, password: string): Observable<void> {
     const promise = signInWithEmailAndPassword(
       this.firebaseAuth,
@@ -39,6 +40,7 @@ export class AuthService {
     return from(promise);
   }
 
+  // logout fonction
   logOut(): Observable<void> {
     const promise = signOut(this.firebaseAuth);
     return from(promise);
