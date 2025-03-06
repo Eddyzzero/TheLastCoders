@@ -1,0 +1,20 @@
+<nav class=" flex flex-col justify-evenly items-center h-screen">
+    <section class="font-primary flex flex-col items-center">
+        <p class="text-2xl">The Last of</p>
+        <h1 class="text-8xl font-bold">Coders</h1>
+    </section>
+
+    @if (authService.currentUserSignal() === null) {
+    <section class=" font-primary flex flex-col items-center gap-5">
+        <a class="text-2xl hover:bg-deep-green px-4 py-1.5 rounded-xl cursor-pointer" routerLink="/login"
+            routerLinkActive="active">Se connecter</a>
+        <a class="text-2xl hover:bg-deep-green px-4 py-1.5 rounded-xl cursor-pointer" routerLink="/register"
+            routerLinkActive="active">S'enregister</a>
+    </section>
+    }
+    @if (authService.currentUserSignal()) {
+    <section class="font-primary text-2xl transition-colors hover:opacity-50">
+        <a class="cursor-pointer" (click)="logOut()">Se Deconnecter</a>
+    </section>
+    }
+</nav>

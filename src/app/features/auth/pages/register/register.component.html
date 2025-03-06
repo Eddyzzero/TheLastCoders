@@ -1,0 +1,31 @@
+<section>
+    <section class="font-primary flex flex-col items-center">
+        <p class="text-2xl">The Last of</p>
+        <h1 class="text-8xl font-bold">Coders</h1>
+    </section>
+
+    <section>
+        @if (errorMessage) {
+        <div class="font-primary text-3xl flex justify-center items-center py-4 bg-red-600 rounded-2xl">
+            <p>Il s'est produit une error </p>
+        </div>
+        }
+    </section>
+
+    <section>
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col items-center gap-5">
+            <div>
+                <input type=" text" formControlName="userName" placeholder="Nom d'utilisateur" class="input" />
+            </div>
+            <div>
+                <input type="email" formControlName="email" placeholder="Email" class="input" />
+            </div>
+
+            <div>
+                <input type="password" formControlName="password" placeholder="Mot de passe" class="input" />
+            </div>
+            <button type="submit"
+                class="text-2xl bg-deep-green transition-colors hover:bg-apple-green px-4 py-1.5 rounded-xl cursor-pointer font-primary btn">S'enregistrer</button>
+        </form>
+    </section>
+</section>
