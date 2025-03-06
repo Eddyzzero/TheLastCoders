@@ -13,12 +13,14 @@ import { UserInterface } from '../../user.interface';
 })
 
 export class AuthService {
+
   firebaseAuth = inject(Auth);
   user$ = user(this.firebaseAuth);
   currentUserSignal = signal<UserInterface | null | undefined>(undefined);
   isLoggedIn$: any;
 
 
+  // register the user
   register(email: string, userName: string, password: string): Observable<void> {
     const promise = createUserWithEmailAndPassword(
       this.firebaseAuth,

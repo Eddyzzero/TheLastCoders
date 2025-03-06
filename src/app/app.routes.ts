@@ -3,8 +3,7 @@ import { LoginChoiceComponent } from './features/auth/pages/login-choice/login-c
 import { LoginComponent } from './features/auth/pages/login/login.component';
 import { RegisterComponent } from './features/auth/pages/register/register.component';
 import { HomeComponent } from './features/home/pages/home/home.component';
-import { SkillsQuizComponent } from './features/home/components/skills-quiz/skills-quiz.component';
-
+import { SkillsQuizComponent } from './features/auth/pages/skills-quiz/skills-quiz.component';
 
 export const routes: Routes = [
     { path: 'loginChoice', component: LoginChoiceComponent },
