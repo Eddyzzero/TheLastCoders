@@ -6,7 +6,6 @@ import { provideClientHydration, withEventReplay } from '@angular/platform-brows
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { provideAuth } from '@angular/fire/auth';
 import { getAuth } from 'firebase/auth';
-import { getDatabase } from 'firebase/database';
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -29,5 +28,3 @@ export const appConfig: ApplicationConfig = {
     provideAuth(() => getAuth())
   ]
 };
-
-const db = getDatabase();

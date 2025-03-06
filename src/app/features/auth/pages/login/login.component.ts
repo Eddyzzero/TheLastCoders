@@ -12,8 +12,7 @@ import { Router, RouterModule } from '@angular/router';
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-//TODO :
-//creer le composant login qui permettra de se connecter
+
 export class LoginComponent {
 
   fb = inject(FormBuilder);
@@ -34,7 +33,7 @@ export class LoginComponent {
       .login(rawForm.email, rawForm.password)
       .subscribe({
         next: () => {
-          this.router.navigateByUrl('/home');
+          this.router.navigateByUrl('/skills');
         },
         error: (err) => {
           this.errorMessage = err.code;
