@@ -1,0 +1,40 @@
+<section class="flex flex-col justify-around items-center h-screen">
+    <section class="font-primary flex flex-col items-center">
+        <p class="text-xl">The Last of</p>
+        <h1 class="text-5xl font-bold">Coders</h1>
+    </section>
+    <section>
+        @if (errorMessage) {
+        <div class="font-primary text-3xl flex justify-center items-center py-4 bg-red-600 rounded-2xl">
+            <p>Il s'est produit une error </p>
+        </div>
+        }
+    </section>
+
+    <section class="flex flex-col gap-5">
+        <div>
+            <h1 class="font-primary text-2xl">Se connecter</h1>
+        </div>
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col items-center gap-5">
+            <div class="flex">
+                <span class="material-symbols-outlined">person</span>
+                <input class="input underline invalid: border-red-500 invalid:text-red-500 " type=" text"
+                    formControlName="email" placeholder="john@doe.com" />
+            </div>
+            <div class="flex">
+                <span class="material-symbols-outlined">lock</span>
+                <input class="input" type="password" formControlName="password" placeholder="Mot de passe" />
+            </div>
+            <div class="font-primary ">
+                <p>Oublié mot de passe</p>
+            </div>
+            <button type="submit"
+                class="text-2xl bg-deep-green transition-colors hover:bg-apple-green px-30 py-1.5 rounded-xl cursor-pointer font-primary btn">
+                Se connecter
+            </button>
+        </form>
+        <section class="font-primary flex justify-center text-xl">
+            <a routerLink="/register" routerLinkActive="active">pas encore un compte?</a>
+        </section>
+    </section>
+</section>
