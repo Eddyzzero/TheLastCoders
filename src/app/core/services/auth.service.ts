@@ -6,7 +6,8 @@ import {
 } from '@angular/fire/auth'
 import { signInWithEmailAndPassword, signOut, updateProfile } from 'firebase/auth';
 import { Observable, from } from 'rxjs';
-import { UserInterface } from '../../user.interface';
+import { UserInterface } from '../../features/auth/interfaces/user.interface';
+import { FirestoreService } from './firestore.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,8 +15,10 @@ import { UserInterface } from '../../user.interface';
 
 export class AuthService {
 
+  private fireStoreService = inject(FirestoreService)
   firebaseAuth = inject(Auth);
   user$ = user(this.firebaseAuth);
+
   currentUserSignal = signal<UserInterface | null | undefined>(undefined);
   isLoggedIn$: any;
 
@@ -47,5 +50,9 @@ export class AuthService {
   logOut(): Observable<void> {
     const promise = signOut(this.firebaseAuth);
     return from(promise);
+  }
+
+  getUserData(userId: string) {
+    return this.fireStoreService.getDocumentsWhere('users', 'id', '==', userId)
   }
 }

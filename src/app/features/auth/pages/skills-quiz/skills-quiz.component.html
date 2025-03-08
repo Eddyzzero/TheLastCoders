@@ -1,1 +1,48 @@
-<p>skills-quiz works!</p>
+<div class="container h-screen mx-auto p-4 max-w-2xl bg-amber-50">
+    <div class="mb-8">
+        <div class="text-sm text-gray-500 mb-2">
+            Question {{currentQuestionIndex + 1}} sur {{questions.length}}
+        </div>
+        <h2 class="text-2xl font-bold mb-6">
+            {{currentQuestion.question}}
+        </h2>
+
+        <div class="space-y-4">
+            @for (option of currentQuestion.options; track option.value) {
+            <div class="flex items-center">
+                <input type="checkbox" [id]="option.value" [checked]="isSelected(+currentQuestion.id, option.value)"
+                    (change)="onSelect(+currentQuestion.id, option.value)"
+                    class="w-4 h-4 rounded border-gray-300 focus:ring-2 focus:ring-blue-500">
+                <label [for]="option.value" class="ml-2 text-gray-700">
+                    {{option.label}}
+                </label>
+            </div>
+            }
+        </div>
+    </div>
+
+    <div class="flex justify-between mt-8">
+        <button *ngIf="currentQuestionIndex > 0" (click)="onPrevious()"
+            class="px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors">
+            Précédent
+        </button>
+
+        @if (currentQuestionIndex === questions.length - 1) {
+        <button (click)="saveAnswers()"
+            class="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors">
+            Terminer
+        </button>
+        } @else {
+        <button (click)="onNext()" class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+            Suivant
+        </button>
+        }
+    </div>
+
+    <!-- Progress bar -->
+    <div class="mt-8 w-full bg-gray-200 rounded-full h-2.5">
+        <div class="bg-blue-600 h-2.5 rounded-full"
+            [style.width.%]="(currentQuestionIndex + 1) / questions.length * 100">
+        </div>
+    </div>
+</div>

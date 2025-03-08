@@ -18,13 +18,15 @@ export class LoginChoiceComponent {
     this.authService.user$.subscribe(user => {
       if (user) {
         this.authService.currentUserSignal.set({
+          Uid: user.uid,
           email: user.email!,
-          name: user.displayName!,
+          UserName: user.displayName!,
+          createdAt: new Date(),
         })
       } else {
         this.authService.currentUserSignal.set(null);
       }
-      console.log(this.authService.currentUserSignal())
+      console.log(this.authService.currentUserSignal(),)
     })
   }
 

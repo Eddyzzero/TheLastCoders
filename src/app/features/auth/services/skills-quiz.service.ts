@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Question } from '../interfaces/question.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -6,9 +7,9 @@ import { Injectable } from '@angular/core';
 export class skillsQuizService {
 
 
-  questions = [
+  private questions: Question[] = [
     {
-      id: 1,
+      id: '',
       question: "Avez-vous déjà une expérience en programmation ?",
       options: [
         { value: "beginner", label: "Oui, je suis débutant" },
@@ -18,7 +19,7 @@ export class skillsQuizService {
       ]
     },
     {
-      id: 2,
+      id: '2',
       question: "Quel domaine du développement vous intéresse le plus ?",
       options: [
         { value: "frontend", label: "Développement web frontend" },
@@ -31,7 +32,7 @@ export class skillsQuizService {
       ]
     },
     {
-      id: 3,
+      id: '3',
       question: "Quels langages de programmation connaissez-vous ou souhaitez-vous apprendre ?",
       options: [
         { value: "javascript", label: "JavaScript" },
@@ -48,7 +49,7 @@ export class skillsQuizService {
       ]
     },
     {
-      id: 4,
+      id: '4',
       question: "Quelle est votre méthode d'apprentissage préférée ?",
       options: [
         { value: "video", label: "Tutoriels vidéo" },
@@ -60,7 +61,7 @@ export class skillsQuizService {
       ]
     },
     {
-      id: 5,
+      id: '5',
       question: "Quel est votre objectif principal en apprenant le développement ?",
       options: [
         { value: "career_change", label: "Changer de carrière" },
@@ -72,7 +73,7 @@ export class skillsQuizService {
       ]
     },
     {
-      id: 6,
+      id: '6',
       question: "Combien de temps pouvez-vous consacrer à l'apprentissage chaque semaine ?",
       options: [
         { value: "lt5", label: "Moins de 5 heures" },
@@ -82,7 +83,7 @@ export class skillsQuizService {
       ]
     },
     {
-      id: 7,
+      id: '7',
       question: "Quels types de ressources recherchez-vous principalement ?",
       options: [
         { value: "beginner_tutorials", label: "Tutoriels pour débutants" },
@@ -94,7 +95,7 @@ export class skillsQuizService {
       ]
     },
     {
-      id: 8,
+      id: '8',
       question: "Préférez-vous des ressources gratuites ou êtes-vous prêt à investir dans des formations payantes ?",
       options: [
         { value: "free_only", label: "Uniquement des ressources gratuites" },
@@ -104,7 +105,7 @@ export class skillsQuizService {
       ]
     },
     {
-      id: 9,
+      id: '9',
       question: "Quels sujets spécifiques souhaitez-vous explorer davantage ?",
       options: [
         { value: "js_frameworks", label: "Frameworks JavaScript (React, Vue, Angular)" },
@@ -119,7 +120,7 @@ export class skillsQuizService {
       ]
     },
     {
-      id: 10,
+      id: '10',
       question: "Comment avez-vous découvert notre plateforme ?",
       options: [
         { value: "search_engine", label: "Moteur de recherche" },
@@ -136,7 +137,7 @@ export class skillsQuizService {
   constructor() { }
 
   // method get all questions
-  getQuestions() {
+  getQuestions(): Question[] {
     return this.questions;
   }
 
