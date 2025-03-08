@@ -18,7 +18,7 @@ export class LoginChoiceComponent {
     this.authService.user$.subscribe(user => {
       if (user) {
         this.authService.currentUserSignal.set({
-          Uid: user.uid,
+          uid: user.uid,
           email: user.email!,
           UserName: user.displayName!,
           createdAt: new Date(),

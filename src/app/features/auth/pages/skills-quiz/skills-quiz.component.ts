@@ -69,23 +69,7 @@ export class SkillsQuizComponent {
 
 
   saveAnswers() {
-    const userId = this.authService.currentUserSignal()?.Uid;
-    if (!userId) return;
 
-    const quizData = {
-      userId,
-      answers: this.answers,
-      timestamp: new Date()
-    };
-
-    this.fireStoreService.addDocument('Reponses quiz', quizData)
-      .subscribe({
-        next: () => {
-          console.log("Le quiz à bien été ajouté");
-          this.router.navigate(['/home']);
-        },
-        error: (error) => console.log("le quiz n'as pas été ajouté:", error)
-      })
   }
 
 }

@@ -16,7 +16,7 @@ import {
 export class FirestoreService {
   private firestore = inject(Firestore)
 
-  //get documents from collection (firestore)
+  //add documents from collection (firestore)
   addDocument(collectionName: string, data: DocumentData): Observable<string> {
     const collectionRef = collection(this.firestore, collectionName);
     return from(addDoc(collectionRef, data).then(ref => ref.id));
@@ -29,7 +29,7 @@ export class FirestoreService {
       snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
-      }))
+      })),
     ));
   }
 

@@ -2,10 +2,9 @@ import { inject, Injectable, signal } from '@angular/core';
 import {
   Auth,
   createUserWithEmailAndPassword,
-  user,
 } from '@angular/fire/auth'
-import { signInWithEmailAndPassword, signOut, updateProfile } from 'firebase/auth';
-import { Observable, from } from 'rxjs';
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut, updateProfile, User } from 'firebase/auth';
+import { BehaviorSubject, Observable, from } from 'rxjs';
 import { UserInterface } from '../../features/auth/interfaces/user.interface';
 import { FirestoreService } from './firestore.service';
 
@@ -15,12 +14,22 @@ import { FirestoreService } from './firestore.service';
 
 export class AuthService {
 
-  private fireStoreService = inject(FirestoreService)
+  private fireStoreService = inject(FirestoreService);
+  private userSubject = new BehaviorSubject<User | null>(null);
+  user$ = this.userSubject.asObservable();
   firebaseAuth = inject(Auth);
-  user$ = user(this.firebaseAuth);
-
   currentUserSignal = signal<UserInterface | null | undefined>(undefined);
   isLoggedIn$: any;
+
+  constructor(private auth: Auth) {
+    onAuthStateChanged(this.auth, (user) => {
+      this.userSubject.next(user);
+    });
+  }
+
+  getCurrentUser() {
+    return this.userSubject.value
+  }
 
 
   // register the user
@@ -50,9 +59,5 @@ export class AuthService {
   logOut(): Observable<void> {
     const promise = signOut(this.firebaseAuth);
     return from(promise);
-  }
-
-  getUserData(userId: string) {
-    return this.fireStoreService.getDocumentsWhere('users', 'id', '==', userId)
   }
 }
