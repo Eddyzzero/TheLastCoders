@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { AuthService } from '../../../../core/services/auth.service';
+import { AuthService } from '../../../../core/services/fireAuth.service';
 
 
 @Component({
@@ -18,9 +18,9 @@ export class LoginChoiceComponent {
     this.authService.user$.subscribe(user => {
       if (user) {
         this.authService.currentUserSignal.set({
-          uid: user.uid,
+          id: user.uid,
           email: user.email!,
-          UserName: user.displayName!,
+          userName: user.displayName!,
           createdAt: new Date(),
         })
       } else {

@@ -4,16 +4,16 @@
         <h1 class="text-8xl font-bold">Coders</h1>
     </section>
 
-    <section>
+    <!-- <section>
         @if (errorMessage) {
         <div class="font-primary text-3xl flex justify-center items-center py-4 bg-red-600 rounded-2xl">
             <p>Il s'est produit une error </p>
         </div>
         }
-    </section>
+    </section> -->
 
     <section>
-        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col items-center gap-5">
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="flex flex-col items-center gap-5">
             <div>
                 <input type=" text" formControlName="userName" placeholder="Nom d'utilisateur" class="input" />
             </div>

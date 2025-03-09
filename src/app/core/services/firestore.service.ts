@@ -1,54 +1,54 @@
-import { inject, Injectable } from '@angular/core';
-import { from, Observable } from 'rxjs';
+import { Injectable } from '@angular/core';
 import {
   Firestore,
-  collection,
-  addDoc,
-  getDocs,
-  query,
-  where,
-  DocumentData
 } from '@angular/fire/firestore';
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  DocumentData,
+  getDocFromServer,
+  setDoc,
+  updateDoc
+} from 'firebase/firestore';
 
 @Injectable({
   providedIn: 'root'
 })
-export class FirestoreService {
-  private firestore = inject(Firestore)
+export class FirestoreService<T extends DocumentData> {
 
-  //add documents from collection (firestore)
-  addDocument(collectionName: string, data: DocumentData): Observable<string> {
-    const collectionRef = collection(this.firestore, collectionName);
-    return from(addDoc(collectionRef, data).then(ref => ref.id));
+  constructor(private firestore: Firestore) { };
+
+  // requests single documents
+  public async CreateDocument(docPath: string, data: any) {
+    const docReference = doc(this.firestore, docPath);
+    await setDoc(docReference, data);
+  };
+
+  public async addDocument(collectionPath: string, data: any) {
+    const collectionRef = collection(this.firestore, collectionPath);
+    const doc = await addDoc(collectionRef, data);
+    return doc.id;
   }
 
-  // Get documents from collection (firestore)
-  getDocuments(collectionName: string): Observable<DocumentData[]> {
-    const collectionRef = collection(this.firestore, collectionName);
-    return from(getDocs(collectionRef).then(snapshot =>
-      snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })),
-    ));
-  }
+  public async getDocument(docPath: string): Promise<T | null> {
+    const docReference = doc(this.firestore, docPath);
+    const docSnap = await getDocFromServer(docReference);
+    if (docSnap.exists()) {
+      return docSnap.data() as T;
+    }
+    return null
+  };
 
-  // Get documents with query
-  getDocumentsWhere(
-    collectionName: string,
-    field: string,
-    operator: any,
-    value: any
-  ): Observable<DocumentData[]> {
-    const collectionRef = collection(this.firestore, collectionName);
-    const q = query(collectionRef, where(field, operator, value));
+  public async updateDocument(collectionPath: string, data: any): Promise<void> {
+    const docRef = doc(this.firestore, collectionPath);
+    await updateDoc(docRef, data);
+  };
 
-    return from(getDocs(q).then(snapshot =>
-      snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-    ));
+  public async deleteDocument(docPath: string): Promise<void> {
+    const docRef = doc(this.firestore, docPath);
+    await deleteDoc(docRef);
   }
 }
 

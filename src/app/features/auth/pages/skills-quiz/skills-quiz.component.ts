@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { FirestoreService } from '../../../../core/services/firestore.service';
-import { AuthService } from '../../../../core/services/auth.service';
+import { AuthService } from '../../../../core/services/fireAuth.service';
 import { Router } from '@angular/router';
-import { skillsQuizService } from '../../services/skills-quiz.service';
+import { skillsQuizService } from '../../../../core/services/skills-quiz.service';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Question } from '../../interfaces/question.interface';
 import { CommonModule } from '@angular/common';

@@ -1,7 +1,8 @@
 import { Component, inject } from '@angular/core';
-import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
-import { AuthService } from '../../../../core/services/auth.service';
+import { FormBuilder, Validators, ReactiveFormsModule, FormGroup } from '@angular/forms';
+import { AuthService } from '../../../../core/services/fireAuth.service';
 import { Router, RouterModule } from '@angular/router';
+import { FirebaseError } from 'firebase/app';
 
 @Component({
   selector: 'app-login',
@@ -15,29 +16,37 @@ import { Router, RouterModule } from '@angular/router';
 
 export class LoginComponent {
 
-  fb = inject(FormBuilder);
-  private authService = inject(AuthService);
-  private router = inject(Router);
+  loginForm: FormGroup;
+
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router
+  ) {
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]]
+    });
+  }
 
 
-  form = this.fb.nonNullable.group({
-    email: ['', Validators.required],
-    password: ['', Validators.required],
-  });
+  onSubmit() {
+    if (this.loginForm.valid) {
+      const { email, password } = this.loginForm.value;
 
-  errorMessage: string | null = null;
-
-  onSubmit(): void {
-    const rawForm = this.form.getRawValue();
-    this.authService
-      .login(rawForm.email, rawForm.password)
-      .subscribe({
+      this.authService.login(email, password).subscribe({
         next: () => {
-          this.router.navigateByUrl('/skills');
+          console.log('Connexion réussie');
+          this.router.navigate(['/dashboard']); // Redirection après la connexion
         },
-        error: (err) => {
-          this.errorMessage = err.code;
+        error: (error: FirebaseError) => {
+          console.error('Erreur lors de la connexion:', error.message);
+          // Affichage d'un message d'erreur à l'utilisateur
+          alert('Erreur de connexion : ' + error.message);
         }
       });
+    }
   }
+
+
 }
