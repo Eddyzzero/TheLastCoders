@@ -4,13 +4,15 @@ import { AuthService } from '../../../../core/services/fireAuth.service';
 import { FirestoreService } from '../../../../core/services/firestore.service';
 import { FirebaseError } from 'firebase/app';
 import { Router, RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
   imports: [
     ReactiveFormsModule,
-    RouterModule
+    RouterModule,
+    CommonModule
   ],
   styleUrl: './register.component.css'
 })
@@ -19,6 +21,7 @@ import { Router, RouterModule } from '@angular/router';
 export class RegisterComponent implements OnInit {
 
   registerForm: FormGroup;
+  errorMessage: string = '';
 
   constructor(
     private authService: AuthService,
@@ -65,10 +68,10 @@ export class RegisterComponent implements OnInit {
 
   onSubmit() {
     if (this.registerForm.valid) {
-      const { email, password, userName } = this.registerForm.value;
+      const { email, userName, password } = this.registerForm.value;
+      this.errorMessage = '';
 
-      // call auth service to create the user
-      this.authService.register(email, password, userName)
+      this.authService.register(email, userName, password)
         .subscribe({
           next: () => {
             console.log('Inscription réussie');
@@ -76,6 +79,22 @@ export class RegisterComponent implements OnInit {
           },
           error: (error: FirebaseError) => {
             console.error('Erreur lors de l\'inscription:', error);
+            switch (error.code) {
+              case 'auth/email-already-in-use':
+                this.errorMessage = 'Cet email est déjà utilisé.';
+                break;
+              case 'auth/invalid-email':
+                this.errorMessage = 'L\'adresse email n\'est pas valide.';
+                break;
+              case 'auth/operation-not-allowed':
+                this.errorMessage = 'L\'inscription par email/mot de passe n\'est pas activée.';
+                break;
+              case 'auth/weak-password':
+                this.errorMessage = 'Le mot de passe est trop faible.';
+                break;
+              default:
+                this.errorMessage = 'Une erreur est survenue lors de l\'inscription.';
+            }
           }
         });
     }

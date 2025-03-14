@@ -3,18 +3,20 @@
         <p class="text-xl">The Last of</p>
         <h1 class="text-5xl font-bold">Coders</h1>
     </section>
-    <!-- <section>
-        @if (getErrorMessage()) {
-        <div class="font-primary text-3xl flex justify-center items-center py-4 bg-red-600 rounded-2xl">
-            <p>Il s'est produit une error </p>
-        </div>
-        }
-    </section> -->
 
     <section class="flex flex-col gap-5">
+
+        <!-- Titre de la page -->
         <div>
             <h1 class="font-primary text-2xl">Se connecter</h1>
         </div>
+
+        <!-- Message d'erreur -->
+        <div *ngIf="errorMessage" class="font-primary text-red-500 text-center bg-red-100 p-3 rounded-lg">
+            {{ errorMessage }}
+        </div>
+
+        <!-- Formulair de connexion -->
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="flex flex-col items-center gap-5">
             <div class="flex">
                 <span class="material-symbols-outlined">person</span>

@@ -8,6 +8,7 @@ import {
   updateProfile,
   User,
   onAuthStateChanged,
+  UserCredential,
 } from '@angular/fire/auth';
 import { BehaviorSubject, Observable, from, catchError } from 'rxjs';
 import { UserInterface } from '../../features/auth/interfaces/user.interface';
@@ -21,10 +22,10 @@ export class AuthService {
   private fireStoreService = inject(FirestoreService);
   private userSubject = new BehaviorSubject<User | null>(null);
   user$ = this.userSubject.asObservable();
-  firebaseAuth = inject(Auth);
+  private auth = inject(Auth);
   currentUserSignal = signal<UserInterface | null | undefined>(undefined);
 
-  constructor(private auth: Auth) {
+  constructor() {
     // Écoute les changements d'état de l'utilisateur
     onAuthStateChanged(this.auth, (user) => {
       this.userSubject.next(user);
@@ -47,60 +48,50 @@ export class AuthService {
   }
 
   // Inscription de l'utilisateur
-  register(email: string, userName: string, password: string): Observable<void> {
-    const promise = createUserWithEmailAndPassword(this.firebaseAuth, email, password)
-      .then((response) => {
-        return updateProfile(response.user, { displayName: userName });
-      })
-      .catch((error) => {
-        throw error; // Gestion d'erreur si nécessaire
-      });
-
-    return from(promise).pipe(
-      catchError((error: FirebaseError) => {
-        console.error('Erreur lors de l\'inscription:', error.message);
-        throw error; // Propager l'erreur pour la gestion dans le composant
-      })
-    );
+  register(email: string, userName: string, password: string): Observable<UserCredential> {
+    return from(createUserWithEmailAndPassword(this.auth, email, password)
+      .then(async (response) => {
+        await updateProfile(response.user, { displayName: userName });
+        return response;
+      }))
+      .pipe(
+        catchError((error: FirebaseError) => {
+          console.error('Erreur lors de l\'inscription:', error.message);
+          throw error;
+        })
+      );
   }
 
   // Connexion de l'utilisateur
-  login(email: string, password: string): Observable<void> {
-    const promise = signInWithEmailAndPassword(this.firebaseAuth, email, password)
-      .then(() => { })
-      .catch((error) => {
-        throw error; // Gestion d'erreur si nécessaire
-      });
-    console.log("bien recupéré")
-
-
-    return from(promise).pipe(
-      catchError((error: FirebaseError) => {
-        console.error('Erreur lors de la connexion:', error.message);
-        throw error; // Propager l'erreur pour la gestion dans le composant
-      })
-    );
+  login(email: string, password: string): Observable<UserCredential> {
+    return from(signInWithEmailAndPassword(this.auth, email, password))
+      .pipe(
+        catchError((error: FirebaseError) => {
+          console.error('Erreur lors de la connexion:', error.message);
+          throw error;
+        })
+      );
   }
 
   // Déconnexion de l'utilisateur
   logOut(): Observable<void> {
-    const promise = signOut(this.firebaseAuth);
-    return from(promise).pipe(
-      catchError((error: FirebaseError) => {
-        console.error('Erreur lors de la déconnexion:', error.message);
-        throw error; // Propager l'erreur pour la gestion dans le composant
-      })
-    );
+    return from(signOut(this.auth))
+      .pipe(
+        catchError((error: FirebaseError) => {
+          console.error('Erreur lors de la déconnexion:', error.message);
+          throw error;
+        })
+      );
   }
 
   // Envoi de l'email de réinitialisation du mot de passe
   sendPasswordResetEmail(email: string): Observable<void> {
-    const promise = sendPasswordResetEmail(this.firebaseAuth, email);
-    return from(promise).pipe(
-      catchError((error: FirebaseError) => {
-        console.error('Erreur lors de la réinitialisation du mot de passe:', error.message);
-        throw error; // Propager l'erreur pour la gestion dans le composant
-      })
-    );
+    return from(sendPasswordResetEmail(this.auth, email))
+      .pipe(
+        catchError((error: FirebaseError) => {
+          console.error('Erreur lors de la réinitialisation du mot de passe:', error.message);
+          throw error;
+        })
+      );
   }
 }
