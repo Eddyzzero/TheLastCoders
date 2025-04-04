@@ -9,7 +9,7 @@ export class skillsQuizService {
 
   private questions: Question[] = [
     {
-      id: '',
+      id: '1',
       question: "Avez-vous déjà une expérience en programmation ?",
       options: [
         { value: "beginner", label: "Oui, je suis débutant" },
@@ -140,6 +140,4 @@ export class skillsQuizService {
   getQuestions(): Question[] {
     return this.questions;
   }
-
-  //method save answers
 }

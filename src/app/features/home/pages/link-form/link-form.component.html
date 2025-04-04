@@ -1,0 +1,47 @@
+<main class="min-h-screen p-4">
+    <header class="mb-6">
+        <h1 class="text-2xl font-bold">Ajouter un lien</h1>
+    </header>
+
+    <form [formGroup]="linkForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-4">
+        <div *ngIf="errorMessage" class="bg-red-100 text-red-700 p-3 rounded">
+            {{ errorMessage }}
+        </div>
+
+        <div class="form-group">
+            <label class="block mb-1">Titre</label>
+            <input type="text" formControlName="title" class="w-full p-2 rounded bg-deep-green text-soft-white">
+        </div>
+
+        <div class="form-group">
+            <label class="block mb-1">Description</label>
+            <textarea formControlName="description" rows="3"
+                class="w-full p-2 rounded bg-deep-green text-soft-white"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label class="block mb-1">URL de l'image</label>
+            <input type="text" formControlName="imageUrl" class="w-full p-2 rounded bg-deep-green text-soft-white">
+        </div>
+
+        <div class="form-group">
+            <label class="block mb-1">Lien</label>
+            <input type="text" formControlName="route" class="w-full p-2 rounded bg-deep-green text-soft-white">
+        </div>
+
+        <div class="form-group">
+            <label class="block mb-1">Catégorie</label>
+            <select formControlName="category" class="w-full p-2 rounded bg-deep-green text-soft-white">
+                <option value="">Sélectionnez une catégorie</option>
+                @for (category of categories; track category) {
+                <option [value]="category">{{ category }}</option>
+                }
+            </select>
+        </div>
+
+        <button type="submit" [disabled]="!linkForm.valid" class="bg-apple-green text-white py-2 px-4 rounded mt-4 
+                   disabled:opacity-50 disabled:cursor-not-allowed">
+            Ajouter
+        </button>
+    </form>
+</main>

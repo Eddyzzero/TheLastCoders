@@ -111,16 +111,16 @@ export class SkillsQuizComponent {
 
       const quizResponse: QuizResponse = {
         userId: currentUser.uid,
-        experience: this.answers['0']?.[0] || '',
-        domain: this.answers['1']?.[0] || '',
-        languages: this.answers['2'] || [],
-        learningMethod: this.answers['3']?.[0] || '',
-        goal: this.answers['4']?.[0] || '',
-        timePerWeek: this.answers['5']?.[0] || '',
-        resources: this.answers['6'] || [],
-        paymentPreference: this.answers['7']?.[0] || '',
-        topics: this.answers['8'] || [],
-        discovery: this.answers['9']?.[0] || '',
+        experience: this.answers['1']?.[0] || '',
+        domain: this.answers['2']?.[0] || '',
+        languages: this.answers['3'] || [],
+        learningMethod: this.answers['4']?.[0] || '',
+        goal: this.answers['5']?.[0] || '',
+        timePerWeek: this.answers['6']?.[0] || '',
+        resources: this.answers['7'] || [],
+        paymentPreference: this.answers['8']?.[0] || '',
+        topics: this.answers['9'] || [],
+        discovery: this.answers['10']?.[0] || '',
         createdAt: new Date()
       };
 
@@ -128,12 +128,12 @@ export class SkillsQuizComponent {
 
       // Sauvegarder dans Firestore
       await this.fireStoreService.CreateDocument(`quiz_responses/${currentUser.uid}`, quizResponse);
-      console.log('✅ Réponses sauvegardées avec succès dans Firestore');
+      console.log('Réponses sauvegardées avec succès dans Firestore');
 
       // Rediriger vers la page d'accueil
       this.router.navigate(['/home']);
     } catch (error) {
-      console.error('❌ Erreur lors de la sauvegarde des réponses:', error);
+      console.error('Erreur lors de la sauvegarde des réponses:', error);
       this.errorMessage = 'Une erreur est survenue lors de la sauvegarde des réponses. Veuillez réessayer.';
     }
   }
