@@ -1,0 +1,54 @@
+<main class="pb-16 min-h-screen">
+    <header class="p-4 flex justify-between items-center">
+        <div>
+            <h1 class="text-2xl font-bold">Bienvenue {{ userService.gerUserConnectedFullName() }}</h1>
+            <p class="text-gray-400">Découvrez nos ressources d'apprentissage</p>
+        </div>
+        <button routerLink="/add-link" class="bg-apple-green text-white p-2 rounded-full">
+            <span class="material-symbols-outlined">add</span>
+        </button>
+    </header>
+
+    <!-- Filtres par catégorie -->
+    <div class="px-4 mb-4">
+        <div class="flex gap-2 overflow-x-auto">
+            @for (category of categories; track category) {
+            <button (click)="filterByCategory(category)" class="px-4 py-2 rounded-full text-sm whitespace-nowrap"
+                [class.bg-apple-green]="selectedCategory === category"
+                [class.bg-deep-green]="selectedCategory !== category">
+                {{ category }}
+            </button>
+            }
+        </div>
+    </div>
+
+    <!-- Liste des liens -->
+    <section class="p-4 overflow-y-auto h-[calc(100vh-180px)]">
+        <div class="grid grid-cols-2 gap-4">
+            @for (link of filteredLinks; track link.id) {
+            <div class="bg-deep-green rounded-xl overflow-hidden hover:bg-apple-green transition-colors cursor-pointer">
+                <img [src]="link.imageUrl" [alt]="link.title" class="w-full h-32 object-cover">
+                <div class="p-4">
+                    <h3 class="font-primary text-lg mb-1">{{ link.title }}</h3>
+                    <p class="text-xs text-gray-300">{{ link.category }}</p>
+                </div>
+            </div>
+            }
+        </div>
+    </section>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-deep-green text-soft-white p-2">
+        <ul class="flex justify-around items-center">
+            @for (link of navLinks; track link.route) {
+            <li>
+                <a [routerLink]="link.route"
+                    class="flex flex-col items-center p-2 hover:text-apple-green transition-colors">
+                    <span class="material-symbols-outlined">{{ link.icon }}</span>
+                    <span class="text-xs">{{ link.label }}</span>
+                </a>
+            </li>
+            }
+        </ul>
+    </nav>
+</main>

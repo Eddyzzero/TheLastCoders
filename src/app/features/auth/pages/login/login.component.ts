@@ -1,13 +1,16 @@
 import { Component, inject } from '@angular/core';
-import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
-import { AuthService } from '../../../../core/services/auth.service';
+import { FormBuilder, Validators, ReactiveFormsModule, FormGroup } from '@angular/forms';
+import { AuthService } from '../../../../core/services/fireAuth.service';
 import { Router, RouterModule } from '@angular/router';
+import { FirebaseError } from 'firebase/app';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
   imports: [
     ReactiveFormsModule,
     RouterModule,
+    CommonModule
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
@@ -15,29 +18,58 @@ import { Router, RouterModule } from '@angular/router';
 
 export class LoginComponent {
 
-  fb = inject(FormBuilder);
-  private authService = inject(AuthService);
-  private router = inject(Router);
+  loginForm: FormGroup;
+  errorMessage: string = '';
+
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router
+  ) {
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]]
+    });
+  }
 
 
-  form = this.fb.nonNullable.group({
-    email: ['', Validators.required],
-    password: ['', Validators.required],
-  });
+  onSubmit() {
+    if (this.loginForm.valid) {
+      const { email, password } = this.loginForm.value;
+      this.errorMessage = ''; // Réinitialiser le message d'erreur
 
-  errorMessage: string | null = null;
-
-  onSubmit(): void {
-    const rawForm = this.form.getRawValue();
-    this.authService
-      .login(rawForm.email, rawForm.password)
-      .subscribe({
+      this.authService.login(email, password).subscribe({
         next: () => {
-          this.router.navigateByUrl('/skills');
+          console.log('Connexion réussie');
+          this.router.navigate(['/home']); // Redirection après la connexion
         },
-        error: (err) => {
-          this.errorMessage = err.code;
+        error: (error: FirebaseError) => {
+          console.error('Erreur lors de la connexion:', error);
+
+          // Gestion des erreurs spécifiques
+          switch (error.code) {
+            case 'auth/invalid-email':
+              this.errorMessage = 'L\'adresse email n\'est pas valide.';
+              break;
+            case 'auth/user-disabled':
+              this.errorMessage = 'Ce compte a été désactivé.';
+              break;
+            case 'auth/user-not-found':
+              this.errorMessage = 'Aucun compte n\'existe avec cet email.';
+              break;
+            case 'auth/wrong-password':
+              this.errorMessage = 'Le mot de passe est incorrect.';
+              break;
+            case 'auth/invalid-credential':
+              this.errorMessage = 'Email ou mot de passe incorrect.';
+              break;
+            default:
+              this.errorMessage = 'Une erreur est survenue lors de la connexion. Veuillez réessayer.';
+          }
         }
       });
+    }
   }
+
+
 }

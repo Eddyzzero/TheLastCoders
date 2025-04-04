@@ -5,27 +5,43 @@
     </section>
 
     <section>
-        @if (errorMessage) {
-        <div class="font-primary text-3xl flex justify-center items-center py-4 bg-red-600 rounded-2xl">
-            <p>Il s'est produit une error </p>
+        <div *ngIf="errorMessage" class="font-primary text-red-500 text-center bg-red-100 p-3 rounded-lg mb-4">
+            {{ errorMessage }}
         </div>
-        }
-    </section>
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="flex flex-col items-center gap-5">
+            <div class="w-full max-w-md">
+                <input type="text" formControlName="userName" placeholder="Nom d'utilisateur" class="input w-full" />
+                <div *ngIf="registerForm.get('userName')?.touched && registerForm.get('userName')?.errors"
+                    class="text-red-500 text-sm mt-1">
+                    <p *ngIf="registerForm.get('userName')?.errors?.['required']">Le nom d'utilisateur est requis</p>
+                    <p *ngIf="registerForm.get('userName')?.errors?.['minlength']">Le nom d'utilisateur doit contenir au
+                        moins 7 caractères</p>
+                </div>
+            </div>
 
-    <section>
-        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col items-center gap-5">
-            <div>
-                <input type=" text" formControlName="userName" placeholder="Nom d'utilisateur" class="input" />
-            </div>
-            <div>
-                <input type="email" formControlName="email" placeholder="Email" class="input" />
+            <div class="w-full max-w-md">
+                <input type="email" formControlName="email" placeholder="Email" class="input w-full" />
+                <div *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.errors"
+                    class="text-red-500 text-sm mt-1">
+                    <p *ngIf="registerForm.get('email')?.errors?.['required']">L'email est requis</p>
+                    <p *ngIf="registerForm.get('email')?.errors?.['email']">L'email n'est pas valide</p>
+                </div>
             </div>
 
-            <div>
-                <input type="password" formControlName="password" placeholder="Mot de passe" class="input" />
+            <div class="w-full max-w-md">
+                <input type="password" formControlName="password" placeholder="Mot de passe" class="input w-full" />
+                <div *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.errors"
+                    class="text-red-500 text-sm mt-1">
+                    <p *ngIf="registerForm.get('password')?.errors?.['required']">Le mot de passe est requis</p>
+                    <p *ngIf="registerForm.get('password')?.errors?.['minlength']">Le mot de passe doit contenir au
+                        moins 6 caractères</p>
+                </div>
             </div>
-            <button type="submit"
-                class="text-2xl bg-deep-green transition-colors hover:bg-apple-green px-4 py-1.5 rounded-xl cursor-pointer font-primary btn">S'enregistrer</button>
+
+            <button type="submit" [disabled]="!registerForm.valid"
+                class="text-2xl bg-deep-green transition-colors hover:bg-apple-green px-4 py-1.5 rounded-xl cursor-pointer font-primary btn disabled:opacity-50 disabled:cursor-not-allowed">
+                S'enregistrer
+            </button>
         </form>
     </section>
 </section>
