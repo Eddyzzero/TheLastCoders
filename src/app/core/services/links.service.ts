@@ -9,6 +9,8 @@ import { AuthService } from './fireAuth.service';
     providedIn: 'root'
 })
 export class LinksService {
+
+
     private firestore = inject(Firestore);
     private authService = inject(AuthService);
 

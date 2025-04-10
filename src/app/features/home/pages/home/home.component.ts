@@ -3,19 +3,21 @@ import { isPlatformBrowser } from '@angular/common';
 import { UsersService } from '../../../../core/services/users.service';
 import { LinksService } from '../../../../core/services/links.service';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { Link } from '../../interfaces/link.interface';
+import { AuthService } from '../../../../core/services/fireAuth.service';
 
 @Component({
   selector: 'app-home',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule,],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
 export class HomeComponent implements OnInit {
   public userService = inject(UsersService);
   private linksService = inject(LinksService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
   links: Link[] = [];
   filteredLinks: Link[] = [];
@@ -51,8 +53,9 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  filterByCategory(category: string) {
-    this.selectedCategory = category;
-    this.loadLinks();
+  logout(): void {
+    this.authService.logOut().subscribe(() => {
+      this.router.navigate(['/auth/login']);
+    });
   }
 }

@@ -19,6 +19,8 @@ import { FirebaseError } from 'firebase/app';
   providedIn: 'root',
 })
 export class AuthService {
+
+
   private fireStoreService = inject(FirestoreService);
   private userSubject = new BehaviorSubject<User | null>(null);
   user$ = this.userSubject.asObservable();
