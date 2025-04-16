@@ -15,38 +15,34 @@ import { CommonModule } from '@angular/common';
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-
 export class LoginComponent {
+  private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
   loginForm: FormGroup;
   errorMessage: string = '';
 
-  constructor(
-    private fb: FormBuilder,
-    private authService: AuthService,
-    private router: Router
-  ) {
+  constructor() {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
-
   onSubmit() {
     if (this.loginForm.valid) {
       const { email, password } = this.loginForm.value;
-      this.errorMessage = ''; // Réinitialiser le message d'erreur
+      this.errorMessage = '';
 
       this.authService.login(email, password).subscribe({
         next: () => {
           console.log('Connexion réussie');
-          this.router.navigate(['/home']); // Redirection après la connexion
+          this.router.navigate(['/home']);
         },
         error: (error: FirebaseError) => {
           console.error('Erreur lors de la connexion:', error);
 
-          // Gestion des erreurs spécifiques
           switch (error.code) {
             case 'auth/invalid-email':
               this.errorMessage = 'L\'adresse email n\'est pas valide.';
@@ -70,6 +66,4 @@ export class LoginComponent {
       });
     }
   }
-
-
 }

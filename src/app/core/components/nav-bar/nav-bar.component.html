@@ -1,0 +1,59 @@
+<!-- Menu latéral -->
+<div class="fixed inset-0 z-50 transition-opacity duration-300" [class.opacity-0]="!isMenuOpen"
+    [class.pointer-events-none]="!isMenuOpen" [class.opacity-100]="isMenuOpen">
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-black/50" (click)="toggleMenu()"></div>
+    <!-- Menu -->
+    <div class="fixed inset-y-0 left-0 w-full bg-deep-green transform transition-transform duration-300 ease-in-out"
+        [class.-translate-x-full]="!isMenuOpen" [class.translate-x-0]="isMenuOpen">
+        <div class="p-4">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-xl font-semibold text-white">Menu</h2>
+                <button type="button" (click)="toggleMenu()" class="text-white hover:text-gray-300">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <nav class=" w-full">
+                <ul class="space-y-4 flex flex-col justify-center">
+                    <li *ngFor="let item of menuItems">
+                        <a [routerLink]="item.route" (click)="toggleMenu()"
+                            class="block py-2 px-4 text-white hover:bg-apple-green rounded-lg transition-colors">
+                            {{ item.label }}
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- Barre de navigation -->
+<nav class="fixed bottom-0 left-0 right-0 border-t bg-deep-green">
+    <div class="max-w-md mx-auto px-4">
+        <ul class="flex justify-between items-center py-3">
+            <li>
+                <button type="button" (click)="toggleMenu()"
+                    class="p-2 bg-apple-green rounded-2xl shadow hover:bg-light-green transition-colors">
+                    <span class="material-symbols-outlined text-white">menu</span>
+                </button>
+            </li>
+            <li class="flex gap-2">
+                <button type="button" (click)="toggleView()"
+                    class="p-2 bg-apple-green rounded-2xl shadow hover:bg-light-green transition-colors">
+                    <span class="material-symbols-outlined text-white">{{ viewMode === 'grid' ? 'view_carousel' :
+                        'grid_view' }}</span>
+                </button>
+                <button type="button" (click)="toggleSearch()"
+                    class="p-2 bg-apple-green rounded-2xl shadow hover:bg-light-green transition-colors">
+                    <span class="material-symbols-outlined text-white">search</span>
+                </button>
+            </li>
+            <li>
+                <button type="button" class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
+                    <img [src]="userService.gerUserConnectedFullName()" alt="Profile"
+                        class="w-full h-full object-cover">
+                </button>
+            </li>
+        </ul>
+    </div>
+</nav>

@@ -6,9 +6,9 @@
 
     @if (authService.currentUserSignal() === null) {
     <section class=" font-primary flex flex-col items-center gap-5">
-        <a class="text-2xl hover:bg-deep-green px-4 py-1.5 rounded-xl cursor-pointer" routerLink="/login"
+        <a class="text-2xl hover:bg-deep-green px-4 py-1.5 rounded-xl cursor-pointer" routerLink="/auth/login"
             routerLinkActive="active">Se connecter</a>
-        <a class="text-2xl hover:bg-deep-green px-4 py-1.5 rounded-xl cursor-pointer" routerLink="/register"
+        <a class="text-2xl hover:bg-deep-green px-4 py-1.5 rounded-xl cursor-pointer" routerLink="/auth/register"
             routerLinkActive="active">S'enregister</a>
     </section>
     }

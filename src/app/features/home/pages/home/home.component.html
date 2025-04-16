@@ -1,96 +1,96 @@
-<main class="pb-16 min-h-screen flex justify-center items-center">
-    <div class="flex flex-col w-full max-w-4xl mx-auto">
-        <section>
-            <div class=" gap-4 w-lg">
-                @for (link of filteredLinks; track link.id) {
-                <div>
-                    <h1 class="text-3xl"> {{link.title}} </h1>
-                </div>
-                }
-            </div>
-        </section>
-        <!-- Liste des liens -->
-        <section class="p-4  flex justify-center items-center h-full">
-            <div class=" gap-4 w-sm h-full  ">
-                @for (link of filteredLinks; track link.id) {
-                <div
-                    class="bg-deep-green rounded-xl h-full overflow-hidden hover:bg-apple-green transition-colors cursor-pointer flex flex-col items-end p-2">
-                    <img [src]="link.imageUrl" [alt]="link.title" class="w-full h-96 object-cover">
-                    <button>voir </button>
-                </div>
-                }
-            </div>
-        </section>
-
-        <!-- Bottom Navigation -->
-        <nav class="fixed bottom-0 left-0 right-0 bg-deep-green text-soft-white p-2">
-            <div class="container mx-auto">
-                <!-- Search Bar -->
-                <div class="flex justify-center mb-2">
-                    <div class="relative w-full max-w-md">
-                        <input type="search" placeholder="Search..."
-                            class="w-full px-4 py-2 rounded-full bg-apple-green/20 text-soft-white">
-                        <span class="material-symbols-outlined absolute right-3 top-2">search</span>
-                    </div>
-                </div>
-
-                <!-- Main Navigation -->
-                <ul class="flex justify-around items-center">
-                    <!-- User Profile -->
-                    <li>
-                        <a [routerLink]="['/profile']"
-                            class="flex flex-col items-center p-2 hover:text-apple-green transition-colors">
-                            <!-- <img [src]="userPhotoUrl" alt="Profile"
-                                class="w-8 h-8 rounded-full border-2 border-apple-green"> -->
-                            <span class="text-xs">Profile</span>
-                        </a>
-                    </li>
-
-                    <!-- Burger Menu -->
-                    <li class="relative group">
-                        <button class="flex flex-col items-center p-2 hover:text-apple-green transition-colors">
-                            <span class="material-symbols-outlined">menu</span>
-                            <span class="text-xs">Menu</span>
-                        </button>
-                        <!-- Dropdown Menu -->
-                        <div
-                            class="absolute bottom-full mb-2 hidden group-hover:block bg-deep-green rounded-lg p-2 w-48">
-                            <a [routerLink]="['/cards']" class="block px-4 py-2 hover:bg-apple-green/20 rounded">
-                                <span class="material-symbols-outlined align-middle mr-2">style</span>Cards
-                            </a>
-                            <a [routerLink]="['/community']" class="block px-4 py-2 hover:bg-apple-green/20 rounded">
-                                <span class="material-symbols-outlined align-middle mr-2">group</span>Community
-                            </a>
-                            <a [routerLink]="['/privacy']" class="block px-4 py-2 hover:bg-apple-green/20 rounded">
-                                <span class="material-symbols-outlined align-middle mr-2">policy</span>Privacy Policy
-                            </a>
-                        </div>
-                    </li>
-
-                    <!-- Social Links -->
-                    <li class="flex space-x-3">
-                        <a href="https://github.com" target="_blank" class="hover:text-apple-green transition-colors">
-                            <span class="material-symbols-outlined">code</span>
-                        </a>
-                        <a href="https://linkedin.com" target="_blank" class="hover:text-apple-green transition-colors">
-                            <span class="material-symbols-outlined">work</span>
-                        </a>
-                        <a href="https://instagram.com" target="_blank"
-                            class="hover:text-apple-green transition-colors">
-                            <span class="material-symbols-outlined">photo_camera</span>
-                        </a>
-                    </li>
-
-                    <!-- Logout -->
-                    <li>
-                        <button (click)="logout()"
-                            class="flex flex-col items-center p-2 hover:text-apple-green transition-colors">
-                            <span class="material-symbols-outlined">logout</span>
-                            <span class="text-xs">Logout</span>
-                        </button>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+<!-- Overlay du popup -->
+@if (showAddLinkForm) {
+<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="sticky top-0 bg-white p-4 border-b flex justify-between items-center">
+            <h2 class="text-xl font-semibold">Ajouter un nouveau lien</h2>
+            <button (click)="toggleAddLinkForm()" class="text-gray-500 hover:text-gray-700">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="p-4">
+            <app-link-form (linkAdded)="onLinkAdded()"></app-link-form>
+        </div>
     </div>
+</div>
+}
+
+<!-- Contenu principal -->
+<main class="min-h-screen bg-soft-white pb-20">
+    <!-- Titre -->
+    <header class="pt-6 pb-4 text-center relative">
+        <h1 class="text-3xl font-mono">Code Monkey</h1>
+        <!-- Bouton d'ajout -->
+        <button (click)="toggleAddLinkForm()"
+            class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-apple-green text-white rounded-xl p-3 shadow-lg hover:bg-deep-green transition-colors flex items-center">
+            <span class="material-symbols-outlined">add</span>
+        </button>
+    </header>
+
+    <!-- Zone de recherche -->
+    @if (searchVisible) {
+    <div class="fixed top-0 left-0 right-0 bg-white p-4 shadow-lg z-40">
+        <div class="relative max-w-md mx-auto">
+            <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()"
+                class="w-full px-4 py-2 rounded-full border-2 border-apple-green" placeholder="Rechercher...">
+            <button (click)="toggleSearch()" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+    </div>
+    }
+
+    <!-- Carrousel -->
+    @if (viewMode === 'carousel' && filteredLinks.length > 0) {
+    <div class="relative px-4 py-8">
+        <div class="max-w-sm mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="relative aspect-square">
+                <img [src]="filteredLinks[currentIndex].imageUrl" [alt]="filteredLinks[currentIndex].title"
+                    class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-b from-transparent to-green-500/30"></div>
+            </div>
+            <div class="p-6">
+                <h2 class="text-xl font-semibold mb-2">{{ filteredLinks[currentIndex].title }}</h2>
+                <p class="text-gray-600 mb-4">{{ filteredLinks[currentIndex].description }}</p>
+                <div class="flex justify-end">
+                    <button [routerLink]="['/link', filteredLinks[currentIndex].id]"
+                        class="flex justify-center bg-apple-green text-white text-center py-1 px-10 rounded-xl shadow-xl hover:bg-deep-green transition-colors">
+                        voir
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex justify-center gap-2 mt-6">
+            @for (link of filteredLinks; track link.id; let i = $index) {
+            <button (click)="goToSlide(i)" class="w-2 h-2 rounded-full transition-colors"
+                [class.bg-apple-green]="currentIndex === i" [class.bg-gray-300]="currentIndex !== i">
+            </button>
+            }
+        </div>
+    </div>
+    }
+
+    <!-- Vue grille -->
+    @if (viewMode === 'grid') {
+    <div class="grid grid-cols-2 gap-4 p-4">
+        @for (link of filteredLinks; track link.id) {
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <img [src]="link.imageUrl" [alt]="link.title" class="w-full aspect-square object-cover">
+            <div class="p-4">
+                <h3 class="font-semibold mb-1">{{ link.title }}</h3>
+                <button [routerLink]="['/link', link.id]"
+                    class="block w-full bg-apple-green text-white text-center py-1 rounded-lg text-sm hover:bg-deep-green transition-colors">
+                    voir
+                </button>
+            </div>
+        </div>
+        }
+    </div>
+    }
+
+    <!-- Navigation -->
+    <app-nav-bar (viewModeChange)="onViewModeChange($event)" (searchToggle)="toggleSearch()">
+    </app-nav-bar>
 </main>

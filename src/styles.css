@@ -29,3 +29,7 @@
 .font-tertiary {
     font-family: var(--font-tertiary);
 }
+
+.color-back {
+    background-color: var(--color-black);
+}

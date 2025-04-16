@@ -10,7 +10,7 @@ import {
   onAuthStateChanged,
   UserCredential,
 } from '@angular/fire/auth';
-import { BehaviorSubject, Observable, from, catchError } from 'rxjs';
+import { BehaviorSubject, Observable, from, catchError, map } from 'rxjs';
 import { UserInterface } from '../../features/auth/interfaces/user.interface';
 import { FirestoreService } from './firestore.service';
 import { FirebaseError } from 'firebase/app';
@@ -24,6 +24,7 @@ export class AuthService {
   private fireStoreService = inject(FirestoreService);
   private userSubject = new BehaviorSubject<User | null>(null);
   user$ = this.userSubject.asObservable();
+  isLoggedIn$ = this.user$.pipe(map(user => !!user));
   private auth = inject(Auth);
   currentUserSignal = signal<UserInterface | null | undefined>(undefined);
 

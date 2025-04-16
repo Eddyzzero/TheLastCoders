@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../../core/services/fireAuth.service';
 import { FirestoreService } from '../../../../core/services/firestore.service';
@@ -8,28 +8,24 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-register',
-  templateUrl: './register.component.html',
   imports: [
     ReactiveFormsModule,
     RouterModule,
     CommonModule
   ],
+  templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
-
-
 export class RegisterComponent implements OnInit {
+  private authService = inject(AuthService);
+  private firestoreService = inject(FirestoreService<any>);
+  private fb = inject(FormBuilder);
+  private router = inject(Router);
 
   registerForm: FormGroup;
   errorMessage: string = '';
 
-  constructor(
-    private authService: AuthService,
-    private firestoreService: FirestoreService<any>,
-    private fb: FormBuilder,
-    private router: Router
-
-  ) {
+  constructor() {
     this.registerForm = this.fb.group({
       userName: ['', [Validators.required, Validators.minLength(7)]],
       email: ['', [Validators.required, Validators.email]],
