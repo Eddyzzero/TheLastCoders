@@ -33,3 +33,8 @@
 .color-back {
     background-color: var(--color-black);
 }
+
+h3 {
+    font-family: var(--font-secondary);
+    text-transform: uppercase;
+}

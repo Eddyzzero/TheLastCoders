@@ -91,6 +91,7 @@
     }
 
     <!-- Navigation -->
-    <app-nav-bar (viewModeChange)="onViewModeChange($event)" (searchToggle)="toggleSearch()">
+    <app-nav-bar (viewModeChange)="onViewModeChange($event)" (searchToggle)="toggleSearch()"
+        (filterChange)="onFilterChange($event)">
     </app-nav-bar>
 </main>

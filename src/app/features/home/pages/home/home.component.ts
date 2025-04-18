@@ -12,6 +12,7 @@ import { Observable, map, switchMap, combineLatest } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { LinkFormComponent } from '../link-form/link-form.component';
 import { NavBarComponent } from '../../../../core/components/nav-bar/nav-bar.component';
+import { Filters } from '../../components/filter-panel/filter-panel.component';
 
 @Component({
   selector: 'app-home',
@@ -42,6 +43,13 @@ export class HomeComponent implements OnInit {
   showAddLinkForm = false;
   userMap: { [key: string]: UserInterface } = {};
 
+  activeFilters: Filters = {
+    niveau: [],
+    langage: [],
+    prix: [],
+    type: []
+  };
+
   navLinks = [
     { route: '/home', icon: 'home', label: 'Accueil' },
     { route: '/search', icon: 'search', label: 'Rechercher' },
@@ -61,7 +69,7 @@ export class HomeComponent implements OnInit {
     this.linksService.getLinks().pipe(
       switchMap(links => {
         this.links = links;
-        this.filterLinks();
+        this.applyFilters();
         const userIds = [...new Set(links.map(link => link.createdBy))];
         const userObservables = userIds.map(userId =>
           this.firestoreService.getDocument(`users/${userId}`)
@@ -77,11 +85,53 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  filterLinks() {
-    this.filteredLinks = this.links.filter(link =>
+  applyFilters() {
+    // Filtre par terme de recherche
+    let result = this.links.filter(link =>
       link.title.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
       link.description.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
+
+    // Appliquer d'autres filtres si nécessaire
+    if (this.hasActiveFilters()) {
+      // Filtrer par niveau
+      if (this.activeFilters.niveau.length > 0) {
+        result = result.filter(link =>
+          link.niveau && this.activeFilters.niveau.includes(link.niveau)
+        );
+      }
+
+      // Filtrer par langage
+      if (this.activeFilters.langage.length > 0) {
+        result = result.filter(link =>
+          link.tags && link.tags.some(tag =>
+            this.activeFilters.langage.includes(tag)
+          )
+        );
+      }
+
+      // Filtrer par prix
+      if (this.activeFilters.prix.length > 0) {
+        result = result.filter(link => {
+          const isPaid = link.isPaid;
+          return (isPaid && this.activeFilters.prix.includes('Payant')) ||
+            (!isPaid && this.activeFilters.prix.includes('Gratuit'));
+        });
+      }
+
+      // Filtrer par type
+      if (this.activeFilters.type.length > 0) {
+        result = result.filter(link =>
+          link.type && this.activeFilters.type.includes(link.type)
+        );
+      }
+    }
+
+    this.filteredLinks = result;
+  }
+
+  hasActiveFilters(): boolean {
+    return Object.values(this.activeFilters).some(filters => filters.length > 0);
   }
 
   nextSlide() {
@@ -100,8 +150,13 @@ export class HomeComponent implements OnInit {
     this.searchVisible = !this.searchVisible;
     if (!this.searchVisible) {
       this.searchTerm = '';
-      this.filterLinks();
+      this.applyFilters();
     }
+  }
+
+  onFilterChange(filters: Filters) {
+    this.activeFilters = filters;
+    this.applyFilters();
   }
 
   onViewModeChange(mode: 'grid' | 'carousel') {
@@ -122,7 +177,7 @@ export class HomeComponent implements OnInit {
   }
 
   onSearchChange() {
-    this.filterLinks();
+    this.applyFilters();
   }
 
   getUserInfo(userId: string): UserInterface | null {
@@ -131,7 +186,7 @@ export class HomeComponent implements OnInit {
 
   logout(): void {
     this.authService.logOut().subscribe(() => {
-      this.router.navigate(['/auth/login']);
+      this.router.navigate(['/login-choice']);
     });
   }
 }

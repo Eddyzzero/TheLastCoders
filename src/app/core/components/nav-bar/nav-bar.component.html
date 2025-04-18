@@ -1,10 +1,10 @@
 <!-- Menu latéral -->
-<div class="fixed inset-0 z-50 transition-opacity duration-300" [class.opacity-0]="!isMenuOpen"
+<div class="fixed inset-0 z-50 transition-opacity duration-300 font-primary font-bold" [class.opacity-0]="!isMenuOpen"
     [class.pointer-events-none]="!isMenuOpen" [class.opacity-100]="isMenuOpen">
     <!-- Overlay -->
     <div class="absolute inset-0 bg-black/50" (click)="toggleMenu()"></div>
     <!-- Menu -->
-    <div class="fixed inset-y-0 left-0 w-full bg-deep-green transform transition-transform duration-300 ease-in-out"
+    <div class="fixed inset-y-0 left-0 w-full bg-apple-green transform transition-transform duration-300 ease-in-out"
         [class.-translate-x-full]="!isMenuOpen" [class.translate-x-0]="isMenuOpen">
         <div class="p-4">
             <div class="flex justify-between items-center mb-8">
@@ -14,11 +14,22 @@
                 </button>
             </div>
             <nav class=" w-full">
-                <ul class="space-y-4 flex flex-col justify-center">
+                <ul class="space-y-4 grid place-content-center h-screen">
                     <li *ngFor="let item of menuItems">
                         <a [routerLink]="item.route" (click)="toggleMenu()"
-                            class="block py-2 px-4 text-white hover:bg-apple-green rounded-lg transition-colors">
+                            class="block py-2 text-black hover:text-white rounded-lg transition-colors text-6xl">
                             {{ item.label }}
+                        </a>
+                    </li>
+                    <li class="flex gap-2">
+                        <a href="" class=" text-black hover:text-soft-white">instagram</a>
+                        <a href="" class=" text-black hover:text-soft-white">linkedIn</a>
+                        <a href="" class=" text-black hover:text-soft-white">Github</a>
+                    </li>
+                    <li class="border-t border-apple-green/30 mt-4 pt-20">
+                        <a (click)="logOut()"
+                            class="block py-2  text-black hover:text-white rounded-lg transition-colors cursor-pointer text-2xl ">
+                            se déconnecter
                         </a>
                     </li>
                 </ul>
@@ -27,8 +38,11 @@
     </div>
 </div>
 
+<!-- Panneau de filtres -->
+<app-filter-panel (filterChange)="onFilterChange($event)" (close)="searchToggle.emit()"></app-filter-panel>
+
 <!-- Barre de navigation -->
-<nav class="fixed bottom-0 left-0 right-0 border-t bg-deep-green">
+<nav class="fixed bottom-0 left-0 right-0 ">
     <div class="max-w-md mx-auto px-4">
         <ul class="flex justify-between items-center py-3">
             <li>
@@ -37,15 +51,14 @@
                     <span class="material-symbols-outlined text-white">menu</span>
                 </button>
             </li>
-            <li class="flex gap-2">
+            <li class="flex gap-2 bg-apple-green shadow-lg rounded-xl px-2 py-1">
                 <button type="button" (click)="toggleView()"
-                    class="p-2 bg-apple-green rounded-2xl shadow hover:bg-light-green transition-colors">
+                    class="px-2 bg-white/50 rounded-lg shadow hover:bg-light-green transition-colors">
                     <span class="material-symbols-outlined text-white">{{ viewMode === 'grid' ? 'view_carousel' :
                         'grid_view' }}</span>
                 </button>
-                <button type="button" (click)="toggleSearch()"
-                    class="p-2 bg-apple-green rounded-2xl shadow hover:bg-light-green transition-colors">
-                    <span class="material-symbols-outlined text-white">search</span>
+                <button type="button" (click)="toggleSearch()" class="p-2  transition-colors">
+                    <span class="material-symbols-outlined text-white">filter_alt</span>
                 </button>
             </li>
             <li>

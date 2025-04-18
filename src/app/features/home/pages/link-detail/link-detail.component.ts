@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { LinksService } from '../../../../core/services/links.service';
@@ -7,84 +7,27 @@ import { Link } from '../../interfaces/link.interface';
 import { NavBarComponent } from '../../../../core/components/nav-bar/nav-bar.component';
 
 @Component({
-    selector: 'app-link-detail',
-    standalone: true,
-    imports: [CommonModule, NavBarComponent],
-    template: `
-    <main class="min-h-screen bg-gradient-to-b from-deep-green to-black pb-20">
-      <!-- Image et titre -->
-      <div class="relative">
-        <img [src]="link?.imageUrl" [alt]="link?.title" class="w-full aspect-square object-cover">
-        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/80"></div>
-        <div class="absolute bottom-0 left-0 right-0 p-6 text-white">
-          <h1 class="text-2xl font-bold mb-2">{{ link?.title }}</h1>
-          <div class="flex items-center gap-4">
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined">favorite</span>
-              <span>{{ link?.likes || 0 }}</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined">comment</span>
-              <span>200</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Description -->
-      <div class="p-6 text-white">
-        <p class="text-lg">{{ link?.description }}</p>
-      </div>
-
-      <!-- Commentaires -->
-      <div class="px-4">
-        <div class="bg-deep-green/50 rounded-xl p-4 mb-4" *ngFor="let i of [1,2,3]">
-          <div class="flex items-start gap-3">
-            <img [src]="userService.gerUserConnectedFullName()" alt="User" class="w-10 h-10 rounded-full">
-            <div>
-              <div class="flex items-center gap-2">
-                <h3 class="font-semibold text-white">User1</h3>
-                <span class="text-gray-400 text-sm">2h</span>
-              </div>
-              <p class="text-gray-200 mt-1">
-                Le Lorem Ipsum est simplement du faux texte employé dans la composition et la mise en page avant impression.
-              </p>
-              <div class="flex items-center gap-2 mt-2">
-                <button class="text-gray-400 hover:text-white transition-colors">
-                  <span class="material-symbols-outlined text-sm">favorite</span>
-                </button>
-                <span class="text-gray-400 text-sm">1.2k</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Navigation -->
-      <app-nav-bar></app-nav-bar>
-    </main>
-  `,
-    styles: [`
-    :host {
-      display: block;
-    }
-  `]
+  selector: 'app-link-detail',
+  standalone: true,
+  imports: [CommonModule, NavBarComponent],
+  templateUrl: './link-detail.component.html',
+  styleUrls: ['./link-detail.component.css']
 })
-export class LinkDetailComponent {
-    private route = inject(ActivatedRoute);
-    private linksService = inject(LinksService);
-    protected userService = inject(UsersService);
+export class LinkDetailComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private linksService = inject(LinksService);
+  protected userService = inject(UsersService);
 
-    link: Link | null = null;
+  link: Link | null = null;
 
-    ngOnInit() {
-        this.route.params.subscribe(params => {
-            const id = params['id'];
-            if (id) {
-                this.linksService.getLinkById(id).subscribe(link => {
-                    this.link = link;
-                });
-            }
+  ngOnInit() {
+    this.route.params.subscribe(params => {
+      const id = params['id'];
+      if (id) {
+        this.linksService.getLinkById(id).subscribe(link => {
+          this.link = link;
         });
-    }
+      }
+    });
+  }
 } 

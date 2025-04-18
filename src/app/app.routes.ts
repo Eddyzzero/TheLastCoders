@@ -7,38 +7,39 @@ import { SkillsQuizComponent } from './features/auth/pages/skills-quiz/skills-qu
 import { HomeComponent } from './features/home/pages/home/home.component';
 import { LinkFormComponent } from './features/home/pages/link-form/link-form.component';
 import { LinkDetailComponent } from './features/home/pages/link-detail/link-detail.component';
-import { AuthLayoutComponent } from './features/auth/layouts/auth-layout.component';
-import { HomeLayoutComponent } from './features/home/layouts/home-layout.component';
 
 export const routes: Routes = [
     {
         path: '',
-        redirectTo: 'auth/login-choice',
+        redirectTo: 'login-choice',
         pathMatch: 'full'
     },
-    {
-        path: 'auth',
-        component: AuthLayoutComponent,
-        children: [
-            { path: 'login-choice', component: LoginChoiceComponent },
-            { path: 'login', component: LoginComponent },
-            { path: 'register', component: RegisterComponent },
-            { path: 'skills', component: SkillsQuizComponent },
-            { path: '', redirectTo: 'login-choice', pathMatch: 'full' }
-        ]
-    },
+    { path: 'login-choice', component: LoginChoiceComponent },
+    { path: 'login', component: LoginComponent },
+    { path: 'register', component: RegisterComponent },
+    { path: 'skills', component: SkillsQuizComponent },
     {
         path: 'home',
-        component: HomeLayoutComponent,
-        canActivate: [authGuard],
-        children: [
-            { path: '', component: HomeComponent },
-            { path: 'add', component: LinkFormComponent },
-            { path: ':id', component: LinkDetailComponent }
-        ]
+        component: HomeComponent,
+        canActivate: [authGuard]
+    },
+    {
+        path: 'home/add',
+        component: LinkFormComponent,
+        canActivate: [authGuard]
+    },
+    {
+        path: 'home/:id',
+        component: LinkDetailComponent,
+        canActivate: [authGuard]
+    },
+    {
+        path: 'link/:id',
+        component: LinkDetailComponent,
+        canActivate: [authGuard]
     },
     {
         path: '**',
-        redirectTo: 'auth/login-choice'
+        redirectTo: 'login-choice'
     }
 ];

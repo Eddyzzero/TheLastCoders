@@ -8,4 +8,8 @@ export interface Link {
     createdAt: Date;
     createdBy: string;
     likes?: number;
+    niveau?: 'Junior' | 'Médior' | 'Senior';
+    tags?: string[];
+    isPaid?: boolean;
+    type?: 'Cours' | 'Projet' | 'Forum' | 'Exercice';
 }
