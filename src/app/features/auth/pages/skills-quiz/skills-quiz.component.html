@@ -7,17 +7,18 @@
         </div>
 
 
-        <h2 class="text-3xl font-bold mb-6 font-primary text-center">
+        <h2 class="text-3xl font-bold mb-20 font-primary text-center">
             {{currentQuestion.question}}
         </h2>
 
-        <div class="space-y-4">
+        <div class="flex flex-wrap gap-2 justify-center w-full">
             @for (option of currentQuestion.options; track option.value) {
-            <div class="flex items-center ">
-                <input type="checkbox" [id]="option.value" [checked]="isSelected(currentQuestion.id, option.value)"
-                    (change)="onSelect(currentQuestion.id, option.value)"
-                    class="w-4 h-4 rounded border-gray-300 focus:ring-apple-green">
-                <label [for]="option.value" class="ml-2 ">
+            <div class="flex items-center">
+                <input type="checkbox" [id]="option.value" [checked]="isSelected(currentQuestion.id, option.value) "
+                    (change)="onSelect(currentQuestion.id, option.value)" class="sr-only ">
+                <label [for]="option.value" [class.bg-deep-blue]="!isSelected(currentQuestion.id, option.value)"
+                    [class.bg-apple-green]="isSelected(currentQuestion.id, option.value)"
+                    class="ml-2 cursor-pointer bg-deep-blue text-white rounded-full px-4 py-2 shadow-xl/30 w-full text-center hover:bg-apple-green transition-colors hover:text-black">
                     {{option.label}}
                 </label>
             </div>
@@ -25,30 +26,32 @@
         </div>
     </div>
 
-    <div class="flex justify-between mt-12">
-        <button *ngIf="currentQuestionIndex > 0" (click)="onPrevious()" class="button">
+    <div class="flex justify-evenly mt-20 w-full">
+        <button *ngIf="currentQuestionIndex > 0" (click)="onPrevious()"
+            class="bg-apple-green text-white rounded-2xl shadow px-6 py-2 hover:bg-deep-blue transition-colors">
             Précédent
         </button>
 
         @if (currentQuestionIndex === questions.length - 1) {
         <button (click)="saveAnswers()"
-            class="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors">
+            class="bg-deep-blue text-white rounded-2xl shadow px-6 py-2 hover:bg-black transition-colors">
             Terminer
         </button>
         } @else {
-        <button (click)="onNext()" class=" button">
+        <button (click)="onNext()"
+            class="bg-apple-green text-white rounded-2xl shadow px-6 py-2 hover:bg-deep-blue transition-colors">
             Suivant
         </button>
         }
     </div>
 
     <!-- Progress bar -->
-    <div class="mt-8 w-full bg-soft-white rounded-full h-2.5">
+    <div class="mt-8 w-full bg-deep-blue rounded-full h-2.5">
         <div class="bg-apple-green h-2.5 rounded-full"
             [style.width.%]="(currentQuestionIndex + 1) / questions.length * 100">
         </div>
     </div>
-    <div class="text-sm mb-2">
+    <div class="text-sm mt-6">
         Question {{currentQuestionIndex + 1}} sur {{questions.length}}
     </div>
 </div>
