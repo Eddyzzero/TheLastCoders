@@ -1,20 +1,19 @@
-<div class="container h-screen mx-auto p-4 max-w-2xl bg-black text-soft-white">
-    <div class="mb-8">
+<div
+    class="container h-screen mx-auto p-4 max-w-2xl bg-soft-white text-black flex flex-col items-center justify-center font-secondary">
+    <div class="mb-8 flex flex-col justify-between items-center">
         <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
             role="alert">
             <span class="block sm:inline">{{ errorMessage }}</span>
         </div>
 
-        <div class="text-sm mb-2">
-            Question {{currentQuestionIndex + 1}} sur {{questions.length}}
-        </div>
-        <h2 class="text-2xl font-bold mb-6">
+
+        <h2 class="text-3xl font-bold mb-6 font-primary text-center">
             {{currentQuestion.question}}
         </h2>
 
         <div class="space-y-4">
             @for (option of currentQuestion.options; track option.value) {
-            <div class="flex items-center">
+            <div class="flex items-center ">
                 <input type="checkbox" [id]="option.value" [checked]="isSelected(currentQuestion.id, option.value)"
                     (change)="onSelect(currentQuestion.id, option.value)"
                     class="w-4 h-4 rounded border-gray-300 focus:ring-apple-green">
@@ -26,9 +25,8 @@
         </div>
     </div>
 
-    <div class="flex justify-between mt-8">
-        <button *ngIf="currentQuestionIndex > 0" (click)="onPrevious()"
-            class="px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors">
+    <div class="flex justify-between mt-12">
+        <button *ngIf="currentQuestionIndex > 0" (click)="onPrevious()" class="button">
             Précédent
         </button>
 
@@ -38,7 +36,7 @@
             Terminer
         </button>
         } @else {
-        <button (click)="onNext()" class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+        <button (click)="onNext()" class=" button">
             Suivant
         </button>
         }
@@ -49,5 +47,8 @@
         <div class="bg-apple-green h-2.5 rounded-full"
             [style.width.%]="(currentQuestionIndex + 1) / questions.length * 100">
         </div>
+    </div>
+    <div class="text-sm mb-2">
+        Question {{currentQuestionIndex + 1}} sur {{questions.length}}
     </div>
 </div>

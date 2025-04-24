@@ -15,7 +15,6 @@ import { QuizResponse } from '../../../auth/interfaces/quiz.interface';
     ReactiveFormsModule
   ],
   templateUrl: './skills-quiz.component.html',
-  styleUrl: './skills-quiz.component.css'
 })
 export class SkillsQuizComponent {
   private quizService = inject(skillsQuizService);

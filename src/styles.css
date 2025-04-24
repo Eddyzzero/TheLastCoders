@@ -38,3 +38,15 @@ h3 {
     font-family: var(--font-secondary);
     text-transform: uppercase;
 }
+
+.button {
+    padding: 12px;
+    color: var(--color-soft-white);
+    background-color: var(--color-apple-green);
+    border-radius: 12px;
+    transition: 0.5s;
+}
+
+.button:hover {
+    background-color: var(--color-deep-green);
+}
