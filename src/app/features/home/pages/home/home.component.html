@@ -19,10 +19,10 @@
 <main class="min-h-screen bg-soft-white pb-20">
     <!-- Titre -->
     <header class="pt-6 pb-4 text-center relative">
-        <h1 class="text-3xl font-mono">Code Monkey</h1>
+        <h1 class="text-3xl font-mono text-black font-primary font-bold text-left pl-8">Code Monkey</h1>
         <!-- Bouton d'ajout -->
         <button (click)="toggleAddLinkForm()"
-            class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-apple-green text-white rounded-xl p-3 shadow-lg hover:bg-deep-green transition-colors flex items-center">
+            class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-apple-green text-deep-green rounded-xl p-3 shadow-lg hover:bg-deep-green transition-colors flex items-center">
             <span class="material-symbols-outlined">add</span>
         </button>
     </header>
@@ -54,7 +54,7 @@
                 <p class="text-gray-600 mb-4">{{ filteredLinks[currentIndex].description }}</p>
                 <div class="flex justify-end">
                     <button [routerLink]="['/link', filteredLinks[currentIndex].id]"
-                        class="flex justify-center bg-apple-green text-white text-center py-1 px-10 rounded-xl shadow-xl hover:bg-deep-green transition-colors">
+                        class="flex justify-center bg-apple-green text-white text-center py-1 px-10 rounded-2xl shadow-xl hover:bg-deep-green transition-colors">
                         voir
                     </button>
                 </div>

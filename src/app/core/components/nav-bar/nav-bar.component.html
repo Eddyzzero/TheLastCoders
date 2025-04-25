@@ -8,7 +8,7 @@
         [class.-translate-x-full]="!isMenuOpen" [class.translate-x-0]="isMenuOpen">
         <div class="p-4">
             <div class="flex justify-between items-center mb-8">
-                <h2 class="text-xl font-semibold text-white">Menu</h2>
+                <h2 class="text-xl font-semibold text-deep-green">Menu</h2>
                 <button type="button" (click)="toggleMenu()" class="text-white hover:text-gray-300">
                     <span class="material-symbols-outlined">close</span>
                 </button>
@@ -47,18 +47,18 @@
         <ul class="flex justify-between items-center py-3">
             <li>
                 <button type="button" (click)="toggleMenu()"
-                    class="p-2 bg-apple-green rounded-2xl shadow hover:bg-light-green transition-colors">
-                    <span class="material-symbols-outlined text-white">menu</span>
+                    class=" px-6 bg-apple-green rounded-3xl shadow hover:bg-light-green transition-colors">
+                    <span class="material-symbols-outlined text-deep-green ">menu</span>
                 </button>
             </li>
-            <li class="flex gap-2 bg-apple-green shadow-lg rounded-xl px-2 py-1">
+            <li class="flex gap-2 bg-apple-green shadow-lg py-1 px-6 rounded-3xl">
                 <button type="button" (click)="toggleView()"
                     class="px-2 bg-white/50 rounded-lg shadow hover:bg-light-green transition-colors">
-                    <span class="material-symbols-outlined text-white">{{ viewMode === 'grid' ? 'view_carousel' :
+                    <span class="material-symbols-outlined text-deep-green">{{ viewMode === 'grid' ? 'view_carousel' :
                         'grid_view' }}</span>
                 </button>
-                <button type="button" (click)="toggleSearch()" class="p-2  transition-colors">
-                    <span class="material-symbols-outlined text-white">filter_alt</span>
+                <button type="button" (click)="toggleSearch()" class=" transition-colors">
+                    <span class="material-symbols-outlined text-deep-green">filter_alt</span>
                 </button>
             </li>
             <li>
