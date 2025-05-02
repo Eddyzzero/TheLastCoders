@@ -8,7 +8,7 @@ import { Link } from '../../interfaces/link.interface';
 import { AuthService } from '../../../../core/services/fireAuth.service';
 import { UserInterface } from '../../../auth/interfaces/user.interface';
 import { FirestoreService } from '../../../../core/services/firestore.service';
-import { Observable, map, switchMap, combineLatest } from 'rxjs';
+import { switchMap, combineLatest } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { LinkFormComponent } from '../link-form/link-form.component';
 import { NavBarComponent } from '../../../../core/components/nav-bar/nav-bar.component';
@@ -65,6 +65,8 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  // Méthode pour charger les liens
+  // et les utilisateurs associés
   loadLinks() {
     this.linksService.getLinks().pipe(
       switchMap(links => {
@@ -85,6 +87,16 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  // Méthode pour ouvrir un lien dans un nouvel onglet
+  openLink(url: string): void {
+    // Vérifier si l'URL commence par http:// ou https://
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      url = 'https://' + url;
+    }
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }
+
+  // Méthode pour appliquer les filtres sur les liens
   applyFilters() {
     // Filtre par terme de recherche
     let result = this.links.filter(link =>

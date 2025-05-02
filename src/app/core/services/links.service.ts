@@ -25,6 +25,21 @@ export class LinksService {
         return collectionData(linksQuery, { idField: 'id' }) as Observable<Link[]>;
     }
 
+    getLinksByUser(userId: string): Observable<Link[]> {
+        if (!isPlatformBrowser(this.platformId)) {
+            return of([]);
+        }
+        const linksCollection = collection(this.firestore, 'links');
+        const linksQuery = query(
+            linksCollection,
+            where('createdBy', '==', userId),
+            orderBy('createdAt', 'desc')
+        );
+        return collectionData(linksQuery, { idField: 'id' }) as Observable<Link[]>;
+    }
+
+
+
     getLinksByCategory(category: string): Observable<Link[]> {
         if (!isPlatformBrowser(this.platformId)) {
             return of([]);

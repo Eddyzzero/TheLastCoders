@@ -1,6 +1,6 @@
 import { Component, inject, Output, EventEmitter, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, Router, RouterLink } from '@angular/router';
 import { UsersService } from '../../services/users.service';
 import { AuthService } from '../../services/fireAuth.service';
 import { FilterPanelComponent, Filters } from '../../../features/home/components/filter-panel/filter-panel.component';
@@ -8,7 +8,7 @@ import { FilterPanelComponent, Filters } from '../../../features/home/components
 @Component({
     selector: 'app-nav-bar',
     standalone: true,
-    imports: [CommonModule, RouterModule, FilterPanelComponent],
+    imports: [CommonModule, RouterModule, FilterPanelComponent, RouterLink],
     templateUrl: './nav-bar.component.html',
     styleUrls: ['./nav-bar.component.css']
 })
@@ -77,4 +77,8 @@ export class NavBarComponent {
             }
         });
     }
-} 
+
+    navigateToProfile() {
+        this.router.navigate(['/users']);
+    }
+}

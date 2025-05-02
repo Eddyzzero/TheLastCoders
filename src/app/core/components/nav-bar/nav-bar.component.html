@@ -47,22 +47,24 @@
         <ul class="flex justify-between items-center py-3">
             <li>
                 <button type="button" (click)="toggleMenu()"
-                    class=" px-6 bg-apple-green rounded-3xl shadow hover:bg-light-green transition-colors">
-                    <span class="material-symbols-outlined text-deep-green ">menu</span>
+                    class=" px-6 bg-apple-green rounded-3xl shadow hover:bg-light-green transition-colors w-18 h-12">
+                    <img src="assets/images/icons/burgermenu.png" alt="icon">
                 </button>
             </li>
-            <li class="flex gap-2 bg-apple-green shadow-lg py-1 px-6 rounded-3xl">
+            <li class=" flex justify-between gap-2 bg-apple-green shadow-lg py-1 px-2 rounded-3xl max-w-52 max-h-12">
                 <button type="button" (click)="toggleView()"
-                    class="px-2 bg-white/50 rounded-lg shadow hover:bg-light-green transition-colors">
-                    <span class="material-symbols-outlined text-deep-green">{{ viewMode === 'grid' ? 'view_carousel' :
+                    class="py-2 px-4 bg-white/30 rounded-2xl shadow hover:bg-light-green transition-colors">
+                    <span class="material-symbols-outlined text-deep-green">{{ viewMode === 'grid' ? 'view_carousel'
+                        :
                         'grid_view' }}</span>
                 </button>
                 <button type="button" (click)="toggleSearch()" class=" transition-colors">
-                    <span class="material-symbols-outlined text-deep-green">filter_alt</span>
+                    <img src="assets/images/icons/searchList.png" alt="icon" class="max-w-3xl">
                 </button>
             </li>
             <li>
-                <button type="button" class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
+                <button (click)="navigateToProfile()"
+                    class="block w-10 h-10 rounded-full bg-gray-200 overflow-hidden hover:ring-2 hover:ring-apple-green transition-all">
                     <img [src]="userService.gerUserConnectedFullName()" alt="Profile"
                         class="w-full h-full object-cover">
                 </button>

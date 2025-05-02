@@ -1,1 +1,60 @@
-<p>users works!</p>
+<div class="min-h-screen bg-black p-4 text-soft-white">
+    <div class="max-w-2xl mx-auto">
+        <!-- En-tête du profil -->
+        <div class="flex flex-col items-center">
+            <!-- Image de profil et bouton modifier -->
+            <div class="relative w-32 h-32 mb-4">
+                <img [src]="imagePreview || user?.profileImage || 'assets/images/default-avatar.png'" alt="Profile"
+                    class="w-full h-full rounded-full object-cover bg-soft-white">
+                <label *ngIf="isEditing"
+                    class="absolute bottom-0 right-0 bg-apple-green p-2 rounded-full cursor-pointer hover:bg-deep-green transition-colors">
+                    <input type="file" accept="image/*" (change)="onFileSelected($event)" class="hidden">
+                    <span class="material-symbols-outlined text-white">photo_camera</span>
+                </label>
+            </div>
+
+            <!-- Nom d'utilisateur -->
+            <div class="mb-4 text-center">
+                <h1 class="text-2xl font-bold mb-2 text-soft-white" *ngIf="!isEditing">{{ user?.userName }}</h1>
+                <input *ngIf="isEditing" type="text" formControlName="userName"
+                    class="text-2xl font-bold text-center border-b-2 focus:outline-none focus:border-apple-green">
+                <span class="bg-apple-green text-white px-3 py-1 rounded-full text-sm">{{ user?.role }}</span>
+            </div>
+
+            <!-- Bouton Modifier -->
+            <button (click)="toggleEdit()"
+                class="bg-apple-green text-black px-6 py-1 rounded-3xl font-bold text-xs hover:bg-deep-green transition-colors">
+                {{ isEditing ? 'Sauvegarder' : 'Editer profile' }}
+            </button>
+
+
+            <!-- Grille des liens partagés -->
+            <div class="w-full mb-6 mt-20">
+                <h2 class="text-lg font-semibold mb-4 text-soft-white font-secondary">Liens partagés</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div *ngFor="let link of userSharedLinks"
+                        class="bg-dark-gray rounded-lg p-4 hover:bg-gray-800 transition-colors">
+                        <a [routerLink]="['/link', link.id]" class="block">
+                            <div class="relative aspect-square mb-2">
+                                <img [src]="link.imageUrl" [alt]="link.title"
+                                    class="w-full h-full object-cover rounded-lg">
+                            </div>
+                            <h3 class="font-medium text-apple-green mb-2">{{ link.title }}</h3>
+                            <p class="text-sm text-soft-white mb-2">{{ link.description }}</p>
+                            <div class="flex items-center gap-4 text-xs text-gray-400">
+                                <div class="flex items-center">
+                                    <span class="material-symbols-outlined text-sm mr-1">schedule</span>
+                                    {{ link.createdAt | date }}
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="material-symbols-outlined text-sm mr-1">favorite</span>
+                                    {{ link.likes || 0 }}
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

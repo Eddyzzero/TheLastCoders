@@ -7,6 +7,7 @@ import { SkillsQuizComponent } from './features/auth/pages/skills-quiz/skills-qu
 import { HomeComponent } from './features/home/pages/home/home.component';
 import { LinkFormComponent } from './features/home/pages/link-form/link-form.component';
 import { LinkDetailComponent } from './features/home/pages/link-detail/link-detail.component';
+import { UsersComponent } from './features/users/users.component';
 
 export const routes: Routes = [
     {
@@ -18,6 +19,10 @@ export const routes: Routes = [
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
     { path: 'skills', component: SkillsQuizComponent },
+    {
+        path: 'users',
+        component: UsersComponent
+    },
     {
         path: 'home',
         component: HomeComponent,

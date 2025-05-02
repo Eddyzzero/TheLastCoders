@@ -42,6 +42,7 @@ export class RegisterComponent implements OnInit {
           email: user.email!,
           userName: user.displayName!,
           createdAt: new Date(),
+          role: 'reader' as 'reader' // Type assertion to literal type
         };
 
         // Mettre à jour le signal

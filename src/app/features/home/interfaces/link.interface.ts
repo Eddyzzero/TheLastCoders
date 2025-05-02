@@ -8,6 +8,7 @@ export interface Link {
     createdAt: Date;
     createdBy: string;
     likes?: number;
+    url: string
     niveau?: 'Junior' | 'Médior' | 'Senior';
     tags?: string[];
     isPaid?: boolean;
