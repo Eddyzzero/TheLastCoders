@@ -1,10 +1,10 @@
 <!-- Overlay du popup -->
 @if (showAddLinkForm) {
 <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
-        <div class="sticky top-0 bg-white p-4 border-b flex justify-between items-center">
+    <div class="bg-black rounded-xl shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="sticky top-0 bg-black p-4 border-b border-deep-green flex justify-between items-center">
             <h2 class="text-xl font-semibold">Ajouter un nouveau lien</h2>
-            <button (click)="toggleAddLinkForm()" class="text-gray-500 hover:text-gray-700">
+            <button (click)="toggleAddLinkForm()" class="text-deep-green hover:text-gray-700">
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>
@@ -18,8 +18,7 @@
 <!-- Contenu principal -->
 <main class="min-h-screen bg-soft-white pb-20">
     <!-- Titre -->
-    <header class="pt-6 pb-4 text-center relative">
-        <h1 class="text-3xl font-mono text-black font-primary font-bold text-left pl-8">Code Monkey</h1>
+    <header class="pt-20 pb-4 text-center relative">
         <!-- Bouton d'ajout -->
         <button (click)="toggleAddLinkForm()"
             class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-apple-green text-deep-green rounded-xl p-3 shadow-lg hover:bg-deep-green transition-colors flex items-center">
@@ -27,30 +26,18 @@
         </button>
     </header>
 
-    <!-- Zone de recherche -->
-    @if (searchVisible) {
-    <div class="fixed top-0 left-0 right-0 bg-white p-4 shadow-lg z-40">
-        <div class="relative max-w-md mx-auto">
-            <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()"
-                class="w-full px-4 py-2 rounded-full border-2 border-apple-green" placeholder="Rechercher...">
-            <button (click)="toggleSearch()" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500">
-                <span class="material-symbols-outlined">close</span>
-            </button>
-        </div>
-    </div>
-    }
-
     <!-- Carrousel -->
     @if (viewMode === 'carousel' && filteredLinks.length > 0) {
-    <div class="relative px-4 py-30">
+    <div class="p-6">
+        <h2 class="text-black text-3xl font-primary "> {{filteredLinks[currentIndex].title}} </h2>
+    </div>
+    <div class="relative px-4 py-15">
         <div class="max-w-2xs mx-auto bg-white rounded-4xl shadow-lg overflow-hidden">
             <div class="relative aspect-square">
                 <img [src]="filteredLinks[currentIndex].imageUrl" [alt]="filteredLinks[currentIndex].title"
                     class="w-full h-full object-cover">
             </div>
             <div class="p-6">
-                <h2 class="text-3xl font-semibold mb-10 text-black font-secondary">{{ filteredLinks[currentIndex].title
-                    }}</h2>
                 <div class="flex justify-between">
                     <button (click)="openLink(filteredLinks[currentIndex].url)"
                         class="flex justify-center text-black items-center text-sm hover:text-apple-green transition-colors">
