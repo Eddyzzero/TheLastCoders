@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { UserInterface } from '../auth/interfaces/user.interface';
@@ -7,6 +7,7 @@ import { UsersService } from '../../core/services/users.service';
 import { LinksService } from '../../core/services/links.service';
 import { Link } from '../../features/home/interfaces/link.interface';
 import { RouterModule, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-users',
@@ -15,7 +16,7 @@ import { RouterModule, Router } from '@angular/router';
   templateUrl: './users.component.html',
   styleUrl: './users.component.css'
 })
-export class UsersComponent implements OnInit {
+export class UsersComponent implements OnInit, OnDestroy {
   // Injection des services
   private router = inject(Router);
   private authService = inject(AuthService);
@@ -31,6 +32,8 @@ export class UsersComponent implements OnInit {
   isEditing = false;
   userSharedLinks: Link[] = [];
   userId: string = '';
+  isLoading: boolean = true;
+  private subscriptions: Subscription[] = [];
 
   constructor() {
     this.profileForm = this.fb.group({
@@ -43,18 +46,32 @@ export class UsersComponent implements OnInit {
   }
 
   ngOnInit() {
+    // Vérifier si l'utilisateur est connecté
     const currentUser = this.authService.currentUserSignal();
+    console.log('Current user:', currentUser);
 
     if (!currentUser) {
+      console.error('Aucun utilisateur connecté');
       this.router.navigate(['/login']);
       return;
     }
 
+    // Récupérer l'ID de l'utilisateur
     this.userId = currentUser.id || '';
+    console.log('ID utilisateur récupéré:', this.userId);
 
     if (this.userId) {
       this.loadUserData();
+      this.loadUserSharedLinks();
+    } else {
+      console.error('ID utilisateur non valide');
+      this.isLoading = false;
     }
+  }
+
+  ngOnDestroy() {
+    // Nettoyer les souscriptions pour éviter les fuites de mémoire
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   private loadUserData() {
@@ -63,7 +80,6 @@ export class UsersComponent implements OnInit {
         this.user = userDoc;
         if (this.user) {
           this.initForm();
-          this.loadUserSharedLinks();
         }
       },
       error: (error) => {
@@ -126,15 +142,42 @@ export class UsersComponent implements OnInit {
   }
 
   loadUserSharedLinks() {
-    if (this.userId) {
-      this.linksService.getLinksByUser(this.userId).subscribe(
-        (links) => {
-          this.userSharedLinks = links;
-        },
-        (error) => {
-          console.error('Error loading user links:', error);
-        }
-      );
+    if (!this.userId) {
+      console.error('Impossible de charger les liens: userId manquant');
+      this.isLoading = false;
+      return;
     }
+
+    this.isLoading = true;
+    console.log('Chargement des liens pour utilisateur:', this.userId);
+
+    const subscription = this.linksService.getLinksByUser(this.userId).subscribe({
+      next: (links) => {
+        console.log('Liens récupérés:', links);
+        if (links && Array.isArray(links)) {
+          this.userSharedLinks = links;
+          console.log('Nombre de liens trouvés:', links.length);
+        } else {
+          console.error('Format de données incorrect pour les liens:', links);
+          this.userSharedLinks = [];
+        }
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des liens:', error);
+        this.isLoading = false;
+        this.userSharedLinks = [];
+      },
+      complete: () => {
+        console.log('Chargement des liens terminé');
+        this.isLoading = false;
+      }
+    });
+
+    this.subscriptions.push(subscription);
+  }
+
+  trackById(index: number, link: Link): string {
+    return link.id || index.toString();
   }
 }

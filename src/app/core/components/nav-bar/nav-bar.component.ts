@@ -47,6 +47,11 @@ export class NavBarComponent {
     toggleView(): void {
         this.viewMode = this.viewMode === 'grid' ? 'carousel' : 'grid';
         this.viewModeChange.emit(this.viewMode);
+
+        // Si le mode de vue est carrousel, rediriger vers la page d'accueil
+        if (this.viewMode === 'carousel') {
+            this.router.navigate(['/home']);
+        }
     }
 
     toggleSearch(): void {

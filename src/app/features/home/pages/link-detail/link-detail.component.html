@@ -1,18 +1,27 @@
-<main class="min-h-screen bg-gradient-to-b from-deep-green to-black pb-20">
+<main class="min-h-screen pb-20">
+    <div class="flex items-center gap-4 p-4 justify-center pt-10 font-primary z-10">
+        <h1 class="text-5xl font-bold mb-2">{{ link?.title }}</h1>
+    </div>
+
+    <!-- <div class="relative">
+        <div class="absolute w-96 h-96 bg-deep-green blur-3xl rounded-full -top-70 -right-20 z-0 overflow-hidden"></div>
+
+    </div> -->
+
     <!-- Image et titre -->
     <div class="relative">
         <img [src]="link?.imageUrl" [alt]="link?.title" class="w-full aspect-square object-cover">
-        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/80"></div>
         <div class="absolute bottom-0 left-0 right-0 p-6 text-white">
-            <h1 class="text-2xl font-bold mb-2">{{ link?.title }}</h1>
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-4 justify-around">
                 <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined">favorite</span>
                     <span>{{ link?.likes || 0 }}</span>
+                    <span>j'aimes</span>
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined">comment</span>
                     <span>200</span>
+                    <span>Commentaires</span>
                 </div>
             </div>
         </div>
@@ -50,4 +59,5 @@
 
     <!-- Navigation -->
     <app-nav-bar></app-nav-bar>
+
 </main>

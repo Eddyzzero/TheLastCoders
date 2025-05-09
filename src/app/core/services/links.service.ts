@@ -27,18 +27,31 @@ export class LinksService {
 
     getLinksByUser(userId: string): Observable<Link[]> {
         if (!isPlatformBrowser(this.platformId)) {
+            console.log('Non exécuté côté navigateur');
             return of([]);
         }
+
+        if (!userId) {
+            console.error('getLinksByUser: userId non fourni');
+            return of([]);
+        }
+
+        console.log('Recherche des liens pour userId:', userId);
+
         const linksCollection = collection(this.firestore, 'links');
         const linksQuery = query(
             linksCollection,
             where('createdBy', '==', userId),
             orderBy('createdAt', 'desc')
         );
-        return collectionData(linksQuery, { idField: 'id' }) as Observable<Link[]>;
+
+        return collectionData(linksQuery, { idField: 'id' }).pipe(
+            map((links: any[]) => {
+                console.log(`${links.length} liens trouvés pour l'utilisateur ${userId}`);
+                return links as Link[];
+            })
+        );
     }
-
-
 
     getLinksByCategory(category: string): Observable<Link[]> {
         if (!isPlatformBrowser(this.platformId)) {
