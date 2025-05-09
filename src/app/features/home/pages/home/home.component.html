@@ -4,7 +4,7 @@
     <div class="bg-black rounded-xl shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div class="sticky top-0 bg-black p-4 border-b border-deep-green flex justify-between items-center">
             <h2 class="text-xl font-semibold">Ajouter un nouveau lien</h2>
-            <button (click)="toggleAddLinkForm()" class="text-deep-green hover:text-gray-700">
+            <button (click)="toggleAddLinkForm()" class="text-white hover:text-gray-700">
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>
@@ -21,7 +21,7 @@
     <header class="pt-20 pb-4 text-center relative">
         <!-- Bouton d'ajout -->
         <button (click)="toggleAddLinkForm()"
-            class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-apple-green text-deep-green rounded-xl p-3 shadow-lg hover:bg-deep-green transition-colors flex items-center">
+            class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-apple-green text-deep-green rounded-xl p-3 shadow-lg hover:bg-deep-green hover:text-apple-green transition-colors flex items-center">
             <span class="material-symbols-outlined">add</span>
         </button>
     </header>
@@ -31,22 +31,22 @@
     <div class="p-6">
         <h2 class="text-black text-3xl font-primary "> {{filteredLinks[currentIndex].title}} </h2>
     </div>
-    <div class="relative px-4 py-15">
-        <div class="max-w-2xs mx-auto bg-white rounded-4xl shadow-lg overflow-hidden">
-            <div class="relative aspect-square">
+    <div class="relative px-4 ">
+        <div class="relative aspect-square">
+            <div class="max-w-2xs mx-auto  rounded-4xl shadow-lg overflow-hidden">
                 <img [src]="filteredLinks[currentIndex].imageUrl" [alt]="filteredLinks[currentIndex].title"
-                    class="w-full h-full object-cover">
-            </div>
-            <div class="p-6">
-                <div class="flex justify-between">
-                    <button (click)="openLink(filteredLinks[currentIndex].url)"
-                        class="flex justify-center text-black items-center text-sm hover:text-apple-green transition-colors">
-                        Lien de la page
-                    </button>
-                    <button [routerLink]="['/link', filteredLinks[currentIndex].id]"
-                        class="flex justify-center bg-apple-green text-white text-center py-1 px-10 rounded-2xl shadow-xl hover:bg-deep-green transition-colors">
-                        voir
-                    </button>
+                    class="w-full h-90 object-cover">
+                <div class="p-6">
+                    <div class="flex justify-between">
+                        <button (click)="openLink(filteredLinks[currentIndex].url)"
+                            class="flex justify-center text-black items-center text-sm hover:text-apple-green transition-colors">
+                            Lien de la page
+                        </button>
+                        <button [routerLink]="['/link', filteredLinks[currentIndex].id]"
+                            class="flex justify-center bg-apple-green text-white text-center py-1 px-10 rounded-2xl shadow-xl hover:bg-deep-green transition-colors">
+                            voir
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

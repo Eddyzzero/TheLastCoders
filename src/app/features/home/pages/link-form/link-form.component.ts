@@ -20,7 +20,7 @@ export class LinkFormComponent {
 
     @Output() linkAdded = new EventEmitter<void>();
 
-    categories = ['Frontend', 'Backend', 'DevOps', 'Mobile'];
+    categories = ['Frontend', 'Backend', 'DevOps', 'Mobile', 'Intelligence Artificiel'];
     errorMessage = '';
     selectedFile: File | null = null;
     imagePreview: string | null = null;
