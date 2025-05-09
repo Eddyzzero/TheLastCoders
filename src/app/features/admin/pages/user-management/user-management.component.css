@@ -1,0 +1,20 @@
+/* Styles spécifiques pour l'administration des utilisateurs */
+.role-select {
+    background-color: rgba(30, 30, 30, 0.8);
+    border-color: #444;
+    transition: border-color 0.2s ease;
+}
+
+.role-select:focus {
+    border-color: var(--apple-green);
+    outline: none;
+}
+
+/* Style spécifique pour les boutons d'action */
+.action-button {
+    transition: all 0.2s ease;
+}
+
+.action-button:hover {
+    transform: scale(1.1);
+}

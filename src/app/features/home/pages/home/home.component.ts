@@ -71,6 +71,22 @@ export class HomeComponent implements OnInit {
     this.linksService.getLinks().pipe(
       switchMap(links => {
         this.links = links;
+
+        // Débogage pour voir les utilisateurs associés aux liens
+        console.log('Tous les liens récupérés sur la page home:', links.length);
+        console.log('IDs des créateurs de liens:', links.map(link => link.createdBy));
+
+        // Vérifier l'utilisateur actuellement connecté
+        const currentUser = this.authService.getCurrentUser();
+        if (currentUser) {
+          console.log('ID utilisateur actuel:', currentUser.uid);
+
+          // Filtrer les liens de l'utilisateur actuel
+          const userLinks = links.filter(link => link.createdBy === currentUser.uid);
+          console.log('Liens de l\'utilisateur actuel sur la page home:', userLinks.length);
+          console.log('Détails des liens:', userLinks);
+        }
+
         this.applyFilters();
         const userIds = [...new Set(links.map(link => link.createdBy))];
         const userObservables = userIds.map(userId =>

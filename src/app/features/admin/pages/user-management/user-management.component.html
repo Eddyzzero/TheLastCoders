@@ -1,0 +1,66 @@
+<div class="min-h-screen bg-black p-4 text-soft-white">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-2xl font-bold mb-6 text-apple-green">Administration des utilisateurs</h1>
+
+        <!-- Indicateur de chargement -->
+        <div *ngIf="loading" class="flex justify-center my-8">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-apple-green"></div>
+        </div>
+
+        <!-- Message d'erreur pour les non-admins -->
+        <div *ngIf="!loading && !isAdmin" class="bg-red-900/30 p-4 rounded-lg text-center">
+            <p class="text-xl text-red-400">Accès refusé</p>
+            <p class="mt-2 text-soft-white">Vous n'avez pas les droits d'administrateur nécessaires pour accéder à cette
+                page.</p>
+            <button (click)="navigateToHome()"
+                class="mt-4 bg-apple-green text-black px-6 py-2 rounded-lg hover:bg-deep-green transition-colors">
+                Retour à l'accueil
+            </button>
+        </div>
+
+        <!-- Tableau des utilisateurs -->
+        <div *ngIf="!loading && isAdmin" class="overflow-x-auto">
+            <table class="w-full text-sm text-left text-gray-300">
+                <thead class="text-xs uppercase bg-dark-gray">
+                    <tr>
+                        <th scope="col" class="px-6 py-3">Utilisateur</th>
+                        <th scope="col" class="px-6 py-3">Email</th>
+                        <th scope="col" class="px-6 py-3">Rôle</th>
+                        <th scope="col" class="px-6 py-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let user of users"
+                        class="border-b border-gray-800 bg-dark-gray/50 hover:bg-dark-gray transition-colors">
+                        <td class="px-6 py-4 font-medium">
+                            <div class="flex items-center gap-3">
+                                <img [src]="user.profileImage || 'assets/images/default-avatar.png'" alt="Avatar"
+                                    class="w-8 h-8 rounded-full">
+                                {{ user.userName }}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">{{ user.email }}</td>
+                        <td class="px-6 py-4">
+                            <select [ngModel]="user.role" (ngModelChange)="changeUserRole(user.id!, $event)"
+                                class="role-select bg-dark-gray text-soft-white border border-gray-700 rounded p-1">
+                                <option value="reader">Reader</option>
+                                <option value="author">Author</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </td>
+                        <td class="px-6 py-4">
+                            <button (click)="viewUserProfile(user.id!)"
+                                class="action-button text-apple-green hover:text-deep-green mr-3">
+                                <span class="material-symbols-outlined">visibility</span>
+                            </button>
+                            <button (click)="deleteUser(user.id!)"
+                                class="action-button text-red-500 hover:text-red-700">
+                                <span class="material-symbols-outlined">delete</span>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

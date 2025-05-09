@@ -8,6 +8,7 @@ import { HomeComponent } from './features/home/pages/home/home.component';
 import { LinkFormComponent } from './features/home/pages/link-form/link-form.component';
 import { LinkDetailComponent } from './features/home/pages/link-detail/link-detail.component';
 import { UsersComponent } from './features/users/users.component';
+import { UserManagementComponent } from './features/admin/pages/user-management/user-management.component';
 
 export const routes: Routes = [
     {
@@ -22,6 +23,16 @@ export const routes: Routes = [
     {
         path: 'users',
         component: UsersComponent
+    },
+    {
+        path: 'user-profile/:id',
+        component: UsersComponent,
+        canActivate: [authGuard]
+    },
+    {
+        path: 'admin/users',
+        component: UserManagementComponent,
+        canActivate: [authGuard]
     },
     {
         path: 'home',

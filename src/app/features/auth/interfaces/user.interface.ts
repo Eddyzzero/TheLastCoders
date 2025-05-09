@@ -14,7 +14,7 @@ export interface UserInterface {
     };
 }
 
-//there we create the users roles
+// on creer ici les roles
 export interface UsersRoles {
     reader: boolean;
     author?: boolean

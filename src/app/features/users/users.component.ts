@@ -7,7 +7,7 @@ import { UsersService } from '../../core/services/users.service';
 import { LinksService } from '../../core/services/links.service';
 import { Link } from '../../features/home/interfaces/link.interface';
 import { RouterModule, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subscription, firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-users',
@@ -34,6 +34,7 @@ export class UsersComponent implements OnInit, OnDestroy {
   userId: string = '';
   isLoading: boolean = true;
   private subscriptions: Subscription[] = [];
+  canEdit: boolean = false;
 
   constructor() {
     this.profileForm = this.fb.group({
@@ -48,21 +49,46 @@ export class UsersComponent implements OnInit, OnDestroy {
   ngOnInit() {
     // Vérifier si l'utilisateur est connecté
     const currentUser = this.authService.currentUserSignal();
-    console.log('Current user:', currentUser);
+    console.log('Current user from signal:', currentUser);
 
-    if (!currentUser) {
+    // Vérifier aussi l'utilisateur via getCurrentUser()
+    const firebaseUser = this.authService.getCurrentUser();
+    console.log('Current user from Firebase:', firebaseUser);
+
+    if (!currentUser && !firebaseUser) {
       console.error('Aucun utilisateur connecté');
       this.router.navigate(['/login']);
       return;
     }
 
-    // Récupérer l'ID de l'utilisateur
-    this.userId = currentUser.id || '';
-    console.log('ID utilisateur récupéré:', this.userId);
+    // Récupérer l'ID de l'utilisateur (préférer d'abord firebaseUser.uid car c'est celui utilisé pour créer les liens)
+    if (firebaseUser && firebaseUser.uid) {
+      this.userId = firebaseUser.uid;
+      console.log('Utilisation de Firebase UID:', this.userId);
+    } else if (currentUser && currentUser.id) {
+      this.userId = currentUser.id;
+      console.log('Utilisation de User ID from signal:', this.userId);
+    }
 
     if (this.userId) {
+      // Afficher tous les liens pour déboguer
+      this.linksService.getLinks().subscribe(allLinks => {
+        const createdByValues = [...new Set(allLinks.map(link => link.createdBy))];
+        console.log('Tous les liens disponibles:', allLinks.length);
+        console.log('Valeurs uniques de createdBy:', createdByValues);
+        console.log('Notre userId actuel:', this.userId);
+        console.log('Est-ce que notre userId existe dans les liens?', createdByValues.includes(this.userId));
+
+        // Afficher les liens de cet utilisateur pour vérification
+        const userLinks = allLinks.filter(link => link.createdBy === this.userId);
+        console.log(`Liens avec userId=${this.userId}:`, userLinks);
+      });
+
       this.loadUserData();
       this.loadUserSharedLinks();
+
+      // Vérifier si l'utilisateur a le droit de modifier ce profil
+      this.checkEditPermission();
     } else {
       console.error('ID utilisateur non valide');
       this.isLoading = false;
@@ -99,11 +125,38 @@ export class UsersComponent implements OnInit, OnDestroy {
     });
   }
 
+  // Vérifier si l'utilisateur peut modifier ce profil
+  checkEditPermission(): void {
+    this.usersService.canModifyUser(this.userId).subscribe({
+      next: (canModify) => {
+        this.canEdit = canModify;
+        console.log(`Droits de modification pour ce profil: ${canModify ? 'Oui' : 'Non'}`);
+      },
+      error: (error) => {
+        console.error('Erreur lors de la vérification des permissions:', error);
+        this.canEdit = false;
+      }
+    });
+  }
+
   toggleEdit(): void {
+    // Vérifier d'abord si l'utilisateur a le droit de modifier ce profil
+    if (!this.canEdit) {
+      console.error('Vous n\'avez pas les droits nécessaires pour modifier ce profil');
+      alert('Vous n\'avez pas les droits nécessaires pour modifier ce profil');
+      return;
+    }
+
     this.isEditing = !this.isEditing;
-    if (!this.isEditing) {
-      // Si on quitte le mode édition sans sauvegarder, on réinitialise le formulaire
-      this.profileForm.patchValue(this.user || {});
+
+    if (this.isEditing) {
+      // Entrer en mode édition - initialiser le formulaire avec les valeurs actuelles
+      this.initForm();
+    } else {
+      // Sortir du mode édition sans sauvegarder - réinitialiser le formulaire
+      this.initForm();
+      this.imagePreview = null;
+      this.selectedFile = null;
     }
   }
 
@@ -120,10 +173,18 @@ export class UsersComponent implements OnInit, OnDestroy {
   }
 
   async updateProfile() {
-    if (this.user && this.profileForm.valid) {
+    if (!this.user || !this.profileForm.valid) {
+      console.error('Formulaire invalide ou utilisateur non défini');
+      return;
+    }
+
+    this.isLoading = true;
+
+    try {
+      // Récupérer les données du formulaire
       const updatedData = {
-        ...this.user,
-        ...this.profileForm.value,
+        userName: this.profileForm.value.userName,
+        bio: this.profileForm.value.bio,
         socialLinks: {
           github: this.profileForm.value.github,
           linkedin: this.profileForm.value.linkedin,
@@ -131,14 +192,44 @@ export class UsersComponent implements OnInit, OnDestroy {
         }
       };
 
-      try {
-        // TODO: Implémenter la mise à jour du profil avec le service
-        console.log('Profile updated:', updatedData);
-        this.isEditing = false; // Désactive le mode édition après la sauvegarde
-      } catch (error) {
-        console.error('Error updating profile:', error);
-      }
+      console.log('Données à mettre à jour:', updatedData);
+
+      // Mettre à jour le profil utilisateur dans Firestore
+      await firstValueFrom(this.usersService.updateUserProfile(this.userId, updatedData));
+
+      // Mettre à jour l'objet user local
+      this.user = {
+        ...this.user,
+        ...updatedData
+      };
+
+      console.log('Profil mis à jour avec succès:', this.user);
+
+      // Désactiver le mode édition
+      this.isEditing = false;
+
+      // Recharger les données utilisateur pour voir les changements
+      this.loadUserData();
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du profil:', error);
+    } finally {
+      this.isLoading = false;
     }
+  }
+
+  // Convertir un Timestamp Firebase en Date JavaScript
+  convertTimestampToDate(timestamp: any): Date {
+    if (timestamp instanceof Date) {
+      return timestamp;
+    }
+
+    if (timestamp && typeof timestamp === 'object' && 'seconds' in timestamp) {
+      // C'est un Timestamp Firebase
+      return new Date(timestamp.seconds * 1000);
+    }
+
+    // Si c'est déjà un nombre ou une chaîne de caractères, essayer de créer une Date
+    return new Date(timestamp);
   }
 
   loadUserSharedLinks() {
@@ -149,28 +240,53 @@ export class UsersComponent implements OnInit, OnDestroy {
     }
 
     this.isLoading = true;
-    console.log('Chargement des liens pour utilisateur:', this.userId);
+    console.log('Chargement des liens pour utilisateur avec ID:', this.userId);
 
-    const subscription = this.linksService.getLinksByUser(this.userId).subscribe({
-      next: (links) => {
-        console.log('Liens récupérés:', links);
-        if (links && Array.isArray(links)) {
-          this.userSharedLinks = links;
-          console.log('Nombre de liens trouvés:', links.length);
+    // Récupérer TOUS les liens puis filtrer côté client 
+    const subscription = this.linksService.getLinks().subscribe({
+      next: (allLinks) => {
+        console.log('Total des liens disponibles:', allLinks.length);
+
+        // Convertir toutes les dates Timestamp en objets Date JavaScript
+        const linksWithFixedDates = allLinks.map(link => ({
+          ...link,
+          createdAt: this.convertTimestampToDate(link.createdAt)
+        }));
+
+        // Filtrer UNIQUEMENT les liens créés par cet utilisateur spécifique
+        const userLinks = linksWithFixedDates.filter(link => link.createdBy === this.userId);
+        console.log(`Liens filtrés pour cet utilisateur (${this.userId}):`, userLinks.length);
+
+        if (userLinks.length > 0) {
+          console.log('Liens trouvés pour cet utilisateur:', userLinks);
+          this.userSharedLinks = userLinks;
         } else {
-          console.error('Format de données incorrect pour les liens:', links);
-          this.userSharedLinks = [];
+          console.log('Aucun lien trouvé avec cet ID utilisateur. Valeurs createdBy dans les liens:',
+            [...new Set(allLinks.map(link => link.createdBy))]);
+
+          // Si l'utilisateur courant est celui qu'on consulte, essayer avec l'UID Firebase
+          const firebaseUser = this.authService.getCurrentUser();
+          if (firebaseUser && firebaseUser.uid) {
+            console.log('Tentative avec Firebase UID:', firebaseUser.uid);
+
+            const firebaseUserLinks = linksWithFixedDates.filter(link => link.createdBy === firebaseUser.uid);
+            if (firebaseUserLinks.length > 0) {
+              console.log('Liens trouvés avec Firebase UID:', firebaseUserLinks);
+              this.userSharedLinks = firebaseUserLinks;
+            } else {
+              this.userSharedLinks = [];
+            }
+          } else {
+            this.userSharedLinks = [];
+          }
         }
+
         this.isLoading = false;
       },
       error: (error) => {
         console.error('Erreur lors du chargement des liens:', error);
         this.isLoading = false;
         this.userSharedLinks = [];
-      },
-      complete: () => {
-        console.log('Chargement des liens terminé');
-        this.isLoading = false;
       }
     });
 
