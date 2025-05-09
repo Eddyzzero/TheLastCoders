@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { authRedirectGuard } from './core/guards/auth-redirect.guard';
 import { LoginChoiceComponent } from './features/auth/pages/login-choice/login-choice.component';
 import { LoginComponent } from './features/auth/pages/login/login.component';
 import { RegisterComponent } from './features/auth/pages/register/register.component';
@@ -9,6 +10,10 @@ import { LinkFormComponent } from './features/home/pages/link-form/link-form.com
 import { LinkDetailComponent } from './features/home/pages/link-detail/link-detail.component';
 import { UsersComponent } from './features/users/users.component';
 import { UserManagementComponent } from './features/admin/pages/user-management/user-management.component';
+import { inject } from '@angular/core';
+import { AuthService } from './core/services/fireAuth.service';
+import { Router } from '@angular/router';
+import { map } from 'rxjs/operators';
 
 export const routes: Routes = [
     {
@@ -16,10 +21,26 @@ export const routes: Routes = [
         redirectTo: 'login-choice',
         pathMatch: 'full'
     },
-    { path: 'login-choice', component: LoginChoiceComponent },
-    { path: 'login', component: LoginComponent },
-    { path: 'register', component: RegisterComponent },
-    { path: 'skills', component: SkillsQuizComponent },
+    {
+        path: 'login-choice',
+        component: LoginChoiceComponent,
+        canActivate: [authRedirectGuard]
+    },
+    {
+        path: 'login',
+        component: LoginComponent,
+        canActivate: [authRedirectGuard]
+    },
+    {
+        path: 'register',
+        component: RegisterComponent,
+        canActivate: [authRedirectGuard]
+    },
+    {
+        path: 'skills',
+        component: SkillsQuizComponent,
+        canActivate: [authRedirectGuard]
+    },
     {
         path: 'users',
         component: UsersComponent
