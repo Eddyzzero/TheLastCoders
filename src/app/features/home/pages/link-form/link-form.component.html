@@ -6,12 +6,32 @@
         </div>
         }
 
+        <!-- Statut du formulaire pour débogage -->
+        <div class="text-xs bg-gray-100 p-2 rounded">
+            <p>Form valid: {{ linkForm.valid ? '✅' : '❌' }}</p>
+            <p>Image ready: {{ base64Ready ? '✅' : '❌' }}</p>
+            <p>Champs invalides:
+                <span *ngIf="linkForm.get('title')?.invalid">titre,</span>
+                <span *ngIf="linkForm.get('description')?.invalid">description,</span>
+                <span *ngIf="linkForm.get('route')?.invalid">lien,</span>
+                <span *ngIf="linkForm.get('url')?.invalid">url,</span>
+                <span *ngIf="linkForm.get('category')?.invalid">catégorie</span>
+            </p>
+        </div>
+
         <!-- Upload d'image -->
         <div class="form-group">
             <label class="block mb-1">Image</label>
             <div class="flex flex-col items-center gap-2">
                 @if (imagePreview) {
                 <img [src]="imagePreview" alt="Aperçu" class="w-32 h-32 object-cover rounded-lg">
+                <div class="text-xs" [class.text-green-600]="base64Ready" [class.text-red-600]="!base64Ready">
+                    @if (base64Ready) {
+                    <span>✓ Image prête</span>
+                    } @else {
+                    <span>⚠️ Image en traitement...</span>
+                    }
+                </div>
                 }
                 <div class="w-full">
                     <input type="file" accept="image/*" (change)="onFileSelected($event)" class="hidden" #fileInput>
@@ -43,6 +63,13 @@
             <input type="text" formControlName="route" class="w-full p-2 rounded bg-deep-green text-soft-white">
         </div>
 
+        <!-- Champ URL manquant -->
+        <div class="form-group">
+            <label class="block mb-1">URL du site <span class="text-red-500">*</span></label>
+            <input type="url" formControlName="url" class="w-full p-2 rounded bg-deep-green text-soft-white"
+                placeholder="https://example.com">
+        </div>
+
         <div class="form-group">
             <label class="block mb-1">Catégorie</label>
             <select formControlName="category" class="w-full p-2 rounded bg-deep-green text-soft-white">
@@ -53,7 +80,7 @@
             </select>
         </div>
 
-        <button type="submit" [disabled]="!linkForm.valid || !selectedFile"
+        <button type="submit" [disabled]="!linkForm.valid || !base64Ready"
             class="bg-apple-green text-white py-2 px-4 rounded mt-4 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-deep-green transition-colors">
             Ajouter
         </button>

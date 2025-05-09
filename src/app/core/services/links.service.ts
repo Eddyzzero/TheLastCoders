@@ -88,6 +88,11 @@ export class LinksService {
         return collectionData(linksQuery, { idField: 'id' }) as Observable<Link[]>;
     }
 
+    /**
+     * MÉTHODE OBSOLÈTE : Utilise Firebase Storage, qui peut causer des erreurs CORS
+     * Utiliser createLinkWithBase64Image à la place
+     */
+    /*
     async createLinkWithImage(link: Omit<Link, 'id' | 'createdAt' | 'createdBy' | 'likes'>, imageFile: File) {
         const user = this.authService.getCurrentUser();
         if (!user) throw new Error("L'utilisateur doit être authentifié");
@@ -116,24 +121,32 @@ export class LinksService {
             })
         ).toPromise();
     }
+    */
 
     async deleteLink(linkId: string) {
+        console.log(`Suppression du lien avec l'ID: ${linkId}`);
         const user = this.authService.getCurrentUser();
         if (!user) throw new Error("L'utilisateur doit être authentifié");
 
-        // Récupérer le lien pour obtenir l'URL de l'image
+        // Récupérer le lien
         const linkRef = doc(this.firestore, `links/${linkId}`);
         const linkDoc = await getDoc(linkRef);
 
-        if (linkDoc.exists()) {
-            const linkData = linkDoc.data() as Link;
-            if (linkData.imageUrl) {
-                // Extraire le chemin de l'image depuis l'URL
-                const imagePath = linkData.imageUrl.split('/').slice(-2).join('/');
-                // Supprimer l'image
-                await this.firestorageService.deleteImage(`links/${imagePath}`).toPromise();
-            }
+        if (!linkDoc.exists()) {
+            throw new Error("Le lien à supprimer n'existe pas");
         }
+
+        const linkData = linkDoc.data() as Link;
+
+        // Vérifier que l'utilisateur est bien le propriétaire
+        if (linkData.createdBy !== user.uid) {
+            throw new Error("Vous n'êtes pas autorisé à supprimer ce lien");
+        }
+
+        console.log("Suppression du document Firestore");
+
+        // Pour les images base64, pas besoin de supprimer l'image séparément
+        // car elle est stockée directement dans le document
 
         // Supprimer le document
         return deleteDoc(linkRef);
@@ -186,5 +199,28 @@ export class LinksService {
                 return null;
             })
         );
+    }
+
+    /**
+     * Crée un lien avec une image en base64 (sans utiliser Firebase Storage)
+     */
+    async createLinkWithBase64Image(link: Omit<Link, 'id' | 'createdAt' | 'createdBy' | 'likes' | 'imageUrl'>, base64Image: string): Promise<any> {
+        const user = this.authService.getCurrentUser();
+        if (!user) throw new Error("L'utilisateur doit être authentifié");
+
+        // Debug pour vérifier l'ID utilisateur
+        console.log('Utilisateur créant le lien:', user.uid);
+
+        const linkData = {
+            ...link,
+            imageUrl: base64Image, // Utiliser directement l'image base64
+            createdAt: new Date(),
+            createdBy: user.uid,
+            likes: 0
+        };
+
+        console.log('Données du lien créé avec image base64');
+        const linksCollection = collection(this.firestore, 'links');
+        return addDoc(linksCollection, linkData);
     }
 }

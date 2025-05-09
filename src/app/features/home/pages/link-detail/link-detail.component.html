@@ -32,6 +32,14 @@
         <p class="text-lg">{{ link?.description }}</p>
     </div>
 
+    <!-- Boutons d'action pour le propriétaire -->
+    <div class="mt-4 flex justify-end" *ngIf="isOwner">
+        <button (click)="toggleDeleteConfirm()" class="bg-red-600 text-white py-2 px-4 rounded-lg flex items-center">
+            <span class="material-symbols-outlined mr-1">delete</span>
+            Supprimer
+        </button>
+    </div>
+
     <!-- Commentaires -->
     <div class="px-4">
         <div class="bg-deep-green/50 rounded-xl p-4 mb-4" *ngFor="let i of [1,2,3]">
@@ -60,4 +68,31 @@
     <!-- Navigation -->
     <app-nav-bar></app-nav-bar>
 
+    <!-- Modal de confirmation de suppression -->
+    <div *ngIf="showDeleteConfirm" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+        <div class="bg-deep-green rounded-xl p-6 w-5/6 max-w-md">
+            <h3 class="text-xl font-bold mb-4 text-white">Confirmer la suppression</h3>
+
+            <p class="text-gray-100 mb-6">
+                Êtes-vous sûr de vouloir supprimer ce lien ? Cette action est irréversible.
+            </p>
+
+            <div *ngIf="deleteError" class="mb-4 p-3 bg-red-600/20 border border-red-600 rounded text-white text-sm">
+                {{ deleteError }}
+            </div>
+
+            <div class="flex justify-between">
+                <button (click)="toggleDeleteConfirm()" class="py-2 px-4 bg-gray-600 text-white rounded-lg"
+                    [disabled]="isDeleting">
+                    Annuler
+                </button>
+                <button (click)="deleteLink()" class="py-2 px-4 bg-red-600 text-white rounded-lg flex items-center"
+                    [disabled]="isDeleting">
+                    <span *ngIf="isDeleting" class="material-symbols-outlined animate-spin mr-1">autorenew</span>
+                    <span *ngIf="!isDeleting" class="material-symbols-outlined mr-1">delete</span>
+                    {{ isDeleting ? 'Suppression...' : 'Supprimer' }}
+                </button>
+            </div>
+        </div>
+    </div>
 </main>
