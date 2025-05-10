@@ -30,7 +30,6 @@ export class LinkFormComponent {
     linkForm = this.fb.group({
         title: ['', [Validators.required]],
         description: ['', [Validators.required]],
-        route: ['', [Validators.required]],
         url: ['', [Validators.required]],
         category: ['', [Validators.required]],
         niveau: ['Junior'],
