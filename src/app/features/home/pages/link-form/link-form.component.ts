@@ -1,6 +1,6 @@
 import { Component, inject, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LinksService } from '../../../../core/services/links.service';
 
@@ -27,10 +27,19 @@ export class LinkFormComponent {
     base64Image: string | null = null;
     base64Ready = false;
 
+    // validateur pour l'URL
+    // Vérifie si l'URL commence par http:// ou https://
+    private urlValidator(control: AbstractControl): ValidationErrors | null {
+        const url = control.value;
+        if (!url) return null;
+        const urlPattern = /^https?:\/\/.+/;
+        return urlPattern.test(url) ? null : { invalidUrlFormat: true };
+    }
+
     linkForm = this.fb.group({
         title: ['', [Validators.required]],
         description: ['', [Validators.required]],
-        url: ['', [Validators.required]],
+        url: ['', [Validators.required, this.urlValidator]],
         category: ['', [Validators.required]],
         niveau: ['Junior'],
         isPaid: [false],

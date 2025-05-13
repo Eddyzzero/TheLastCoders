@@ -31,12 +31,12 @@
     <div class="p-6">
         <h2 class="text-black text-3xl font-primary "> {{filteredLinks[currentIndex].title}} </h2>
     </div>
-    <div class="relative px-4 ">
-        <div class="relative aspect-square">
-            <div class="max-w-2xs mx-auto  rounded-4xl shadow-lg overflow-hidden">
+    <div class="relative px-4">
+        <div class="aspect-square">
+            <div class="max-w-2xs mx-auto rounded-4xl shadow-lg overflow-hidden relative">
                 <img [src]="filteredLinks[currentIndex].imageUrl" [alt]="filteredLinks[currentIndex].title"
-                    class="w-full h-90 object-cover">
-                <div class="p-6">
+                    class="w-full h-full object-cover">
+                <div class="absolute bottom-0 left-0 right-0 p-6 ">
                     <div class="flex justify-between">
                         <button (click)="openLink(filteredLinks[currentIndex].url)"
                             class="flex justify-center text-black items-center text-sm hover:text-apple-green transition-colors">
