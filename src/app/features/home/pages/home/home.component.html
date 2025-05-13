@@ -16,7 +16,16 @@
 }
 
 <!-- Contenu principal -->
-<main class="min-h-screen bg-soft-white pb-20">
+<main class="min-h-screen pb-20 relative overflow-hidden">
+
+    <!-- Background avec effet de flou -->
+    @if (viewMode === 'carousel' && filteredLinks.length > 0) {
+    <div class="absolute inset-0 z-0">
+        <img [src]="filteredLinks[currentIndex].imageUrl" class="w-full h-full object-cover blur-md">
+        <div class="absolute inset-0 bg-soft-white/50"></div>
+    </div>
+    }
+
     <!-- Titre -->
     <header class="pt-20 pb-4 text-center relative">
         <!-- Bouton d'ajout -->
@@ -28,8 +37,8 @@
 
     <!-- Carrousel -->
     @if (viewMode === 'carousel' && filteredLinks.length > 0) {
-    <div class="p-6">
-        <h2 class="text-black text-3xl font-primary "> {{filteredLinks[currentIndex].title}} </h2>
+    <div class="p-6 relative z-10">
+        <h2 class="text-black text-3xl font-primary drop-shadow-lg"> {{filteredLinks[currentIndex].title}} </h2>
     </div>
     <div class="relative px-4">
         <div class="aspect-square">
