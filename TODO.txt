@@ -1,2 +1,5 @@
 //TODO ajouter le questionaire apres login.
 //TODO ajouter les users et regarder la videohttps://www.youtube.com/watch?v=0ihoworuX4o&t=377s
+
+//TODO ajouter une page de charge quand la base de données doit ajouter un utilisateur
+//TODO modifier la page administrateur pour un meilleur affichage
