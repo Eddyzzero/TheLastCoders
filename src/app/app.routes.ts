@@ -39,7 +39,7 @@ export const routes: Routes = [
     {
         path: 'skills',
         component: SkillsQuizComponent,
-        canActivate: [authRedirectGuard]
+        canActivate: [authGuard]
     },
     {
         path: 'users',

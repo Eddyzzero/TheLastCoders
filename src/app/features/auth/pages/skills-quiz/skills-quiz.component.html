@@ -18,7 +18,7 @@
                     (change)="onSelect(currentQuestion.id, option.value)" class="sr-only ">
                 <label [for]="option.value" [class.bg-deep-blue]="!isSelected(currentQuestion.id, option.value)"
                     [class.bg-apple-green]="isSelected(currentQuestion.id, option.value)"
-                    class="ml-2 cursor-pointer bg-deep-blue text-white rounded-full px-4 py-2 shadow-xl/30 w-full text-center hover:bg-apple-green transition-colors hover:text-black">
+                    class="ml-2 cursor-pointer bg-deep-blue text-white rounded-full px-4 py-2 shadow-sm/30 w-full text-center hover:bg-apple-green transition-colors hover:text-black">
                     {{option.label}}
                 </label>
             </div>

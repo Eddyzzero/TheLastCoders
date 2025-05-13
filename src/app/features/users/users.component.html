@@ -28,6 +28,10 @@
                     <input *ngIf="isEditing" type="text" formControlName="userName"
                         class="text-2xl font-bold text-center border-b-2 bg-transparent text-soft-white focus:outline-none focus:border-apple-green">
                     <span class="bg-apple-green text-white px-3 py-1 rounded-full text-sm">{{ user?.role }}</span>
+
+                    <div class="mt-2 font-secondary text-gray-400">
+                        <span class="text-sm"> {{user?.bio}} </span>
+                    </div>
                 </div>
 
                 <!-- Champs additionnels en mode édition -->
