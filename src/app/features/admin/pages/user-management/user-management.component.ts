@@ -21,6 +21,8 @@ export class UserManagementComponent implements OnInit {
     isAdmin = false;
     loading = true;
     errorMessage = '';
+    showRoleModal = false;
+    selectedUser: UserInterface | null = null;
 
     ngOnInit(): void {
         this.checkAdminStatus();
@@ -111,4 +113,37 @@ export class UserManagementComponent implements OnInit {
     navigateToHome(): void {
         this.router.navigate(['/home']);
     }
-} 
+
+    openRoleModal(user: UserInterface) {
+        this.selectedUser = user;
+        this.showRoleModal = true;
+    }
+
+    closeRoleModal() {
+        this.showRoleModal = false;
+        this.selectedUser = null;
+    }
+
+    updateRole(newRole: 'reader' | 'author' | 'admin') {
+        if (this.selectedUser && this.selectedUser.id) {
+            this.loading = true;
+            this.usersService.changeUserRole(this.selectedUser.id, newRole).subscribe({
+                next: () => {
+                    console.log(`Rôle de l'utilisateur ${this.selectedUser?.id} changé en ${newRole}`);
+                    // Mettre à jour le rôle dans la liste locale
+                    if (this.selectedUser) {
+                        this.selectedUser.role = newRole;
+                    }
+                    this.closeRoleModal();
+                    // Recharger la liste des utilisateurs
+                    this.loadUsers();
+                },
+                error: (error) => {
+                    console.error('Erreur lors du changement de rôle:', error);
+                    this.errorMessage = `Erreur: ${error.message}`;
+                    this.loading = false;
+                }
+            });
+        }
+    }
+}

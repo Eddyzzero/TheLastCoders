@@ -1,10 +1,10 @@
-<div class="min-h-screen bg-black p-4 text-soft-white">
+<section class=" bg-black p-4 text-soft-white">
     <div class="max-w-4xl mx-auto">
-        <h1 class="text-2xl font-bold mb-6 text-apple-green">Administration des utilisateurs</h1>
+        <h1 class="text-2xl font-bold mb-6 text-apple-green font-primary ">Administration des utilisateurs</h1>
 
         <!-- Indicateur de chargement -->
         <div *ngIf="loading" class="flex justify-center my-8">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-apple-green"></div>
+            <div class="animate-spin rounded-full h-12 w-12 buser-b-2 buser-apple-green"></div>
         </div>
 
         <!-- Message d'erreur pour les non-admins -->
@@ -18,49 +18,84 @@
             </button>
         </div>
 
-        <!-- Tableau des utilisateurs -->
-        <div *ngIf="!loading && isAdmin" class="overflow-x-auto">
-            <table class="w-full text-sm text-left text-gray-300">
-                <thead class="text-xs uppercase bg-dark-gray">
-                    <tr>
-                        <th scope="col" class="px-6 py-3">Utilisateur</th>
-                        <th scope="col" class="px-6 py-3">Email</th>
-                        <th scope="col" class="px-6 py-3">Rôle</th>
-                        <th scope="col" class="px-6 py-3">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let user of users"
-                        class="border-b border-gray-800 bg-dark-gray/50 hover:bg-dark-gray transition-colors">
-                        <td class="px-6 py-4 font-medium">
-                            <div class="flex items-center gap-3">
-                                <img [src]="user.profileImage || 'assets/images/default-avatar.png'" alt="Avatar"
-                                    class="w-8 h-8 rounded-full">
-                                {{ user.userName }}
-                            </div>
-                        </td>
-                        <td class="px-6 py-4">{{ user.email }}</td>
-                        <td class="px-6 py-4">
-                            <select [ngModel]="user.role" (ngModelChange)="changeUserRole(user.id!, $event)"
-                                class="role-select bg-dark-gray text-soft-white border border-gray-700 rounded p-1">
-                                <option value="reader">Reader</option>
-                                <option value="author">Author</option>
-                                <option value="admin">Admin</option>
-                            </select>
-                        </td>
-                        <td class="px-6 py-4">
-                            <button (click)="viewUserProfile(user.id!)"
-                                class="action-button text-apple-green hover:text-deep-green mr-3">
-                                <span class="material-symbols-outlined">visibility</span>
-                            </button>
-                            <button (click)="deleteUser(user.id!)"
-                                class="action-button text-red-500 hover:text-red-700">
-                                <span class="material-symbols-outlined">delete</span>
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <!-- tous les utilisateurs -->
+        <div *ngFor="let user of users" class=" border border-gray-500 rounded-lg shadow-lg p-4 flex flex-col m-2">
+            <div class="flex justify-between items-center pb-3">
+                <div class="flex-shrink-0">
+                    <img [src]="user.profileImage" alt="User" class="w-10 h-10 rounded-full" />
+                </div>
+                <div class="flex-shrink-0">
+                    <button (click)="openRoleModal(user)" class="px-2 py-1 text-xs rounded-lg cursor-pointer" [ngClass]="
+                    {
+                        'bg-apple-green text-deep-blue': user.role === 'admin',
+                        'bg-soft-white text-black': user.role === 'reader',
+                        'bg-amber-500 text-white': user.role === 'author',
+                        }">{{ user.role }}
+                    </button>
+                </div>
+            </div>
+            <div class="flex-1">
+                <div class="flex justify-between items-center ">
+                    <p class="text-xs text-white">ID</p>
+                    <span class="text-sm text-gray-500"> {{ user.id }}</span>
+                </div>
+                <div class="flex justify-between items-center ">
+                    <p class="text-xs text-white">User</p>
+                    <span class="text-sm text-gray-500">{{ user.userName }}</span>
+                </div>
+                <div class="flex justify-between items-center ">
+                    <p class="text-xs text-white">Address </p>
+                    <span class="text-sm text-gray-500">{{ user.email }}</span>
+                </div>
+            </div>
+
+            <div class="pt-3">
+                <div class="flex justify-end gap-5">
+                    <button (click)="viewUserProfile(user.id!)"
+                        class="action-button text-apple-green hover:text-deep-green mr-3 bg bg-apple-green/10 hover:bg-apple-green/20 px-5 rounded-lg flex items-center justify-center">
+                        <span class="material-symbols-outlined">visibility</span>
+                    </button>
+                    <button (click)="deleteUser(user.id!)"
+                        class="action-button bg-red-400/50 p-1 text-white px-5 text-xs  rounded-lg flex items-center justify-center">
+                        <span class="material-symbols-outlined">delete</span>
+                    </button>
+                </div>
+            </div>
+
         </div>
+
+
+    </div>
+
+
+</section>
+
+<!-- Modal pour changer le rôle -->
+<div *ngIf="showRoleModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-dark-gray rounded-lg p-6 w-96 relative">
+        <h2 class="text-2xl font-bold mb-4 text-apple-green font-primary">Changer le rôle</h2>
+        <p class="text-soft-white mb-4">Utilisateur: {{ selectedUser?.userName }}</p>
+
+        <div class="space-y-2">
+            <button (click)="updateRole('reader')"
+                class="w-full text-left px-4 py-2 rounded hover:bg-apple-green text-soft-white"
+                [class.bg-apple-green]="selectedUser?.role === 'reader'">
+                Reader
+            </button>
+            <button (click)="updateRole('author')"
+                class="w-full text-left px-4 py-2 rounded hover:bg-apple-green text-soft-white"
+                [class.bg-apple-green]="selectedUser?.role === 'author'">
+                Author
+            </button>
+            <button (click)="updateRole('admin')"
+                class="w-full text-left px-4 py-2 rounded hover:bg-apple-green text-soft-white"
+                [class.bg-apple-green]="selectedUser?.role === 'admin'">
+                Admin
+            </button>
+        </div>
+
+        <button (click)="closeRoleModal()" class="absolute top-2 right-2 text-gray-400 hover:text-white">
+            <span class="material-symbols-outlined">close</span>
+        </button>
     </div>
 </div>

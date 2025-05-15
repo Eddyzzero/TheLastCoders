@@ -1,5 +1,5 @@
 import { effect, inject, Injectable } from '@angular/core';
-import { Firestore, collectionData, collection, doc, getDoc, updateDoc, DocumentReference, deleteDoc, query, where } from '@angular/fire/firestore';
+import { Firestore, collectionData, collection, doc, getDoc, updateDoc, DocumentReference, deleteDoc, query, where, setDoc } from '@angular/fire/firestore';
 import { Observable, from, of, map, catchError, switchMap } from 'rxjs';
 import { UserInterface } from '../../features/auth/interfaces/user.interface';
 import { AuthService } from './fireAuth.service';
@@ -31,19 +31,46 @@ export class UsersService {
       throw new Error('User ID is required');
     }
     const userDocRef = doc(this.usersFirestore, `users/${userId}`);
-    return from(getDoc(userDocRef).then(doc => {
-      if (doc.exists()) {
+
+    return from(getDoc(userDocRef)).pipe(
+      map(doc => {
+        if (!doc.exists()) {
+          // Create a minimal user document if it doesn't exist
+          const basicUserData: UserInterface = {
+            id: userId,
+            email: '',
+            userName: 'Nouvel utilisateur',
+            createdAt: new Date(),
+            role: 'reader'
+          };
+          // Save the basic user data
+          from(setDoc(userDocRef, basicUserData)).subscribe();
+          return basicUserData;
+        }
+
         const userData = doc.data();
         return {
           id: doc.id,
-          userName: userData['userName'] || '',
+          userName: userData['userName'] || 'Nouvel utilisateur',
           email: userData['email'] || '',
           createdAt: userData['createdAt']?.toDate() || new Date(),
+          role: userData['role'] as 'reader' | 'author' | 'admin' || 'reader',
           ...userData
         } as UserInterface;
-      }
-      throw new Error('User not found');
-    }));
+      }),
+      catchError(error => {
+        console.error('Error in getUserById:', error);
+        // Return a minimal user object instead of throwing
+        const tempUser: UserInterface = {
+          id: userId,
+          email: '',
+          userName: 'Utilisateur temporaire',
+          createdAt: new Date(),
+          role: 'reader'
+        };
+        return of(tempUser);
+      })
+    );
   }
 
   updateUserProfile(userId: string, userData: Partial<UserInterface>): Observable<void> {
