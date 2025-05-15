@@ -3,15 +3,10 @@
         <h1 class="text-5xl font-bold mb-2">{{ link?.title }}</h1>
     </div>
 
-    <!-- <div class="relative">
-        <div class="absolute w-96 h-96 bg-deep-green blur-3xl rounded-full -top-70 -right-20 z-0 overflow-hidden"></div>
-
-    </div> -->
-
     <!-- Image et titre -->
     <div class="relative">
         <img [src]="link?.imageUrl" [alt]="link?.title" class="w-full aspect-square object-cover">
-        <div class="absolute bottom-0 left-0 right-0 p-6 text-white">
+        <div class=" mt-4 text-white">
             <div class="flex items-center gap-4 justify-around">
                 <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined">favorite</span>
@@ -27,38 +22,67 @@
         </div>
     </div>
 
-    <!-- Description -->
-    <div class="p-6 text-white">
-        <p class="text-lg">{{ link?.description }}</p>
-    </div>
-
     <!-- Boutons d'action pour le propriétaire -->
-    <div class="mt-4 flex justify-end" *ngIf="isOwner">
+    <div class="m-4 flex justify-center" *ngIf="isOwner">
         <button (click)="toggleDeleteConfirm()" class="bg-red-600 text-white py-2 px-4 rounded-lg flex items-center">
             <span class="material-symbols-outlined mr-1">delete</span>
             Supprimer
         </button>
     </div>
 
+    <!-- Description -->
+    <div class="p-6 text-white">
+        <p class="text-lg">{{ link?.description }}</p>
+    </div>
+
     <!-- Commentaires -->
     <div class="px-4">
-        <div class="bg-deep-green/50 rounded-xl p-4 mb-4" *ngFor="let i of [1,2,3]">
-            <div class="flex items-start gap-3">
-                <img [src]="userService.gerUserConnectedFullName()" alt="User" class="w-10 h-10 rounded-full">
-                <div>
-                    <div class="flex items-center gap-2">
-                        <h3 class="font-semibold text-white">User1</h3>
-                        <span class="text-gray-400 text-sm">2h</span>
-                    </div>
-                    <p class="text-gray-200 mt-1">
-                        Le Lorem Ipsum est simplement du faux texte employé dans la composition et la mise en page avant
-                        impression.
-                    </p>
-                    <div class="flex items-center gap-2 mt-2">
-                        <button class="text-gray-400 hover:text-white transition-colors">
-                            <span class="material-symbols-outlined text-sm">favorite</span>
+        <!-- Formulaire de commentaire -->
+        <form (ngSubmit)="addComment()" class="mb-6" [formGroup]="commentForm">
+            <div class="flex gap-3">
+                <img [src]="currentUser?.profileImage || 'assets/images/default-avatar.png'" alt="User"
+                    class="w-10 h-10 rounded-full">
+                <div class="flex-1">
+                    <textarea formControlName="text"
+                        class="w-full bg-deep-green/30 rounded-lg p-3 text-white resize-none focus:outline-none focus:ring-1 focus:ring-apple-green"
+                        rows="2" placeholder="Ajouter un commentaire..."></textarea>
+                    <div class="flex justify-end mt-2">
+                        <button type="submit" [disabled]="!commentForm.valid || isSubmitting"
+                            class="bg-apple-green text-deep-blue px-4 py-2 rounded-lg flex items-center gap-2 disabled:opacity-50">
+                            <span class="material-symbols-outlined text-sm" *ngIf="isSubmitting">autorenew</span>
+                            <span>{{ isSubmitting ? 'Envoi...' : 'Commenter' }}</span>
                         </button>
-                        <span class="text-gray-400 text-sm">1.2k</span>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <!-- Liste des commentaires -->
+        <div class="space-y-4">
+            <div class="bg-deep-green/30 rounded-xl p-4" *ngFor="let comment of comments">
+                <div class="flex items-start gap-3">
+                    <img [src]="comment.senderImage || 'assets/images/default-avatar.png'" [alt]="comment.senderName"
+                        class="w-10 h-10 rounded-full">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2">
+                            <h3 class="font-semibold text-white">{{ comment.senderName }}</h3>
+                            <span class="text-gray-400 text-sm">{{ comment.createdAt | date:'shortTime' }}</span>
+                        </div>
+                        <p class="text-gray-200 mt-1">{{ comment.text }}</p>
+                        <div class="flex items-center gap-2 mt-2">
+                            <button (click)="toggleLike(comment)"
+                                class="text-gray-400 hover:text-white transition-colors flex items-center gap-1">
+                                <span class="material-symbols-outlined text-sm"
+                                    [class.text-apple-green]="isLikedByCurrentUser(comment)">
+                                    favorite
+                                </span>
+                                <span class="text-sm">{{ comment.likes || 0 }}</span>
+                            </button>
+                            <button *ngIf="canDeleteComment(comment)" (click)="deleteComment(comment)"
+                                class="text-gray-400 hover:text-red-500 transition-colors ml-4">
+                                <span class="material-symbols-outlined text-sm">delete</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

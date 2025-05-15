@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  Firestore,
-} from '@angular/fire/firestore';
+import { Firestore, CollectionReference, Query } from '@angular/fire/firestore';
 import {
   addDoc,
   collection,
@@ -10,8 +8,15 @@ import {
   DocumentData,
   getDocFromServer,
   setDoc,
-  updateDoc
+  updateDoc,
+  query,
+  getDocs,
+  onSnapshot,
+  QueryConstraint,
+  where,
+  orderBy
 } from 'firebase/firestore';
+import { Observable, from } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -49,6 +54,76 @@ export class FirestoreService<T extends DocumentData> {
   public async deleteDocument(docPath: string): Promise<void> {
     const docRef = doc(this.firestore, docPath);
     await deleteDoc(docRef);
+  }
+
+  public getCollection(
+    collectionPath: string,
+    queryFn?: (ref: CollectionReference) => Query
+  ): Observable<T[]> {
+    const collectionRef = collection(this.firestore, collectionPath);
+    const queryRef = queryFn ? queryFn(collectionRef) : query(collectionRef);
+
+    return new Observable<T[]>(observer => {
+      const unsubscribe = onSnapshot(queryRef,
+        (snapshot) => {
+          const items = snapshot.docs.map(doc => ({
+            ...doc.data(),
+            id: doc.id,
+          } as unknown)) as T[];
+          observer.next(items);
+        },
+        (error) => {
+          console.error('Error fetching collection:', error);
+          observer.error(error);
+        }
+      );
+
+      return () => unsubscribe();
+    });
+  }
+
+  public async getCommentsByLinkId(linkId: string): Promise<T[]> {
+    const q = query(
+      collection(this.firestore, 'messages'),
+      where('linkId', '==', linkId),
+      orderBy('createdAt', 'desc')
+    );
+
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({
+      ...doc.data(),
+      id: doc.id,
+    } as unknown)) as T[];
+  }
+
+  public async markCommentAsRead(commentId: string): Promise<void> {
+    const commentRef = doc(this.firestore, `messages/${commentId}`);
+    await updateDoc(commentRef, {
+      read: true,
+      updatedAt: new Date()
+    });
+  }
+
+  public async editComment(commentId: string, newText: string): Promise<void> {
+    const commentRef = doc(this.firestore, `messages/${commentId}`);
+    await updateDoc(commentRef, {
+      text: newText,
+      isEdited: true,
+      editedAt: new Date()
+    });
+  }
+
+  public async replyToComment(parentId: string, commentData: Partial<T>): Promise<string> {
+    const commentsRef = collection(this.firestore, 'messages');
+    const docRef = await addDoc(commentsRef, {
+      ...commentData,
+      parentId,
+      createdAt: new Date(),
+      likes: 0,
+      likedBy: [],
+      read: false
+    });
+    return docRef.id;
   }
 }
 
