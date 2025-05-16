@@ -8,6 +8,7 @@ import { LinksService } from '../../core/services/links.service';
 import { Link } from '../../features/home/interfaces/link.interface';
 import { RouterModule, Router } from '@angular/router';
 import { Subscription, firstValueFrom } from 'rxjs';
+import { FirestorageService } from '../../core/services/firestorage.service';
 
 @Component({
   selector: 'app-users',
@@ -22,6 +23,7 @@ export class UsersComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private usersService = inject(UsersService);
   private linksService = inject(LinksService);
+  private firestorageService = inject(FirestorageService);
   private fb = inject(FormBuilder);
 
   // Propriétés de classe
@@ -160,16 +162,60 @@ export class UsersComponent implements OnInit, OnDestroy {
     }
   }
 
-  onFileSelected(event: Event) {
+  async onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
-      this.selectedFile = input.files[0];
+      const file = input.files[0];
+      // Vérifier si le fichier est une image
+      if (!file.type.startsWith('image/')) {
+        console.error('Le fichier doit être une image');
+        return;
+      }
+
+      this.selectedFile = file;
+
+      // Créer une prévisualisation de l'image
       const reader = new FileReader();
-      reader.onload = () => {
-        this.imagePreview = reader.result as string;
+      reader.onload = (e) => {
+        this.imagePreview = e.target?.result as string;
       };
-      reader.readAsDataURL(this.selectedFile);
+      reader.readAsDataURL(file);
+
+      // Upload immédiat de l'image
+      await this.uploadProfileImage(file);
     }
+  }
+
+  private async uploadProfileImage(file: File) {
+    try {
+      // Générer un nom de fichier unique
+      const fileName = this.firestorageService.generateUniqueFileName(file);
+      const path = `profile-images/${this.userId}/${fileName}`;
+
+      // Upload l'image et obtenir l'URL
+      const imageUrl = await firstValueFrom(this.firestorageService.uploadImage(file, path));
+
+      // Mettre à jour le profil utilisateur avec la nouvelle URL
+      await firstValueFrom(this.usersService.updateUserProfile(this.userId, {
+        profileImage: imageUrl
+      }));
+
+      // Mettre à jour l'image dans le signal du UsersService pour la navbar
+      this.usersService.updateProfileImageSignal(imageUrl);
+
+      // Mise à jour locale
+      if (this.user) {
+        this.user.profileImage = imageUrl;
+      }
+
+      console.log('Image de profil mise à jour avec succès');
+    } catch (error) {
+      console.error('Erreur lors de l\'upload de l\'image:', error);
+    }
+  }
+
+  getUserProfileImage(): string {
+    return this.user?.profileImage || 'assets/images/icons/userIcon.png';
   }
 
   async updateProfile() {

@@ -9,7 +9,7 @@ import { LinksService } from '../../../../core/services/links.service';
     standalone: true,
     imports: [
         CommonModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
     ],
     templateUrl: './link-form.component.html',
 })

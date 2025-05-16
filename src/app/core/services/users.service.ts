@@ -1,4 +1,4 @@
-import { effect, inject, Injectable } from '@angular/core';
+import { effect, inject, Injectable, Signal, signal } from '@angular/core';
 import { Firestore, collectionData, collection, doc, getDoc, updateDoc, DocumentReference, deleteDoc, query, where, setDoc } from '@angular/fire/firestore';
 import { Observable, from, of, map, catchError, switchMap } from 'rxjs';
 import { UserInterface } from '../../features/auth/interfaces/user.interface';
@@ -12,11 +12,15 @@ export class UsersService {
   private authService = inject(AuthService);
   private usersCollection = collection(this.usersFirestore, 'users');
   private _userLogged: UserInterface | undefined = undefined;
+  private userProfileImage = signal<string>('assets/images/icons/userIcon.png');
 
   constructor() {
     // Utiliser effect pour réagir aux changements du signal
     effect(() => {
       this._userLogged = this.authService.currentUserSignal() || undefined;
+      if (this._userLogged?.profileImage) {
+        this.userProfileImage.set(this._userLogged.profileImage);
+      }
     });
   }
 
@@ -76,6 +80,11 @@ export class UsersService {
   updateUserProfile(userId: string, userData: Partial<UserInterface>): Observable<void> {
     if (!userId) {
       throw new Error('User ID is required');
+    }
+
+    // Update the profile image signal if it's being updated
+    if (userData.profileImage) {
+      this.userProfileImage.set(userData.profileImage);
     }
 
     // Vérifier si l'utilisateur actuel a le droit de modifier ce profil
@@ -150,5 +159,18 @@ export class UsersService {
 
   public gerUserConnectedFullName(): string | undefined {
     return this._userLogged?.userName;
+  }
+
+  public getUserProfileImage(): Signal<string> {
+    return this.userProfileImage;
+  }
+
+  // Méthode pour obtenir l'image de profil de l'utilisateur connecté
+  public getCurrentUserImage(): string {
+    return this.userProfileImage();
+  }
+
+  updateProfileImageSignal(imageUrl: string) {
+    this.userProfileImage.set(imageUrl);
   }
 }

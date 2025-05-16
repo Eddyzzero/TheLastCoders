@@ -13,7 +13,7 @@
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
-            <nav class=" w-full">
+            <nav class="w-full">
                 <ul class="space-y-4 grid place-content-center h-screen">
                     <li *ngFor="let item of menuItems">
                         <a [routerLink]="item.route" (click)="toggleMenu()"
@@ -22,13 +22,13 @@
                         </a>
                     </li>
                     <li class="flex gap-2">
-                        <a href="" class=" text-black hover:text-soft-white">instagram</a>
-                        <a href="" class=" text-black hover:text-soft-white">linkedIn</a>
-                        <a href="" class=" text-black hover:text-soft-white">Github</a>
+                        <a href="" class="text-black hover:text-soft-white">instagram</a>
+                        <a href="" class="text-black hover:text-soft-white">linkedIn</a>
+                        <a href="" class="text-black hover:text-soft-white">Github</a>
                     </li>
                     <li class="border-t border-apple-green/30 mt-4 pt-20">
                         <a (click)="logOut()"
-                            class="block py-2  text-black hover:text-white rounded-lg transition-colors cursor-pointer text-2xl ">
+                            class="block py-2 text-black hover:text-white rounded-lg transition-colors cursor-pointer text-2xl">
                             se déconnecter
                         </a>
                     </li>
@@ -42,32 +42,31 @@
 <app-filter-panel (filterChange)="onFilterChange($event)" (close)="searchToggle.emit()"></app-filter-panel>
 
 <!-- Barre de navigation -->
-<nav class="fixed bottom-0 left-0 right-0 ">
+<nav class="fixed bottom-0 left-0 right-0">
     <div class="max-w-md mx-auto px-4">
         <ul class="flex justify-between items-center py-3">
             <li>
                 <button type="button" (click)="toggleMenu()"
-                    class=" px-6 bg-apple-green rounded-3xl shadow hover:bg-light-green transition-colors w-18 h-12">
+                    class="px-6 bg-apple-green rounded-3xl shadow hover:bg-light-green transition-colors w-18 h-12">
                     <img src="assets/images/icons/burgermenu.png" alt="icon">
                 </button>
             </li>
-            <li class=" flex justify-between gap-2 bg-apple-green shadow-lg py-1 px-2 rounded-3xl max-w-52 max-h-12">
+            <li class="flex justify-between gap-2 bg-apple-green shadow-lg py-1 px-2 rounded-3xl max-w-52 max-h-12">
                 <button type="button" (click)="toggleView()"
                     title="{{ viewMode === 'grid' ? 'Vue carrousel (retour à l\'accueil)' : 'Vue grille' }}"
                     class="py-2 px-4 bg-white/30 rounded-2xl shadow hover:bg-light-green transition-colors">
-                    <span class="material-symbols-outlined text-deep-green">{{ viewMode === 'grid' ? 'view_carousel'
-                        :
-                        'grid_view' }}</span>
+                    <span class="material-symbols-outlined text-deep-green">
+                        {{ viewMode === 'grid' ? 'view_carousel' : 'grid_view' }}
+                    </span>
                 </button>
-                <button type="button" (click)="toggleSearch()" class=" transition-colors">
+                <button type="button" (click)="toggleSearch()" class="transition-colors">
                     <img src="assets/images/icons/searchList.png" alt="icon" class="max-w-3xl">
                 </button>
             </li>
             <li>
                 <button (click)="navigateToProfile()"
-                    class="block w-10 h-10 rounded-full bg-gray-200 overflow-hidden hover:ring-2 hover:ring-apple-green transition-all">
-                    <img [src]="userService.gerUserConnectedFullName()" alt="Profile"
-                        class="w-full h-full object-cover">
+                    class="block w-10 h-10 rounded-full border border-white overflow-hidden hover:ring-2 hover:ring-apple-green transition-all">
+                    <img [src]="userService.getCurrentUserImage()" alt="Profile" class="w-full h-full object-cover">
                 </button>
             </li>
         </ul>
