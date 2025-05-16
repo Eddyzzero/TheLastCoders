@@ -15,17 +15,21 @@ export class InitialNavigationService {
      */
     initializeNavigation(): Promise<boolean> {
         return new Promise((resolve) => {
-            this.authService.isLoggedIn$.pipe(take(1)).subscribe(isLoggedIn => {
-                console.log('État de connexion initial:', isLoggedIn);
+            // Vérifier d'abord l'état actuel
+            const currentUser = this.authService.getCurrentUser();
+            if (currentUser) {
+                this.router.navigate(['/home']);
+                resolve(true);
+                return;
+            }
 
+            // Si pas d'utilisateur actuel, attendre la réponse de Firebase
+            this.authService.isLoggedIn$.pipe(take(1)).subscribe(isLoggedIn => {
                 if (isLoggedIn) {
-                    console.log('Utilisateur connecté, redirection vers /home');
                     this.router.navigate(['/home']);
                 } else {
-                    console.log('Utilisateur non connecté, redirection vers /login-choice');
                     this.router.navigate(['/login-choice']);
                 }
-
                 resolve(true);
             });
         });

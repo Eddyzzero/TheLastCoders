@@ -29,6 +29,18 @@ export class AuthService {
   currentUserSignal = signal<UserInterface | null | undefined>(undefined);
 
   constructor() {
+    // Initialisation de l'état de l'utilisateur
+    const currentUser = this.auth.currentUser;
+    if (currentUser) {
+      this.userSubject.next(currentUser);
+      this.currentUserSignal.set({
+        id: currentUser.uid,
+        email: currentUser.email!,
+        userName: currentUser.displayName!,
+        createdAt: new Date(),
+      });
+    }
+
     // Écoute les changements d'état de l'utilisateur
     onAuthStateChanged(this.auth, (user) => {
       this.userSubject.next(user);
