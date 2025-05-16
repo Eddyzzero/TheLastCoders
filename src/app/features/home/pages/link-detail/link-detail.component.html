@@ -1,87 +1,112 @@
-<main class="min-h-screen pb-20">
-    <div class="flex items-center gap-4 p-4 justify-center pt-10 font-primary z-10">
-        <h1 class="text-5xl font-bold mb-2">{{ link?.title }}</h1>
+<main class="min-h-screen pb-20 relative overflow-hidden">
+    <!-- Cercles flous pour l'effet glassmorphisme -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <!-- Cercle en haut à droite -->
+        <div class="absolute -top-20 -right-20 w-96 h-96 bg-apple-green rounded-full opacity-30 blur-3xl"></div>
+        <!-- Cercle en bas à gauche -->
+        <div class="absolute -bottom-20 -left-40 w-96 h-96 bg-blue-900 rounded-full opacity-30 blur-3xl"></div>
     </div>
 
-    <!-- Image et titre -->
-    <div class="relative">
-        <img [src]="link?.imageUrl" [alt]="link?.title" class="w-full aspect-square object-cover">
-        <div class=" mt-4 text-white">
-            <div class="flex items-center gap-4 justify-around">
-                <div class="flex items-center gap-2">
-                    <span class="material-symbols-outlined">favorite</span>
-                    <span>{{ link?.likes || 0 }}</span>
-                    <span>j'aimes</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="material-symbols-outlined">comment</span>
-                    <span>200</span>
-                    <span>Commentaires</span>
-                </div>
-            </div>
+    <!-- Contenu principal avec effet glassmorphisme -->
+    <div class="relative z-10 backdrop-blur-sm">
+        <div class="flex items-center gap-4 p-4 justify-center pt-10 font-primary">
+            <h1 class="text-5xl font-bold mb-2">{{ link?.title }}</h1>
         </div>
-    </div>
 
-    <!-- Boutons d'action pour le propriétaire -->
-    <div class="m-4 flex justify-center" *ngIf="isOwner">
-        <button (click)="toggleDeleteConfirm()" class="bg-red-600 text-white py-2 px-4 rounded-lg flex items-center">
-            <span class="material-symbols-outlined mr-1">delete</span>
-            Supprimer
-        </button>
-    </div>
-
-    <!-- Description -->
-    <div class="p-6 text-white">
-        <p class="text-lg">{{ link?.description }}</p>
-    </div>
-
-    <!-- Commentaires -->
-    <div class="px-4">
-        <!-- Formulaire de commentaire -->
-        <form (ngSubmit)="addComment()" class="mb-6" [formGroup]="commentForm">
-            <div class="flex gap-3">
-                <img [src]="currentUser?.profileImage || 'assets/images/default-avatar.png'" alt="User"
-                    class="w-10 h-10 rounded-full">
-                <div class="flex-1">
-                    <textarea formControlName="text"
-                        class="w-full bg-deep-green/30 rounded-lg p-3 text-white resize-none focus:outline-none focus:ring-1 focus:ring-apple-green"
-                        rows="2" placeholder="Ajouter un commentaire..."></textarea>
-                    <div class="flex justify-end mt-2">
-                        <button type="submit" [disabled]="!commentForm.valid || isSubmitting"
-                            class="bg-apple-green text-deep-blue px-4 py-2 rounded-lg flex items-center gap-2 disabled:opacity-50">
-                            <span class="material-symbols-outlined text-sm" *ngIf="isSubmitting">autorenew</span>
-                            <span>{{ isSubmitting ? 'Envoi...' : 'Commenter' }}</span>
-                        </button>
+        <!-- Image et titre -->
+        <div class="max-w-md mx-10 ">
+            <img [src]="link?.imageUrl" [alt]="link?.title" class="w-full aspect-square object-cover rounded-3xl">
+            <div class=" mt-4 text-white">
+                <div class="flex items-center gap-4 justify-around text-gray-500">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined">favorite</span>
+                        <span>{{ link?.likes || 0 }}</span>
+                        <span>j'aimes</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined">comment</span>
+                        <span>200</span>
+                        <span>Commentaires</span>
                     </div>
                 </div>
             </div>
-        </form>
+        </div>
 
-        <!-- Liste des commentaires -->
-        <div class="space-y-4">
-            <div class="bg-deep-green/30 rounded-xl p-4" *ngFor="let comment of comments">
-                <div class="flex items-start gap-3">
-                    <img [src]="comment.senderImage || 'assets/images/default-avatar.png'" [alt]="comment.senderName"
+        <!-- Boutons d'action pour le propriétaire -->
+        <div class="m-4 flex justify-center" *ngIf="isOwner">
+            <button (click)="toggleDeleteConfirm()"
+                class="bg-red-600 text-white py-1 text-xs px-4 rounded-lg flex items-center">
+                <span class="material-symbols-outlined mr-1 ">delete</span>
+                Supprimer
+            </button>
+        </div>
+
+        <!-- Description -->
+        <div class="p-6 text-white/50 text-center">
+            <p class="text-sm">{{ link?.description }}</p>
+        </div>
+
+        <!-- Commentaires -->
+        <div class="px-4">
+            <!-- Formulaire de commentaire -->
+            <form (ngSubmit)="addComment()" class="mb-6" [formGroup]="commentForm">
+                <div class="flex gap-3">
+                    <img [src]="currentUser?.profileImage || 'assets/images/icons/Userpng'" alt="User"
                         class="w-10 h-10 rounded-full">
                     <div class="flex-1">
-                        <div class="flex items-center gap-2">
-                            <h3 class="font-semibold text-white">{{ comment.senderName }}</h3>
-                            <span class="text-gray-400 text-sm">{{ comment.createdAt | date:'shortTime' }}</span>
+                        <textarea formControlName="text"
+                            class="w-full bg-white/10 rounded-xl bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-10 border border-gray-100/50  p-4 focus:outline-none focus:border-apple-green"
+                            rows="2" placeholder="Ajouter un commentaire..."></textarea>
+                        <div class="flex justify-end mt-2">
+
+                            <!-- button commentaire personalisé -->
+                            <button type="submit" [disabled]="!commentForm.valid || isSubmitting"
+                                class="relative inline-flex  group">
+                                <div
+                                    class="absolute transitiona-all duration-1000 opacity-70 -inset-px bg-gradient-to-r from-[#EAE0D5] via-[#72B01D] to-[#3F7D20] rounded-xl blur-lg group-hover:opacity-100 group-hover:-inset-1 group-hover:duration-200 animate-tilt">
+                                </div>
+                                <div class="relative inline-flex items-center justify-center px-8 py-2 text-sm font-bold text-soft-white transition-all duration-200 bg-apple-green font-pj rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900"
+                                    role="button">
+                                    <span class="material-symbols-outlined text-sm"
+                                        *ngIf="isSubmitting">autorenew</span>
+                                    <span>{{ isSubmitting ? 'Envoi...' : 'Commenter' }}</span>
+                                </div>
+                            </button>
                         </div>
-                        <p class="text-gray-200 mt-1">{{ comment.text }}</p>
-                        <div class="flex items-center gap-2 mt-2">
-                            <button (click)="toggleLike(comment)"
-                                class="text-gray-400 hover:text-white transition-colors flex items-center gap-1">
-                                <span class="material-symbols-outlined text-sm"
-                                    [class.text-apple-green]="isLikedByCurrentUser(comment)">
-                                    favorite
-                                </span>
-                                <span class="text-sm">{{ comment.likes || 0 }}</span>
-                            </button>
-                            <button *ngIf="canDeleteComment(comment)" (click)="deleteComment(comment)"
-                                class="text-gray-400 hover:text-red-500 transition-colors ml-4">
-                                <span class="material-symbols-outlined text-sm">delete</span>
-                            </button>
+                    </div>
+                </div>
+
+
+
+            </form>
+
+            <!-- Liste des commentaires -->
+            <div class="space-y-4">
+                <div class="h-full w-full bg-white/10 rounded-xl bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-10 border border-gray-100/50  p-4"
+                    *ngFor="let comment of comments">
+                    <div class="flex items-start gap-3">
+                        <img [src]="comment.senderImage || 'assets/images/default-avatar.png'"
+                            [alt]="comment.senderName" class="w-10 h-10 rounded-full">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2">
+                                <h3 class="font-semibold text-white">{{ comment.senderName }}</h3>
+                                <span class="text-gray-400 text-sm">{{ comment.createdAt | date:'shortTime' }}</span>
+                            </div>
+                            <p class="text-gray-200 mt-1">{{ comment.text }}</p>
+                            <div class="flex items-center justify-end gap-2 mt-2">
+                                <button (click)="toggleLike(comment)"
+                                    class="text-gray-400 hover:text-white transition-colors flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-sm"
+                                        [class.text-apple-green]="isLikedByCurrentUser(comment)">
+                                        favorite
+                                    </span>
+                                    <span class="text-sm">{{ comment.likes || 0 }}</span>
+                                </button>
+                                <button *ngIf="canDeleteComment(comment)" (click)="deleteComment(comment)"
+                                    class="text-gray-400 hover:text-red-500 transition-colors ml-4">
+                                    <span class="material-symbols-outlined text-sm">delete</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -89,13 +114,11 @@
         </div>
     </div>
 
-    <!-- Navigation -->
-    <app-nav-bar></app-nav-bar>
 
     <!-- Modal de confirmation de suppression -->
     <div *ngIf="showDeleteConfirm" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
         <div class="bg-deep-green rounded-xl p-6 w-5/6 max-w-md">
-            <h3 class="text-xl font-bold mb-4 text-white">Confirmer la suppression</h3>
+            <h3 class="text-xl font-bold mb-4 text-white ">Confirmer la suppression</h3>
 
             <p class="text-gray-100 mb-6">
                 Êtes-vous sûr de vouloir supprimer ce lien ? Cette action est irréversible.
@@ -119,4 +142,8 @@
             </div>
         </div>
     </div>
+
+
+    <!-- Navigation -->
+    <app-nav-bar></app-nav-bar>
 </main>

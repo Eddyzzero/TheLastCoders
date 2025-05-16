@@ -15,6 +15,7 @@ import { AuthService } from '../../../../core/services/fireAuth.service';
 export class LoginChoiceComponent implements OnInit {
   authService = inject(AuthService);
   router = inject(Router);
+  currentYear: number = new Date().getFullYear();
 
   ngOnInit(): void {
     // Vérifier si l'utilisateur est connecté et le rediriger si nécessaire

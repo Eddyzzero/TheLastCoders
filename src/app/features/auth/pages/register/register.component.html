@@ -1,47 +1,73 @@
-<section>
-    <section class="font-primary flex flex-col items-center">
-        <p class="text-2xl">The Last of</p>
-        <h1 class="text-8xl font-bold">Coders</h1>
-    </section>
+<section class="min-h-screen">
+    <div class="max-w-2xl mx-auto flex flex-col items-center justify-around h-screen px-4">
+        <section class="font-primary flex flex-col items-center">
+            <p class="text-xl">The Last of</p>
+            <h1 class="text-5xl font-bold">Coders</h1>
+        </section>
+        <section>
 
-    <section>
-        <div *ngIf="errorMessage" class="font-primary text-red-500 text-center bg-red-100 p-3 rounded-lg mb-4">
-            {{ errorMessage }}
-        </div>
-        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="flex flex-col items-center gap-5">
-            <div class="w-full max-w-md">
-                <input type="text" formControlName="userName" placeholder="Nom d'utilisateur" class="input w-full" />
-                <div *ngIf="registerForm.get('userName')?.touched && registerForm.get('userName')?.errors"
-                    class="text-red-500 text-sm mt-1">
-                    <p *ngIf="registerForm.get('userName')?.errors?.['required']">Le nom d'utilisateur est requis</p>
-                    <p *ngIf="registerForm.get('userName')?.errors?.['minlength']">Le nom d'utilisateur doit contenir au
-                        moins 7 caractères</p>
-                </div>
+            <!-- message d'erreur pour les champs non completés  -->
+            <div *ngIf="errorMessage" class="font-primary text-red-500 text-center bg-red-100 p-3 rounded-lg mb-4">
+                {{ errorMessage }}
             </div>
+            <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-5 w-full max-w-md">
 
-            <div class="w-full max-w-md">
-                <input type="email" formControlName="email" placeholder="Email" class="input w-full" />
-                <div *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.errors"
-                    class="text-red-500 text-sm mt-1">
-                    <p *ngIf="registerForm.get('email')?.errors?.['required']">L'email est requis</p>
-                    <p *ngIf="registerForm.get('email')?.errors?.['email']">L'email n'est pas valide</p>
+                <div class="flex font-primary">
+                    <p class="text-xl">S'enregistrer</p>
                 </div>
-            </div>
 
-            <div class="w-full max-w-md">
-                <input type="password" formControlName="password" placeholder="Mot de passe" class="input w-full" />
-                <div *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.errors"
-                    class="text-red-500 text-sm mt-1">
-                    <p *ngIf="registerForm.get('password')?.errors?.['required']">Le mot de passe est requis</p>
-                    <p *ngIf="registerForm.get('password')?.errors?.['minlength']">Le mot de passe doit contenir au
-                        moins 6 caractères</p>
+
+                <div class="w-full max-w-md">
+                    <input type="text" formControlName="userName" placeholder="Nom d'utilisateur"
+                        class="input w-full border-b-white border-b-2 opacity-50  focus:outline-none focus:border-apple-green" />
+                    <div *ngIf="registerForm.get('userName')?.touched && registerForm.get('userName')?.errors"
+                        class="text-apple-green text-xs mt-1">
+                        <p *ngIf="registerForm.get('userName')?.errors?.['required']">Le nom d'utilisateur est requis
+                        </p>
+                        <p *ngIf="registerForm.get('userName')?.errors?.['minlength']">Le nom d'utilisateur doit
+                            contenir au
+                            moins 7 caractères</p>
+                    </div>
                 </div>
-            </div>
 
-            <button type="submit" [disabled]="!registerForm.valid"
-                class="text-2xl bg-deep-green transition-colors hover:bg-apple-green px-4 py-1.5 rounded-xl cursor-pointer font-primary btn disabled:opacity-50 disabled:cursor-not-allowed">
-                S'enregistrer
-            </button>
-        </form>
-    </section>
+
+                <div class="w-full max-w-md">
+                    <input type="email" formControlName="email" placeholder="Email"
+                        class="input w-full border-b-white border-b-2 opacity-50  focus:outline-none focus:border-apple-green" />
+                    <div *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.errors"
+                        class="text-apple-green text-xs mt-1">
+                        <p *ngIf="registerForm.get('email')?.errors?.['required']">L'email est requis</p>
+                        <p *ngIf="registerForm.get('email')?.errors?.['email']">L'email n'est pas valide</p>
+                    </div>
+                </div>
+
+                <div class="w-full max-w-md">
+                    <input type="password" formControlName="password" placeholder="Mot de passe"
+                        class="input w-full border-b-white border-b-2 opacity-50  focus:outline-none focus:border-apple-green" />
+                    <div *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.errors"
+                        class="text-apple-green text-xs mt-1">
+                        <p *ngIf="registerForm.get('password')?.errors?.['required']">Le mot de passe est requis</p>
+                        <p *ngIf="registerForm.get('password')?.errors?.['minlength']">Le mot de passe doit contenir au
+                            moins 6 caractères</p>
+                    </div>
+                </div>
+
+                <button type="submit" [disabled]="!registerForm.valid"
+                    class="text-2xl bg-deep-green transition-colors hover:bg-apple-green px-4 py-1.5 rounded-xl cursor-pointer font-primary btn disabled:opacity-50 disabled:cursor-not-allowed">
+                    S'enregistrer
+                </button>
+
+                <div class="flex gap-2 font-secondary mt-12">
+                    <p class="text-sm">Déjà un compte ?</p>
+                    <a routerLink="/login" class="text-sm text-apple-green hover:text-deep-green">Se connecter</a>
+                </div>
+
+            </form>
+        </section>
+
+        <!-- les doits de la page et mise à jour des dates automatiquement -->
+        <section class="text-center text-xs text-gray-500 font-primary">
+            <p>&copy; {{currentYear}} <span class="text-apple-green">The Last Coders.</span> Tous droits réservés.</p>
+        </section>
+    </div>
 </section>

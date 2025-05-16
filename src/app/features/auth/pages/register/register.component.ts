@@ -25,6 +25,7 @@ export class RegisterComponent implements OnInit {
 
   registerForm: FormGroup;
   errorMessage: string = '';
+  currentYear: number = new Date().getFullYear();
 
   constructor() {
     this.registerForm = this.fb.group({

@@ -22,6 +22,7 @@ export class LoginComponent {
 
   loginForm: FormGroup;
   errorMessage: string = '';
+  currentYear: number = new Date().getFullYear();
 
   constructor() {
     this.loginForm = this.fb.group({
