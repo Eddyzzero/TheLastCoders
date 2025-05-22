@@ -12,7 +12,6 @@ import {
   query,
   getDocs,
   onSnapshot,
-  QueryConstraint,
   where,
   orderBy
 } from 'firebase/firestore';

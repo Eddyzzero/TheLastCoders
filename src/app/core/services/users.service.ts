@@ -12,7 +12,7 @@ export class UsersService {
   private authService = inject(AuthService);
   private usersCollection = collection(this.usersFirestore, 'users');
   private _userLogged: UserInterface | undefined = undefined;
-  private userProfileImage = signal<string>('assets/images/icons/userIcon.png');
+  private userProfileImage = signal<string>('assets/images/icons/UserIcon.png');
 
   constructor() {
     // Utiliser effect pour réagir aux changements du signal
