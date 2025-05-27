@@ -88,41 +88,6 @@ export class LinksService {
         return collectionData(linksQuery, { idField: 'id' }) as Observable<Link[]>;
     }
 
-    /**
-     * MÉTHODE OBSOLÈTE : Utilise Firebase Storage, qui peut causer des erreurs CORS
-     * Utiliser createLinkWithBase64Image à la place
-     */
-    /*
-    async createLinkWithImage(link: Omit<Link, 'id' | 'createdAt' | 'createdBy' | 'likes'>, imageFile: File) {
-        const user = this.authService.getCurrentUser();
-        if (!user) throw new Error("L'utilisateur doit être authentifié");
-
-        // Générer un nom unique pour l'image
-        const fileName = this.firestorageService.generateUniqueFileName(imageFile);
-        const imagePath = `links/${user.uid}/${fileName}`;
-
-        // Debug pour vérifier l'ID utilisateur
-        console.log('Utilisateur créant le lien:', user.uid);
-
-        // Upload l'image et créer le lien
-        return this.firestorageService.uploadImage(imageFile, imagePath).pipe(
-            switchMap(imageUrl => {
-                const linkData = {
-                    ...link,
-                    imageUrl,
-                    createdAt: new Date(),
-                    createdBy: user.uid, // Assurez-vous que c'est le même format utilisé dans getLinksByUser
-                    likes: 0
-                };
-
-                console.log('Données du lien créé:', linkData);
-                const linksCollection = collection(this.firestore, 'links');
-                return from(addDoc(linksCollection, linkData));
-            })
-        ).toPromise();
-    }
-    */
-
     async deleteLink(linkId: string) {
         console.log(`Suppression du lien avec l'ID: ${linkId}`);
         const user = this.authService.getCurrentUser();

@@ -1,7 +1,7 @@
 import { effect, inject, Injectable, Signal, signal } from '@angular/core';
 import { Firestore, collectionData, collection, doc, getDoc, updateDoc, DocumentReference, deleteDoc, query, where, setDoc } from '@angular/fire/firestore';
-import { Observable, from, of, map, catchError, switchMap } from 'rxjs';
-import { UserInterface } from '../../features/auth/interfaces/user.interface';
+import { Observable, from, of, map, catchError, switchMap, firstValueFrom } from 'rxjs';
+import { UserInterface, UserImageUrl } from '../../features/auth/interfaces/user.interface';
 import { AuthService } from './fireAuth.service';
 
 @Injectable({
@@ -13,13 +13,27 @@ export class UsersService {
   private usersCollection = collection(this.usersFirestore, 'users');
   private _userLogged: UserInterface | undefined = undefined;
   private userProfileImage = signal<string>('assets/images/icons/UserIcon.png');
+  private userProfileImageBase64 = signal<string>('');
 
   constructor() {
     // Utiliser effect pour réagir aux changements du signal
     effect(() => {
-      this._userLogged = this.authService.currentUserSignal() || undefined;
-      if (this._userLogged?.profileImage) {
-        this.userProfileImage.set(this._userLogged.profileImage);
+      const currentUser = this.authService.currentUserSignal();
+      if (currentUser) {
+        this._userLogged = currentUser;
+        // Charger les données complètes de l'utilisateur
+        this.getUserById(currentUser.id || '').subscribe(user => {
+          if (user?.userImageUrl?.base64) {
+            this.userProfileImage.set(user.userImageUrl.base64);
+          } else if (user?.userImageUrl?.url) {
+            this.userProfileImage.set(user.userImageUrl.url);
+          } else {
+            this.userProfileImage.set('assets/images/icons/UserIcon.png');
+          }
+        });
+      } else {
+        this._userLogged = undefined;
+        this.userProfileImage.set('assets/images/icons/UserIcon.png');
       }
     });
   }
@@ -82,9 +96,11 @@ export class UsersService {
       throw new Error('User ID is required');
     }
 
-    // Update the profile image signal if it's being updated
-    if (userData.profileImage) {
-      this.userProfileImage.set(userData.profileImage);
+    // Mettre à jour le signal de l'image de profil si une nouvelle image est fournie
+    if (userData.userImageUrl?.base64) {
+      this.userProfileImage.set(userData.userImageUrl.base64);
+    } else if (userData.userImageUrl?.url) {
+      this.userProfileImage.set(userData.userImageUrl.url);
     }
 
     // Vérifier si l'utilisateur actuel a le droit de modifier ce profil
@@ -170,7 +186,41 @@ export class UsersService {
     return this.userProfileImage();
   }
 
-  updateProfileImageSignal(imageUrl: string) {
+  public updateProfileImageSignal(imageUrl: string) {
     this.userProfileImage.set(imageUrl);
+  }
+
+  async updateUserProfileWithBase64Image(userId: string, userData: Partial<UserInterface>, base64Image: string): Promise<void> {
+    if (!userId) {
+      throw new Error('User ID is required');
+    }
+
+    // Vérifier si l'utilisateur actuel a le droit de modifier ce profil
+    const canModify = await firstValueFrom(this.canModifyUser(userId));
+    if (!canModify) {
+      throw new Error('Vous n\'avez pas les droits nécessaires pour modifier ce profil');
+    }
+
+    // Créer l'objet userImageUrl
+    const userImageUrl: UserImageUrl = {
+      url: '', // L'URL sera mise à jour après l'upload
+      base64: base64Image,
+      createdAt: new Date()
+    };
+
+    // Préparer les données à mettre à jour
+    const updatedData = {
+      ...userData,
+      userImageUrl: userImageUrl
+    };
+
+    // Mettre à jour le profil dans Firestore
+    const userDocRef = doc(this.usersFirestore, `users/${userId}`) as DocumentReference<UserInterface>;
+    await updateDoc(userDocRef, updatedData);
+
+    // Mettre à jour le signal
+    this.userProfileImage.set(base64Image);
+
+    console.log('Profil utilisateur mis à jour avec succès');
   }
 }

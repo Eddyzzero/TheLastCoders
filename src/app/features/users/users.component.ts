@@ -166,56 +166,72 @@ export class UsersComponent implements OnInit, OnDestroy {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
       const file = input.files[0];
+
       // Vérifier si le fichier est une image
       if (!file.type.startsWith('image/')) {
         console.error('Le fichier doit être une image');
         return;
       }
 
+      // Vérifier la taille du fichier (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        console.error('L\'image ne doit pas dépasser 5MB');
+        return;
+      }
+
       this.selectedFile = file;
 
-      // Créer une prévisualisation de l'image
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.imagePreview = e.target?.result as string;
-      };
-      reader.readAsDataURL(file);
+      try {
+        // Convertir l'image en base64
+        const base64Image = await this.convertToBase64(file);
+        this.imagePreview = base64Image;
 
-      // Upload immédiat de l'image
-      await this.uploadProfileImage(file);
+        // Mettre à jour le profil avec l'image base64
+        await this.usersService.updateUserProfileWithBase64Image(
+          this.userId,
+          {
+            userName: this.user?.userName,
+            email: this.user?.email,
+            role: this.user?.role
+          },
+          base64Image
+        );
+
+        // Recharger les données utilisateur
+        this.loadUserData();
+
+        console.log('Image de profil mise à jour avec succès');
+      } catch (error) {
+        console.error('Erreur lors du traitement de l\'image:', error);
+      }
     }
   }
 
-  private async uploadProfileImage(file: File) {
-    try {
-      // Générer un nom de fichier unique
-      const fileName = this.firestorageService.generateUniqueFileName(file);
-      const path = `profile-images/${this.userId}/${fileName}`;
-
-      // Upload l'image et obtenir l'URL
-      const imageUrl = await firstValueFrom(this.firestorageService.uploadImage(file, path));
-
-      // Mettre à jour le profil utilisateur avec la nouvelle URL
-      await firstValueFrom(this.usersService.updateUserProfile(this.userId, {
-        profileImage: imageUrl
-      }));
-
-      // Mettre à jour l'image dans le signal du UsersService pour la navbar
-      this.usersService.updateProfileImageSignal(imageUrl);
-
-      // Mise à jour locale
-      if (this.user) {
-        this.user.profileImage = imageUrl;
-      }
-
-      console.log('Image de profil mise à jour avec succès');
-    } catch (error) {
-      console.error('Erreur lors de l\'upload de l\'image:', error);
-    }
+  private async convertToBase64(file: File): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64 = e.target?.result as string;
+        resolve(base64);
+      };
+      reader.onerror = (e) => {
+        reject(e);
+      };
+      reader.readAsDataURL(file);
+    });
   }
 
   getUserProfileImage(): string {
-    return this.user?.profileImage || 'assets/images/icons/userIcon.png';
+    // Utiliser l'image base64 si disponible
+    if (this.user?.userImageUrl?.base64) {
+      return this.user.userImageUrl.base64;
+    }
+    // Sinon utiliser l'URL
+    if (this.user?.userImageUrl?.url) {
+      return this.user.userImageUrl.url;
+    }
+    // En dernier recours, utiliser l'image par défaut
+    return 'assets/images/icons/userIcon.png';
   }
 
   async updateProfile() {
@@ -235,7 +251,9 @@ export class UsersComponent implements OnInit, OnDestroy {
           github: this.profileForm.value.github,
           linkedin: this.profileForm.value.linkedin,
           twitter: this.profileForm.value.twitter
-        }
+        },
+        // Conserver l'image de profil existante
+        userImageUrl: this.user.userImageUrl
       };
 
       console.log('Données à mettre à jour:', updatedData);

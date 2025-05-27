@@ -126,7 +126,7 @@ export class LinkDetailComponent implements OnInit, OnDestroy {
         likedBy: [],
         read: false,
         isEdited: false,
-        ...(this.currentUser.profileImage && { senderImage: this.currentUser.profileImage })
+        ...(this.currentUser.userImageUrl?.base64 && { senderImage: this.currentUser.userImageUrl.base64 })
       };
 
       console.log('Attempting to add comment with data:', {

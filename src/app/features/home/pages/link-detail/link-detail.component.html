@@ -51,8 +51,8 @@
             <!-- Formulaire de commentaire -->
             <form (ngSubmit)="addComment()" class="mb-6" [formGroup]="commentForm">
                 <div class="flex gap-3">
-                    <img [src]="currentUser?.profileImage || 'assets/images/icons/Userpng'" alt="User"
-                        class="w-10 h-10 rounded-full">
+                    <img [src]="currentUser?.userImageUrl?.base64 || currentUser?.userImageUrl?.url || 'assets/images/icons/UserIcon.png'"
+                        alt="User" class="w-10 h-10 rounded-full">
                     <div class="flex-1">
                         <textarea formControlName="text"
                             class="w-full bg-white/10 rounded-xl bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-10 border border-gray-100/50  p-4 focus:outline-none focus:border-apple-green"
