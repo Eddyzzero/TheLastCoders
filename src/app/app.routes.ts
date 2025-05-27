@@ -14,6 +14,7 @@ import { inject } from '@angular/core';
 import { AuthService } from './core/services/fireAuth.service';
 import { Router } from '@angular/router';
 import { map } from 'rxjs/operators';
+import { PolicyComponent } from './features/legal/policy/policy.component';
 
 export const routes: Routes = [
     {
@@ -73,6 +74,11 @@ export const routes: Routes = [
     {
         path: 'link/:id',
         component: LinkDetailComponent,
+        canActivate: [authGuard]
+    },
+    {
+        path: 'policy',
+        component: PolicyComponent,
         canActivate: [authGuard]
     },
     {

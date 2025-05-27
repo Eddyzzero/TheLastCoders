@@ -30,7 +30,7 @@ export class NavBarComponent {
     menuItems = [
         { label: 'CARDS', route: '/home' },
         { label: 'COMMUNAUTÉ', route: '/home' },
-        { label: 'POLICY PRIVACY', route: '/privacy' }
+        { label: 'POLICY PRIVACY', route: '/policy' }
     ];
 
     constructor() {

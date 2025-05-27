@@ -13,7 +13,6 @@ import { effect } from '@angular/core';
 
 @Component({
   selector: 'app-users',
-  standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
   templateUrl: './users.component.html',
 })
