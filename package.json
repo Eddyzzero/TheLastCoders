@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "tailwind": "npx tailwindcss -i ./src/styles.css -o ./src/output.css --watch",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:TheLastCoders": "node dist/the-last-coders/server/server.mjs"

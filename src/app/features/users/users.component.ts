@@ -15,7 +15,6 @@ import { FirestorageService } from '../../core/services/firestorage.service';
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
   templateUrl: './users.component.html',
-  styleUrl: './users.component.css'
 })
 export class UsersComponent implements OnInit, OnDestroy {
   // Injection des services

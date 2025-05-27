@@ -11,6 +11,11 @@
                     <input type="file" accept="image/*" (change)="onFileSelected($event)" class="hidden">
                     <span class="material-symbols-outlined text-white">photo_camera</span>
                 </label>
+
+            </div>
+
+            <div *ngIf="isEditing" class="text-xs mb-2 text-red-400/50">
+                <p>La photo de profil ne peux pas dépasser 80kb</p>
             </div>
 
             <!-- Formulaire de profil -->
@@ -18,12 +23,6 @@
                 <!-- Nom d'utilisateur -->
                 <div class="mb-4 text-center">
                     <h1 class="text-2xl font-bold mb-2 text-soft-white" *ngIf="!isEditing">{{ user?.userName }}</h1>
-
-                    <!-- Debug Info -->
-                    <div *ngIf="!isLoading" class="mb-2 text-xs text-gray-500">
-                        <p>{{userId ? 'UserId: ' + userId : 'Aucun userId'}} | {{userSharedLinks.length}} liens trouvés
-                        </p>
-                    </div>
 
                     <input *ngIf="isEditing" type="text" formControlName="userName"
                         class="text-2xl font-bold text-center border-b-2 bg-transparent text-soft-white focus:outline-none focus:border-apple-green">

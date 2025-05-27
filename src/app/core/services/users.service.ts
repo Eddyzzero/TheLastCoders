@@ -1,5 +1,5 @@
 import { effect, inject, Injectable, Signal, signal } from '@angular/core';
-import { Firestore, collectionData, collection, doc, getDoc, updateDoc, DocumentReference, deleteDoc, query, where, setDoc } from '@angular/fire/firestore';
+import { Firestore, collectionData, collection, doc, getDoc, updateDoc, DocumentReference, deleteDoc, query, where, setDoc, Timestamp } from '@angular/fire/firestore';
 import { Observable, from, of, map, catchError, switchMap, firstValueFrom } from 'rxjs';
 import { UserInterface, UserImageUrl } from '../../features/auth/interfaces/user.interface';
 import { AuthService } from './fireAuth.service';
@@ -201,21 +201,18 @@ export class UsersService {
       throw new Error('Vous n\'avez pas les droits nécessaires pour modifier ce profil');
     }
 
-    // Créer l'objet userImageUrl
-    const userImageUrl: UserImageUrl = {
-      url: '', // L'URL sera mise à jour après l'upload
-      base64: base64Image,
-      createdAt: new Date()
-    };
-
-    // Préparer les données à mettre à jour
+    // Simplifier la structure pour Firestore
     const updatedData = {
       ...userData,
-      userImageUrl: userImageUrl
+      userImageUrl: {
+        base64: base64Image,
+        url: '',
+        createdAt: Timestamp.now()
+      }
     };
 
     // Mettre à jour le profil dans Firestore
-    const userDocRef = doc(this.usersFirestore, `users/${userId}`) as DocumentReference<UserInterface>;
+    const userDocRef = doc(this.usersFirestore, `users/${userId}`);
     await updateDoc(userDocRef, updatedData);
 
     // Mettre à jour le signal
