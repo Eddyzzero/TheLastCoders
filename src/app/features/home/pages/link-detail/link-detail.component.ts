@@ -271,24 +271,30 @@ export class LinkDetailComponent implements OnInit, OnDestroy {
   }
 
   toggleDeleteConfirm() {
+    console.log('Toggle delete confirm, état actuel:', this.showDeleteConfirm);
     this.showDeleteConfirm = !this.showDeleteConfirm;
-    this.deleteError = '';
+    this.deleteError = null;
+    console.log('Nouvel état:', this.showDeleteConfirm);
   }
 
   async deleteLink() {
-    if (!this.link || !this.link.id) {
+    console.log('Début de la suppression du lien');
+    if (!this.link?.id) {
+      console.error('ID de lien manquant');
       this.deleteError = "Impossible de supprimer: ID de lien invalide";
       return;
     }
 
     this.isDeleting = true;
     try {
+      console.log('Tentative de suppression du lien:', this.link.id);
       await this.linksService.deleteLink(this.link.id);
+      console.log('Lien supprimé avec succès');
       // Rediriger vers la page d'accueil après suppression
       this.router.navigate(['/home']);
     } catch (error: any) {
+      console.error("Erreur détaillée lors de la suppression:", error);
       this.isDeleting = false;
-      console.error("Erreur lors de la suppression:", error);
       this.deleteError = error.message || "Une erreur s'est produite lors de la suppression";
     }
   }
@@ -311,5 +317,35 @@ export class LinkDetailComponent implements OnInit, OnDestroy {
       console.error('Erreur lors de la suppression du commentaire:', error);
       this.deleteError = "Une erreur s'est produite lors de la suppression du commentaire. Veuillez réessayer.";
     }
+  }
+
+  async toggleLinkLike() {
+    const userId = this.currentUser?.id;
+    if (!userId || !this.link?.id) {
+      console.error('Cannot like link: Missing user ID or link ID');
+      return;
+    }
+
+    try {
+      await this.linksService.toggleLike(this.link.id, userId);
+
+      // Mettre à jour l'état local du lien
+      if (this.link) {
+        const likedBy = this.link.likedBy || [];
+        const isLiked = likedBy.includes(userId);
+
+        this.link.likedBy = isLiked
+          ? likedBy.filter(id => id !== userId)
+          : [...likedBy, userId];
+
+        this.link.likes = this.link.likedBy.length;
+      }
+    } catch (error) {
+      console.error('Error toggling link like:', error);
+    }
+  }
+
+  isLinkLikedByCurrentUser(): boolean {
+    return this.link?.likedBy?.includes(this.currentUser?.id || '') || false;
   }
 }

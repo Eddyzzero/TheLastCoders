@@ -9,6 +9,7 @@ import { Link } from '../../features/home/interfaces/link.interface';
 import { RouterModule, Router } from '@angular/router';
 import { Subscription, firstValueFrom } from 'rxjs';
 import { FirestorageService } from '../../core/services/firestorage.service';
+import { effect } from '@angular/core';
 
 @Component({
   selector: 'app-users',
@@ -32,18 +33,32 @@ export class UsersComponent implements OnInit, OnDestroy {
   imagePreview: string | null = null;
   isEditing = false;
   userSharedLinks: Link[] = [];
+  likedLinks: Link[] = [];
   userId: string = '';
   isLoading: boolean = true;
   private subscriptions: Subscription[] = [];
   canEdit: boolean = false;
+  currentUser: UserInterface | null = null;
 
   constructor() {
     this.profileForm = this.fb.group({
       userName: [''],
+      userImageUrl: [''],
       bio: [''],
       github: [''],
       linkedin: [''],
       twitter: ['']
+    });
+
+    effect(() => {
+      const user = this.authService.currentUserSignal();
+      if (user) {
+        this.usersService.getUserById(user.id || '').subscribe(fullUser => {
+          this.currentUser = fullUser;
+        });
+      } else {
+        this.currentUser = null;
+      }
     });
   }
 
@@ -87,8 +102,6 @@ export class UsersComponent implements OnInit, OnDestroy {
 
       this.loadUserData();
       this.loadUserSharedLinks();
-
-      // Vérifier si l'utilisateur a le droit de modifier ce profil
       this.checkEditPermission();
     } else {
       console.error('ID utilisateur non valide');
@@ -358,5 +371,33 @@ export class UsersComponent implements OnInit, OnDestroy {
 
   trackById(index: number, link: Link): string {
     return link.id || index.toString();
+  }
+
+  async toggleLinkLike(link: Link) {
+    const userId = this.currentUser?.id;
+    if (!userId || !link.id) {
+      console.error('Cannot like link: Missing user ID or link ID');
+      return;
+    }
+
+    try {
+      await this.linksService.toggleLike(link.id, userId);
+
+      // Mettre à jour l'état local du lien
+      const likedBy = link.likedBy || [];
+      const isLiked = likedBy.includes(userId);
+
+      link.likedBy = isLiked
+        ? likedBy.filter(id => id !== userId)
+        : [...likedBy, userId];
+
+      link.likes = link.likedBy.length;
+    } catch (error) {
+      console.error('Error toggling link like:', error);
+    }
+  }
+
+  isLinkLikedByCurrentUser(link: Link): boolean {
+    return link.likedBy?.includes(this.currentUser?.id || '') || false;
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable, inject, PLATFORM_ID, Inject } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID, Inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Firestore, collection, collectionData, query, orderBy, addDoc, deleteDoc, doc, updateDoc, where, getDoc } from '@angular/fire/firestore';
 import { Observable, of, from, switchMap, map } from 'rxjs';
@@ -13,6 +13,7 @@ export class LinksService {
     private firestore = inject(Firestore);
     private authService = inject(AuthService);
     private firestorageService = inject(FirestorageService);
+    private linksSignal = signal<Link[]>([]);
 
     constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
 
@@ -93,28 +94,35 @@ export class LinksService {
         const user = this.authService.getCurrentUser();
         if (!user) throw new Error("L'utilisateur doit être authentifié");
 
-        // Récupérer le lien
-        const linkRef = doc(this.firestore, `links/${linkId}`);
-        const linkDoc = await getDoc(linkRef);
+        try {
+            // Récupérer le lien
+            const linkRef = doc(this.firestore, `links/${linkId}`);
+            const linkDoc = await getDoc(linkRef);
 
-        if (!linkDoc.exists()) {
-            throw new Error("Le lien à supprimer n'existe pas");
+            if (!linkDoc.exists()) {
+                throw new Error("Le lien à supprimer n'existe pas");
+            }
+
+            const linkData = linkDoc.data() as Link;
+
+            // Vérifier que l'utilisateur est bien le propriétaire
+            if (linkData.createdBy !== user.uid) {
+                throw new Error("Vous n'êtes pas autorisé à supprimer ce lien");
+            }
+
+            // Supprimer le document
+            await deleteDoc(linkRef);
+            console.log("Lien supprimé avec succès");
+
+            // Mettre à jour le signal des liens
+            const currentLinks = this.linksSignal();
+            const updatedLinks = currentLinks.filter(link => link.id !== linkId);
+            this.linksSignal.set(updatedLinks);
+
+        } catch (error) {
+            console.error("Erreur lors de la suppression du lien:", error);
+            throw error;
         }
-
-        const linkData = linkDoc.data() as Link;
-
-        // Vérifier que l'utilisateur est bien le propriétaire
-        if (linkData.createdBy !== user.uid) {
-            throw new Error("Vous n'êtes pas autorisé à supprimer ce lien");
-        }
-
-        console.log("Suppression du document Firestore");
-
-        // Pour les images base64, pas besoin de supprimer l'image séparément
-        // car elle est stockée directement dans le document
-
-        // Supprimer le document
-        return deleteDoc(linkRef);
     }
 
     async updateLink(linkId: string, data: Partial<Link>, newImageFile?: File) {
@@ -187,5 +195,47 @@ export class LinksService {
         console.log('Données du lien créé avec image base64');
         const linksCollection = collection(this.firestore, 'links');
         return addDoc(linksCollection, linkData);
+    }
+
+    async toggleLike(linkId: string, userId: string): Promise<void> {
+        try {
+            const linkRef = doc(this.firestore, `links/${linkId}`);
+            const linkDoc = await getDoc(linkRef);
+
+            if (!linkDoc.exists()) {
+                throw new Error('Link not found');
+            }
+
+            const linkData = linkDoc.data() as Link;
+            const likedBy = linkData.likedBy || [];
+            const isLiked = likedBy.includes(userId);
+
+            const updatedLikedBy = isLiked
+                ? likedBy.filter((id: string) => id !== userId)
+                : [...likedBy, userId];
+
+            await updateDoc(linkRef, {
+                likedBy: updatedLikedBy,
+                likes: updatedLikedBy.length
+            });
+
+            // Mettre à jour le signal des liens
+            const currentLinks = this.linksSignal();
+            const updatedLinks = currentLinks.map((link: Link) => {
+                if (link.id === linkId) {
+                    return {
+                        ...link,
+                        likedBy: updatedLikedBy,
+                        likes: updatedLikedBy.length
+                    };
+                }
+                return link;
+            });
+            this.linksSignal.set(updatedLinks);
+
+        } catch (error) {
+            console.error('Error toggling like:', error);
+            throw error;
+        }
     }
 }

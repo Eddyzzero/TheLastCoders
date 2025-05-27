@@ -13,4 +13,6 @@ export interface Link {
     tags?: string[];
     isPaid?: boolean;
     type?: 'Cours' | 'Projet' | 'Forum' | 'Exercice';
+    likedBy?: string[];
+    views: number;
 }

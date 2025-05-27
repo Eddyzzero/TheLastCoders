@@ -23,7 +23,7 @@
             <div class="flex justify-between items-center pb-3">
                 <div class="flex-shrink-0">
                     <img [src]="user.userImageUrl?.base64 || user.userImageUrl?.url || 'assets/images/icons/UserIcon.png'"
-                        alt="User" class="w-10 h-10 rounded-full" />
+                        alt="User" class="w-10 h-10 rounded-full object-cover" />
                 </div>
                 <div class="flex-shrink-0">
                     <button (click)="openRoleModal(user)" class="px-2 py-1 text-xs rounded-lg cursor-pointer" [ngClass]="

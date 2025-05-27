@@ -19,9 +19,16 @@
             <div class=" mt-4 text-white">
                 <div class="flex items-center gap-4 justify-around text-gray-500">
                     <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined">favorite</span>
-                        <span>{{ link?.likes || 0 }}</span>
-                        <span>{{ (link?.likes || 0) === 1 ? 'j\'aime' : 'j\'aimes' }}</span>
+                        <button (click)="toggleLinkLike()"
+                            class="flex items-center gap-2 hover:text-white transition-colors">
+                            <span class="material-symbols-outlined"
+                                [class.text-apple-green]="isLinkLikedByCurrentUser()"
+                                [class.material-symbols-filled]="isLinkLikedByCurrentUser()">
+                                favorite
+                            </span>
+                            <span>{{ link?.likes || 0 }}</span>
+                            <span>{{ (link?.likes || 0) === 1 ? 'j\'aime' : 'j\'aimes' }}</span>
+                        </button>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="material-symbols-outlined">comment</span>
@@ -35,8 +42,8 @@
         <!-- Boutons d'action pour le propriétaire -->
         <div class="m-4 flex justify-center" *ngIf="isOwner">
             <button (click)="toggleDeleteConfirm()"
-                class="bg-red-600 text-white py-1 text-xs px-4 rounded-lg flex items-center">
-                <span class="material-symbols-outlined mr-1 ">delete</span>
+                class="bg-red-600 text-white py-1 text-xs px-4 rounded-lg flex items-center hover:bg-red-700 transition-colors">
+                <span class="material-symbols-outlined mr-1">delete</span>
                 Supprimer
             </button>
         </div>
@@ -135,6 +142,37 @@
                     class="py-2 px-4 bg-red-500/20 text-white rounded-lg flex items-center hover:bg-red-500/30 transition-all duration-300 border border-red-500/30">
                     <span class="material-symbols-outlined mr-1">delete</span>
                     Supprimer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmation de suppression -->
+    <div *ngIf="showDeleteConfirm"
+        class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+        <div class="bg-white/10 backdrop-blur-xl border border-deep-green/50 rounded-xl p-6 w-5/6 max-w-md shadow-2xl">
+            <h3 class="text-2xl font-bold mb-4 text-white font-primary">Confirmer la suppression</h3>
+
+            <p class="text-gray-200 mb-6">
+                Êtes-vous sûr de vouloir supprimer ce lien ? Cette action est irréversible.
+            </p>
+
+            <div *ngIf="deleteError" class="mb-4 p-3 bg-red-600/20 border border-red-600 rounded text-white text-sm">
+                {{ deleteError }}
+            </div>
+
+            <div class="flex justify-between">
+                <button (click)="toggleDeleteConfirm()"
+                    class="py-2 px-4 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-all duration-300 border border-white/20"
+                    [disabled]="isDeleting">
+                    Annuler
+                </button>
+                <button (click)="deleteLink()"
+                    class="py-2 px-4 bg-red-500/20 text-white rounded-lg flex items-center hover:bg-red-500/30 transition-all duration-300 border border-red-500/30"
+                    [disabled]="isDeleting">
+                    <span *ngIf="isDeleting" class="material-symbols-outlined animate-spin mr-1">autorenew</span>
+                    <span *ngIf="!isDeleting" class="material-symbols-outlined mr-1">delete</span>
+                    {{ isDeleting ? 'Suppression...' : 'Supprimer' }}
                 </button>
             </div>
         </div>
