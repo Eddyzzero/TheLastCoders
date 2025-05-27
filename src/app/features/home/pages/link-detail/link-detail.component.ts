@@ -40,6 +40,9 @@ export class LinkDetailComponent implements OnInit, OnDestroy {
   currentUser: UserInterface | null = null;
   private subscriptions: Subscription[] = [];
 
+  showCommentDeleteConfirm = false;
+  commentToDelete: Comment | null = null;
+
   constructor() {
     this.commentForm = this.fb.group({
       text: ['', [Validators.required, Validators.minLength(1)]]
@@ -47,8 +50,13 @@ export class LinkDetailComponent implements OnInit, OnDestroy {
 
     effect(() => {
       const user = this.authService.currentUserSignal();
-      if (user !== undefined) {
-        this.currentUser = user;
+      if (user) {
+        // Charger les données complètes de l'utilisateur pour avoir l'image
+        this.userService.getUserById(user.id || '').subscribe(fullUser => {
+          this.currentUser = fullUser;
+        });
+      } else {
+        this.currentUser = null;
       }
     });
   }
@@ -57,7 +65,6 @@ export class LinkDetailComponent implements OnInit, OnDestroy {
     const linkId = this.route.snapshot.paramMap.get('id');
     if (linkId) {
       this.loadLink(linkId);
-      this.loadComments();
     } else {
       this.router.navigate(['/home']);
     }
@@ -72,6 +79,7 @@ export class LinkDetailComponent implements OnInit, OnDestroy {
       next: (link) => {
         this.link = link;
         this.checkOwnership();
+        this.loadComments();
       },
       error: (error) => {
         console.error('Error loading link:', error);
@@ -163,13 +171,23 @@ export class LinkDetailComponent implements OnInit, OnDestroy {
         where('linkId', '==', this.link!.id),
         orderBy('createdAt', 'desc')
       )
-    ).subscribe(comments => {
-      this.comments = comments.map(comment => ({
-        ...comment,
-        createdAt: comment.createdAt instanceof Timestamp
-          ? comment.createdAt.toDate()
-          : new Date(comment.createdAt)
-      }));
+    ).subscribe({
+      next: (comments) => {
+        this.comments = comments.map(comment => ({
+          ...comment,
+          createdAt: comment.createdAt instanceof Timestamp
+            ? comment.createdAt.toDate()
+            : new Date(comment.createdAt)
+        }));
+        console.log('Commentaires chargés:', this.comments);
+      },
+      error: (error: any) => {
+        console.error('Erreur lors du chargement des commentaires:', error);
+        if (error.code === 'permission-denied') {
+          console.error('Permission denied: User may not be authenticated');
+          this.router.navigate(['/auth/login']);
+        }
+      }
     });
 
     this.subscriptions.push(commentsSub);
@@ -223,15 +241,32 @@ export class LinkDetailComponent implements OnInit, OnDestroy {
     }
 
     try {
-      await this.firestoreService.deleteDocument(`comments/${comment.id}`);
+      // Vérifier si le commentaire existe toujours
+      const commentRef = await this.firestoreService.getDocument(`comments/${comment.id}`);
+      if (!commentRef) {
+        console.error('Comment not found in database');
+        return;
+      }
 
-      // Update local state immediately
+      // Supprimer le commentaire de Firebase
+      await this.firestoreService.deleteDocument(`comments/${comment.id}`);
+      console.log('Commentaire supprimé avec succès:', comment.id);
+
+      // Mettre à jour la liste locale immédiatement
       this.comments = this.comments.filter(c => c.id !== comment.id);
 
-      // Reload comments to ensure consistency
-      this.loadComments();
-    } catch (error) {
+      // Fermer la modale
+      this.toggleCommentDeleteConfirm();
+    } catch (error: any) {
       console.error('Error deleting comment:', error);
+      // Vérifier si l'erreur est liée à l'authentification
+      if (error.code === 'permission-denied') {
+        console.error('Permission denied: User may not be authenticated');
+        // Rediriger vers la page de connexion si nécessaire
+        this.router.navigate(['/auth/login']);
+      }
+      // Afficher un message d'erreur à l'utilisateur
+      this.deleteError = "Une erreur s'est produite lors de la suppression du commentaire. Veuillez réessayer.";
     }
   }
 
@@ -255,6 +290,26 @@ export class LinkDetailComponent implements OnInit, OnDestroy {
       this.isDeleting = false;
       console.error("Erreur lors de la suppression:", error);
       this.deleteError = error.message || "Une erreur s'est produite lors de la suppression";
+    }
+  }
+
+  toggleCommentDeleteConfirm(comment?: Comment) {
+    if (comment) {
+      this.commentToDelete = comment;
+    } else {
+      this.commentToDelete = null;
+    }
+    this.showCommentDeleteConfirm = !this.showCommentDeleteConfirm;
+  }
+
+  async confirmDeleteComment() {
+    if (!this.commentToDelete) return;
+
+    try {
+      await this.deleteComment(this.commentToDelete);
+    } catch (error: any) {
+      console.error('Erreur lors de la suppression du commentaire:', error);
+      this.deleteError = "Une erreur s'est produite lors de la suppression du commentaire. Veuillez réessayer.";
     }
   }
 }
