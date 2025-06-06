@@ -11,7 +11,6 @@ export interface Filters {
 
 @Component({
     selector: 'app-filter-panel',
-    standalone: true,
     imports: [CommonModule, FormsModule],
     templateUrl: './filter-panel.component.html',
     styleUrls: ['./filter-panel.component.css']

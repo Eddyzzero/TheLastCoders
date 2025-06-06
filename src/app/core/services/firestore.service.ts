@@ -15,7 +15,7 @@ import {
   where,
   orderBy
 } from 'firebase/firestore';
-import { Observable, from } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -44,6 +44,7 @@ export class FirestoreService<T extends DocumentData> {
     }
     return null
   };
+
 
   public async updateDocument(collectionPath: string, data: any): Promise<void> {
     const docRef = doc(this.firestore, collectionPath);

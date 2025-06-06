@@ -16,7 +16,6 @@ import { Filters } from '../../components/filter-panel/filter-panel.component';
 
 @Component({
   selector: 'app-home',
-  standalone: true,
   imports: [
     CommonModule,
     RouterModule,

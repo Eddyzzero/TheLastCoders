@@ -3,3 +3,5 @@
 
 //TODO ajouter une page de charge quand la base de données doit ajouter un utilisateur
 //TODO modifier la page administrateur pour un meilleur affichage
+
+//TODO Ajouter les aniamtions avec GSAP? 

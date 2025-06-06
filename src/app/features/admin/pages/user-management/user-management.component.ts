@@ -3,12 +3,10 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { UsersService } from '../../../../core/services/users.service';
 import { UserInterface } from '../../../auth/interfaces/user.interface';
-import { Observable, catchError, of } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'app-user-management',
-    standalone: true,
     imports: [CommonModule, RouterModule, FormsModule],
     templateUrl: './user-management.component.html',
     styleUrls: ['./user-management.component.css']

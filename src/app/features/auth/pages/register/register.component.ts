@@ -2,7 +2,6 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../../core/services/fireAuth.service';
 import { FirestoreService } from '../../../../core/services/firestore.service';
-import { FirebaseError } from 'firebase/app';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { UserInterface } from '../../interfaces/user.interface';

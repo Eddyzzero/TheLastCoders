@@ -6,7 +6,6 @@ import { LinksService } from '../../../../core/services/links.service';
 
 @Component({
     selector: 'app-link-form',
-    standalone: true,
     imports: [
         CommonModule,
         ReactiveFormsModule,
