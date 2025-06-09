@@ -36,40 +36,29 @@
     </header>
 
     <!-- Carrousel -->
-    @if (viewMode === 'carousel' && filteredLinks.length > 0) {
-    <div class="p-6 relative z-10">
-        <h2 class="text-black text-3xl font-primary drop-shadow-lg"> {{filteredLinks[currentIndex].title}} </h2>
-    </div>
-    <div class="relative px-4">
-        <div class="aspect-square">
-            <div class="max-w-2xs mx-auto rounded-4xl shadow-lg overflow-hidden relative">
-                <img [src]="filteredLinks[currentIndex].imageUrl" [alt]="filteredLinks[currentIndex].title"
-                    class="w-full h-full object-cover">
-                <div class="absolute bottom-0 left-0 right-0 p-6 ">
-                    <div class="flex justify-between">
-                        <button (click)="openLink(filteredLinks[currentIndex].url)"
-                            class="flex justify-center text-black items-center text-sm hover:text-apple-green transition-colors">
+    <swiper-container effect="coverflow" grab-cursor="true" centered-slides="true" slides-per-view="2" loop="false"
+        coverflow-effect-rotate="50" coverflow-effect-stretch="0" coverflow-effect-depth="100"
+        coverflow-effect-modifier="1" coverflow-effect-slide-shadows="false" pagination="false">
+        <swiper-slide *ngFor=" let link of filteredLinks" class="mt-10">
+            <h3 class="font-primary  text-3xl font-bold mb-20 drop-shadow">{{ link.title }}</h3>
+            <div class="max-w-2xs mx-auto rounded-4xl shadow-lg overflow-hidden relative bg-white">
+                <img [src]="link.imageUrl" [alt]="link.title" class="w-full h-full object-cover rounded-4xl">
+                <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/70 to-transparent">
+                    <div class="flex justify-between mt-2">
+                        <button (click)="openLink(link.url)"
+                            class="flex justify-center text-black items-center text-sm bg-white/80 rounded-xl px-4 py-1 hover:bg-apple-green hover:text-white transition-colors">
                             Lien de la page
                         </button>
-                        <button [routerLink]="['/link', filteredLinks[currentIndex].id]"
-                            class="flex justify-center bg-apple-green text-white text-center py-1 px-10 rounded-2xl shadow-xl hover:bg-deep-green transition-colors">
+                        <button [routerLink]="['/link', link.id]"
+                            class="flex justify-center bg-apple-green text-white text-center py-1 px-6 rounded-xl shadow-xl hover:bg-deep-green transition-colors">
                             voir
                         </button>
                     </div>
                 </div>
             </div>
-        </div>
+        </swiper-slide>
+    </swiper-container>
 
-        <!-- Pagination -->
-        <div class="flex justify-center gap-2 mt-6">
-            @for (link of filteredLinks; track link.id; let i = $index) {
-            <button (click)="goToSlide(i)" class="w-2 h-2 rounded-full transition-colors"
-                [class.bg-apple-green]="currentIndex === i" [class.bg-gray-300]="currentIndex !== i">
-            </button>
-            }
-        </div>
-    </div>
-    }
 
     <!-- Vue grille -->
     @if (viewMode === 'grid') {
@@ -93,4 +82,6 @@
     <app-nav-bar (viewModeChange)="onViewModeChange($event)" (searchToggle)="toggleSearch()"
         (filterChange)="onFilterChange($event)">
     </app-nav-bar>
+
+
 </main>

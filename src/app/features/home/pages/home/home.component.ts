@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, PLATFORM_ID, Inject } from '@angular/core';
+import { Component, inject, OnInit, PLATFORM_ID, Inject, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { UsersService } from '../../../../core/services/users.service';
 import { LinksService } from '../../../../core/services/links.service';
@@ -24,7 +24,8 @@ import { Filters } from '../../components/filter-panel/filter-panel.component';
     NavBarComponent
   ],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.css'
+  styleUrl: './home.component.css',
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class HomeComponent implements OnInit {
   public userService = inject(UsersService);
