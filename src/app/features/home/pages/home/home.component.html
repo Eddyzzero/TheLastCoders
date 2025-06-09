@@ -59,28 +59,8 @@
         </swiper-slide>
     </swiper-container>
 
-
-    <!-- Vue grille -->
-    @if (viewMode === 'grid') {
-    <div class="grid grid-cols-2 gap-4 p-4">
-        @for (link of filteredLinks; track link.id) {
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-            <img [src]="link.imageUrl" [alt]="link.title" class="w-full aspect-square object-cover">
-            <div class="p-4">
-                <h3 class="font-semibold mb-1">{{ link.title }}</h3>
-                <button [routerLink]="['/link', link.id]"
-                    class="block w-full bg-apple-green text-white text-center py-1 rounded-lg text-sm hover:bg-deep-green transition-colors">
-                    voir
-                </button>
-            </div>
-        </div>
-        }
-    </div>
-    }
-
     <!-- Navigation -->
-    <app-nav-bar (viewModeChange)="onViewModeChange($event)" (searchToggle)="toggleSearch()"
-        (filterChange)="onFilterChange($event)">
+    <app-nav-bar (searchToggle)="toggleSearch()">
     </app-nav-bar>
 
 

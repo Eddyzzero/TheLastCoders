@@ -175,21 +175,9 @@ export class HomeComponent implements OnInit {
   }
 
   toggleSearch() {
-    this.searchVisible = !this.searchVisible;
-    if (!this.searchVisible) {
-      this.searchTerm = '';
-      this.applyFilters();
-    }
+    // Ne rien faire ici pour éviter l'ouverture/fermeture automatique du panneau de filtres
   }
 
-  onFilterChange(filters: Filters) {
-    this.activeFilters = filters;
-    this.applyFilters();
-  }
-
-  onViewModeChange(mode: 'grid' | 'carousel') {
-    this.viewMode = mode;
-  }
 
   toggleView() {
     this.viewMode = this.viewMode === 'grid' ? 'carousel' : 'grid';
