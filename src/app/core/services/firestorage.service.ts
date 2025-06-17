@@ -19,6 +19,7 @@ export class FirestorageService {
       return throwError(() => new Error("L'utilisateur doit être authentifié"));
     }
 
+    // Vérifier si le fichier est valide
     const storageRef = ref(this.storage, path);
     return from(uploadBytes(storageRef, file)).pipe(
       switchMap(snapshot => from(getDownloadURL(snapshot.ref))),
@@ -34,7 +35,7 @@ export class FirestorageService {
     if (!this.auth.currentUser) {
       return throwError(() => new Error("L'utilisateur doit être authentifié"));
     }
-
+    // Vérifier si le chemin est valide
     const storageRef = ref(this.storage, path);
     return from(deleteObject(storageRef)).pipe(
       catchError(error => {

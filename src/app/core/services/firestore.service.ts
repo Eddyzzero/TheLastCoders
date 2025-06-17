@@ -30,12 +30,14 @@ export class FirestoreService<T extends DocumentData> {
     await setDoc(docReference, data);
   };
 
+  // nous permet d'ajouter un document à une collection
   public async addDocument(collectionPath: string, data: any) {
     const collectionRef = collection(this.firestore, collectionPath);
     const doc = await addDoc(collectionRef, data);
     return doc.id;
   }
 
+  //demande un document spécifique et retourne ses données
   public async getDocument(docPath: string): Promise<T | null> {
     const docReference = doc(this.firestore, docPath);
     const docSnap = await getDocFromServer(docReference);
@@ -45,7 +47,7 @@ export class FirestoreService<T extends DocumentData> {
     return null
   };
 
-
+  // met à jour un document spécifique
   public async updateDocument(collectionPath: string, data: any): Promise<void> {
     const docRef = doc(this.firestore, collectionPath);
     await updateDoc(docRef, data);
@@ -56,6 +58,7 @@ export class FirestoreService<T extends DocumentData> {
     await deleteDoc(docRef);
   }
 
+  // récupère une collection entière et retourne un tableau d'objets
   public getCollection(
     collectionPath: string,
     queryFn?: (ref: CollectionReference) => Query

@@ -8,7 +8,6 @@ import { InitialNavigationService } from './core/services/initial-navigation.ser
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [
     CommonModule,
     RouterOutlet,
