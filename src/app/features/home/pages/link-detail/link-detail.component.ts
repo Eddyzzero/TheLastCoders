@@ -9,13 +9,13 @@ import { Link } from '../../interfaces/link.interface';
 import { Comment } from '../../interfaces/comment.interface';
 import { NavBarComponent } from '../../../../core/components/nav-bar/nav-bar.component';
 import { UserInterface } from '../../../auth/interfaces/user.interface';
-import { Subscription, map } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { FirestoreService } from '../../../../core/services/firestore.service';
-import { Timestamp, collection, query, where, orderBy } from 'firebase/firestore';
+import { Timestamp, query, where, orderBy } from 'firebase/firestore';
 
 @Component({
   selector: 'app-link-detail',
-  imports: [CommonModule, RouterModule, NavBarComponent, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule],
   templateUrl: './link-detail.component.html'
 })
 export class LinkDetailComponent implements OnInit, OnDestroy {

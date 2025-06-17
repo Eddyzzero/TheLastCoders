@@ -52,18 +52,26 @@ export class SkillsQuizComponent {
   onSelect(questionId: string, value: string) {
     console.log('Sélection de réponse:', { questionId, value });
 
-    if (!this.answers[questionId]) {
-      this.answers[questionId] = [];
-      console.log('Initialisation du tableau pour la question:', questionId);
+    // Pour la première question (choix unique)
+    if (questionId === '1') {
+      this.answers[questionId] = [value];
+      console.log('Réponse unique définie:', { questionId, value, answers: this.answers[questionId] });
     }
+    // Pour les autres questions (choix multiple)
+    else {
+      if (!this.answers[questionId]) {
+        this.answers[questionId] = [];
+        console.log('Initialisation du tableau pour la question:', questionId);
+      }
 
-    const index = this.answers[questionId].indexOf(value);
-    if (index === -1) {
-      this.answers[questionId].push(value);
-      console.log('Réponse ajoutée:', { questionId, value, answers: this.answers[questionId] });
-    } else {
-      this.answers[questionId].splice(index, 1);
-      console.log('Réponse retirée:', { questionId, value, answers: this.answers[questionId] });
+      const index = this.answers[questionId].indexOf(value);
+      if (index === -1) {
+        this.answers[questionId].push(value);
+        console.log('Réponse ajoutée:', { questionId, value, answers: this.answers[questionId] });
+      } else {
+        this.answers[questionId].splice(index, 1);
+        console.log('Réponse retirée:', { questionId, value, answers: this.answers[questionId] });
+      }
     }
   }
 
