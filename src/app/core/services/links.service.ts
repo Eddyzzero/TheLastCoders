@@ -238,4 +238,31 @@ export class LinksService {
             throw error;
         }
     }
+
+    async rateLink(linkId: string, userId: string, rating: number): Promise<void> {
+        if (!isPlatformBrowser(this.platformId)) {
+            return;
+        }
+
+        const linkRef = doc(this.firestore, 'links', linkId);
+        const linkDoc = await getDoc(linkRef);
+        const linkData = linkDoc.data() as Link;
+
+        const userRatings = linkData.userRatings || {};
+        userRatings[userId] = rating;
+
+        // Calculate new average rating
+        const ratings = Object.values(userRatings);
+        const averageRating = ratings.reduce((a, b) => a + b, 0) / ratings.length;
+
+        await updateDoc(linkRef, {
+            userRatings,
+            averageRating,
+            totalRatings: ratings.length
+        });
+    }
+
+    getUserRating(link: Link, userId: string): number {
+        return link.userRatings?.[userId] || 0;
+    }
 }

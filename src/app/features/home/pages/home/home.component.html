@@ -41,9 +41,14 @@
         coverflow-effect-modifier="1" coverflow-effect-slide-shadows="false" pagination="false">
         <swiper-slide *ngFor=" let link of filteredLinks" class="mt-10">
             <h3 class="font-primary  text-3xl font-bold mb-20 drop-shadow">{{ link.title }}</h3>
+            <!-- ajoute systeme d'etoiles  -->
+            <app-star-rating [rating]="link.averageRating || 0" [totalRatings]="link.totalRatings || 0"
+                (ratingChange)="onRatingChange(link, $event)">
+            </app-star-rating>
             <div class="max-w-2xs mx-auto rounded-4xl shadow-lg overflow-hidden relative bg-white">
                 <img [src]="link.imageUrl" [alt]="link.title" class="w-full h-full object-cover rounded-4xl">
                 <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/70 to-transparent">
+
                     <div class="flex justify-between mt-2">
                         <button (click)="openLink(link.url)"
                             class="flex justify-center text-black items-center text-sm bg-white/80 rounded-xl px-4 py-1 hover:bg-apple-green hover:text-white transition-colors">

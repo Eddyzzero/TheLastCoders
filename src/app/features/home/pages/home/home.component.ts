@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { LinkFormComponent } from '../link-form/link-form.component';
 import { NavBarComponent } from '../../../../core/components/nav-bar/nav-bar.component';
 import { Filters } from '../../components/filter-panel/filter-panel.component';
+import { StarRatingComponent } from '../../components/star-rating/star-rating.component';
 
 @Component({
   selector: 'app-home',
@@ -21,7 +22,8 @@ import { Filters } from '../../components/filter-panel/filter-panel.component';
     RouterModule,
     FormsModule,
     LinkFormComponent,
-    NavBarComponent
+    NavBarComponent,
+    StarRatingComponent
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
@@ -204,5 +206,21 @@ export class HomeComponent implements OnInit {
     this.authService.logOut().subscribe(() => {
       this.router.navigate(['/login-choice']);
     });
+  }
+
+  async onRatingChange(link: Link, rating: number) {
+    const user = await this.authService.getCurrentUser();
+    if (!user) {
+      // TODO: Show login required message
+      return;
+    }
+
+    await this.linksService.rateLink(link.id!, user.uid, rating);
+  }
+
+  async getUserRating(link: Link): Promise<number> {
+    const user = await this.authService.getCurrentUser();
+    if (!user) return 0;
+    return this.linksService.getUserRating(link, user.uid);
   }
 }

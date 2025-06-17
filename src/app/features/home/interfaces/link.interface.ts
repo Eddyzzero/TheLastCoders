@@ -15,4 +15,7 @@ export interface Link {
     type?: 'Cours' | 'Projet' | 'Forum' | 'Exercice';
     likedBy?: string[];
     views: number;
+    averageRating?: number;
+    totalRatings?: number;
+    userRatings?: { [userId: string]: number };
 }
