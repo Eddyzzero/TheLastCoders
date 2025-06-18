@@ -7,7 +7,6 @@ import { UsersService } from '../../../../core/services/users.service';
 import { AuthService } from '../../../../core/services/fireAuth.service';
 import { Link } from '../../interfaces/link.interface';
 import { Comment } from '../../interfaces/comment.interface';
-import { NavBarComponent } from '../../../../core/components/nav-bar/nav-bar.component';
 import { UserInterface } from '../../../auth/interfaces/user.interface';
 import { Subscription } from 'rxjs';
 import { FirestoreService } from '../../../../core/services/firestore.service';

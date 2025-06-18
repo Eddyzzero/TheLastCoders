@@ -10,3 +10,6 @@
 ajouter un module et un core module 
 auth module jste register et login login choice et creer un nouveau dans user user management  module et ajouter le skillchoice 
 dans core ajouter policy 
+
+
+//TODO ajouter deux composants pour le systeme etoile
