@@ -8,13 +8,9 @@ import { SkillsQuizComponent } from './features/auth/pages/skills-quiz/skills-qu
 import { HomeComponent } from './features/home/pages/home/home.component';
 import { LinkFormComponent } from './features/home/pages/link-form/link-form.component';
 import { LinkDetailComponent } from './features/home/pages/link-detail/link-detail.component';
-import { UsersComponent } from './features/users/users.component';
 import { UserManagementComponent } from './features/admin/pages/user-management/user-management.component';
-import { inject } from '@angular/core';
-import { AuthService } from './core/services/fireAuth.service';
-import { Router } from '@angular/router';
-import { map } from 'rxjs/operators';
 import { PolicyComponent } from './features/legal/policy/policy.component';
+import { UsersComponent } from './features/users/users.component';
 
 export const routes: Routes = [
     {

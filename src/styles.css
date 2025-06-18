@@ -3,6 +3,10 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
 
+
+/* ajoute de la bibliotheque tailwind motion  */
+@plugin "tailwindcss-motion";
+
 /* creation of color palette */
 
 :root {

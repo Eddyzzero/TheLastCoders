@@ -1,6 +1,6 @@
 <!-- Overlay du popup -->
 @if (showAddLinkForm) {
-<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 motion-preset-fade motion-duration-1000">
     <div class="bg-black rounded-xl shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div class="sticky top-0 bg-black p-4 border-b border-deep-green flex justify-between items-center">
             <h2 class="text-3xl font-semibold font-primary text-apple-green">Ajouter un nouveau lien</h2>
@@ -16,7 +16,7 @@
 }
 
 <!-- Contenu principal -->
-<main class="min-h-screen pb-20 relative overflow-hidden">
+<main class="min-h-screen pb-20 relative overflow-hidden motion-preset-fade motion-duration-2000">
 
     <!-- Background avec effet de flou -->
     @if (viewMode === 'carousel' && filteredLinks.length > 0) {

@@ -211,7 +211,6 @@ export class HomeComponent implements OnInit {
   async onRatingChange(link: Link, rating: number) {
     const user = await this.authService.getCurrentUser();
     if (!user) {
-      // TODO: Show login required message
       return;
     }
 
