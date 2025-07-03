@@ -95,6 +95,7 @@ export class LinkFormComponent {
                 console.log('Lien ajouté avec succès');
                 this.linkAdded.emit();
                 this.resetForm();
+                this.router.navigate(['/home']);
             } catch (error: any) {
                 console.error("Erreur lors de l'ajout du lien:", error);
                 this.errorMessage = error.message;
