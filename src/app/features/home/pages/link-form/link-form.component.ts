@@ -90,9 +90,7 @@ export class LinkFormComponent {
 
         if (this.linkForm.valid && this.base64Ready && this.base64Image) {
             try {
-                console.log('Tentative d\'ajout de lien avec image base64');
                 await this.linksService.createLinkWithBase64Image(this.linkForm.value as any, this.base64Image);
-                console.log('Lien ajouté avec succès');
                 this.linkAdded.emit();
                 this.resetForm();
                 this.router.navigate(['/home']);

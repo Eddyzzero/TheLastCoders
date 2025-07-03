@@ -22,9 +22,12 @@
                         </a>
                     </li>
                     <li class="flex gap-2">
-                        <a href="" class="text-black hover:text-soft-white">instagram</a>
-                        <a href="" class="text-black hover:text-soft-white">linkedIn</a>
-                        <a href="" class="text-black hover:text-soft-white">Github</a>
+                        <a *ngIf="socialLinks.linkedin" [href]="socialLinks.linkedin" target="_blank"
+                            class="text-black hover:text-soft-white">LinkedIn</a>
+                        <a *ngIf="socialLinks.github" [href]="socialLinks.github" target="_blank"
+                            class="text-black hover:text-soft-white">Github</a>
+                        <a *ngIf="socialLinks.twitter" [href]="socialLinks.twitter" target="_blank"
+                            class="text-black hover:text-soft-white">Twitter</a>
                     </li>
                     <li class="border-t border-apple-green/30 mt-4 pt-20">
                         <a (click)="logOut()"

@@ -1,4 +1,4 @@
-import { Component, inject, Output, EventEmitter, ChangeDetectorRef, ViewChild } from '@angular/core';
+import { Component, inject, Output, EventEmitter, ChangeDetectorRef, ViewChild, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, RouterLink } from '@angular/router';
 import { UsersService } from '../../services/users.service';
@@ -12,7 +12,7 @@ import { FilterPanelComponent, Filters } from '../../../features/home/components
     templateUrl: './nav-bar.component.html',
     styleUrls: ['./nav-bar.component.css']
 })
-export class NavBarComponent {
+export class NavBarComponent implements OnInit {
     @ViewChild(FilterPanelComponent) filterPanel!: FilterPanelComponent;
 
     protected userService = inject(UsersService);
@@ -32,8 +32,21 @@ export class NavBarComponent {
         { label: 'POLICY PRIVACY', route: '/policy' }
     ];
 
+    socialLinks: { github?: string; linkedin?: string; twitter?: string } = {};
+
     constructor() {
         console.log('NavBarComponent initialized');
+    }
+
+    // obtenir l'user et ajouter les liens dans firebase apres ajout
+    ngOnInit() {
+        const uid = this.authService.getCurrentUser()?.uid;
+        if (uid) {
+            this.userService.getUserById(uid).subscribe(user => {
+                this.socialLinks = user?.socialLinks || {};
+                this.cdr.detectChanges();
+            });
+        }
     }
 
     toggleMenu(): void {
