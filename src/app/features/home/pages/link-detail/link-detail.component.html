@@ -1,4 +1,4 @@
-<main class="min-h-screen pb-20 relative overflow-hidden text-white/50">
+<main class="min-h-screen pb-20 relative overflow-hidden text-white/50 motion-preset-fade motion-duration-1000">
     <!-- Cercles flous pour l'effet glassmorphisme -->
     <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <!-- Cercle en haut à droite -->
@@ -125,8 +125,8 @@
 
     <!-- Modal de confirmation de suppression de commentaire -->
     <div *ngIf="showCommentDeleteConfirm"
-        class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
-        <div class="bg-white/10 backdrop-blur-xl border border-deep-green/50 rounded-xl p-6 w-5/6 max-w-md shadow-2xl">
+        class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 ">
+        <div class="bg-white/10 backdrop-blur-xl border border-deep-green/50 rounded-xl p-6 w-5/6 max-w-md shadow-2xl ">
             <h3 class="text-2xl font-bold mb-4 text-white font-primary">Confirmer la suppression</h3>
 
             <p class="text-gray-200 mb-6">
