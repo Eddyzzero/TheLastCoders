@@ -25,7 +25,11 @@ export class StarRatingComponent {
 
     hover(rating: number) {
         if (this.readonly) return;
-        this.updateStars(rating);
+        // Si l'utilisateur n'a pas encore noté (rating = 0), on affiche la note potentielle
+        if (this.rating === 0) {
+            this.updateStars(rating);
+        }
+        // Sinon, on ne change rien au survol
     }
 
     rate(rating: number) {
