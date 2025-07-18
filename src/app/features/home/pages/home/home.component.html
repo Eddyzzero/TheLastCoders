@@ -15,16 +15,17 @@
 </div>
 }
 
+<!-- Fond dynamique flou sur toute la page, visible uniquement en mode carrousel -->
+@if (viewMode === 'carousel' && filteredLinks.length > 0) {
+<div class="fixed inset-0 z-0 pointer-events-none">
+    <img *ngIf="currentBgImage" [src]="currentBgImage"
+        class="w-full h-full object-cover blur-md transition-all duration-700 opacity-80 fade-bg" />
+    <div class="absolute inset-0 bg-soft-white/40"></div>
+</div>
+}
+
 <!-- Contenu principal -->
 <main class="min-h-screen pb-20 relative overflow-hidden motion-preset-fade motion-duration-2000">
-
-    <!-- Background avec effet de flou -->
-    @if (viewMode === 'carousel' && filteredLinks.length > 0) {
-    <div class="absolute inset-0 z-0">
-        <img [src]="filteredLinks[currentIndex].imageUrl" class="w-full h-full object-cover blur-md">
-        <div class="absolute inset-0 bg-soft-white/40"></div>
-    </div>
-    }
 
     <!-- Titre -->
     <header class="pt-20 pb-4 text-center relative">
@@ -36,8 +37,8 @@
     </header>
 
     <!-- Carrousel -->
-    <swiper-container effect="coverflow" grab-cursor="true" centered-slides="true" slides-per-view="2" loop="false"
-        coverflow-effect-rotate="50" coverflow-effect-stretch="0" coverflow-effect-depth="100"
+    <swiper-container #swiperRef effect="coverflow" grab-cursor="true" centered-slides="true" slides-per-view="2"
+        loop="false" coverflow-effect-rotate="50" coverflow-effect-stretch="0" coverflow-effect-depth="100"
         coverflow-effect-modifier="1" coverflow-effect-slide-shadows="false" pagination="false">
         <swiper-slide *ngFor=" let link of filteredLinks">
             <div class="flex flex-col items-center mb-6">

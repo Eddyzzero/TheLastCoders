@@ -84,3 +84,18 @@ button:active {
         'GRAD' 0,
         'opsz' 24;
 }
+
+.fade-bg {
+    opacity: 0;
+    animation: fadeInBg 0.7s forwards;
+}
+
+@keyframes fadeInBg {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 0.8;
+    }
+}

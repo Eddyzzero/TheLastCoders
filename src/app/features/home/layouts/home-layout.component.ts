@@ -5,7 +5,7 @@ import { NavBarComponent } from '../../../core/components/nav-bar/nav-bar.compon
 
 @Component({
     selector: 'app-home-layout',
-    imports: [CommonModule, RouterModule, NavBarComponent],
+    imports: [CommonModule, RouterModule,],
     templateUrl: './home-layout.component.html',
 })
 export class HomeLayoutComponent { } 

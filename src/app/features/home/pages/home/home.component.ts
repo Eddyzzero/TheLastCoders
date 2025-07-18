@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, PLATFORM_ID, Inject, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit, inject, OnInit, PLATFORM_ID, Inject, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { UsersService } from '../../../../core/services/users.service';
 import { LinksService } from '../../../../core/services/links.service';
@@ -11,7 +11,6 @@ import { FirestoreService } from '../../../../core/services/firestore.service';
 import { switchMap, combineLatest } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { LinkFormComponent } from '../link-form/link-form.component';
-import { NavBarComponent } from '../../../../core/components/nav-bar/nav-bar.component';
 import { Filters } from '../../components/filter-panel/filter-panel.component';
 import { StarRatingComponent } from '../../components/star-rating/star-rating.component';
 
@@ -28,12 +27,13 @@ import { StarRatingComponent } from '../../components/star-rating/star-rating.co
   styleUrl: './home.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   public userService = inject(UsersService);
   private linksService = inject(LinksService);
   private authService = inject(AuthService);
   private firestoreService = inject(FirestoreService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   links: Link[] = [];
   filteredLinks: Link[] = [];
@@ -43,6 +43,7 @@ export class HomeComponent implements OnInit {
   viewMode: 'grid' | 'carousel' = 'carousel';
   showAddLinkForm = false;
   userMap: { [key: string]: UserInterface } = {};
+  currentBgImage: string | null = null;
 
   activeFilters: Filters = {
     niveau: [],
@@ -58,11 +59,31 @@ export class HomeComponent implements OnInit {
     { route: '/settings', icon: 'settings', label: 'Paramètres' },
   ];
 
+  @ViewChild('swiperRef', { static: false }) swiperRef!: ElementRef;
+  private swiperInterval: any = null;
+
   constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
       this.loadLinks();
+    }
+  }
+
+  // ici on attache le swiper listener et on démarre l'intervalle
+  // on démarre l'intervalle pour que le fond dynamique soit mis à jour toutes les 300ms
+
+  ngAfterViewInit() {
+    this.attachSwiperListener();
+    this.startSwiperInterval();
+  }
+
+  ngOnDestroy() {
+    if (this.swiperInterval) {
+      clearInterval(this.swiperInterval);
+    }
+    if (this.swiperRef && this.swiperRef.nativeElement) {
+      this.swiperRef.nativeElement.removeEventListener('slidechange', this.swiperSlideChangeHandler);
     }
   }
 
@@ -89,6 +110,8 @@ export class HomeComponent implements OnInit {
         }
 
         this.applyFilters();
+        setTimeout(() => this.attachSwiperListener(), 0);
+        setTimeout(() => this.startSwiperInterval(), 0);
         const userIds = [...new Set(links.map(link => link.createdBy))];
         const userObservables = userIds.map(userId =>
           this.firestoreService.getDocument(`users/${userId}`)
@@ -220,5 +243,41 @@ export class HomeComponent implements OnInit {
     const user = await this.authService.getCurrentUser();
     if (!user) return 0;
     return this.linksService.getUserRating(link, user.uid);
+  }
+
+  attachSwiperListener() {
+    if (this.swiperRef && this.swiperRef.nativeElement) {
+      this.swiperRef.nativeElement.removeEventListener('slidechange', this.swiperSlideChangeHandler);
+      this.swiperRef.nativeElement.addEventListener('slidechange', this.swiperSlideChangeHandler);
+    }
+  }
+
+  swiperSlideChangeHandler = (event: any) => {
+    const swiper = event.target.swiper;
+    const realIndex = swiper.realIndex ?? swiper.activeIndex;
+    if (this.filteredLinks[realIndex]) {
+      this.currentBgImage = this.filteredLinks[realIndex].imageUrl;
+      this.currentIndex = realIndex;
+      this.cdr.detectChanges();
+    }
+  }
+
+  startSwiperInterval() {
+    if (this.swiperInterval) {
+      clearInterval(this.swiperInterval);
+    }
+    this.swiperInterval = setInterval(() => {
+      if (this.swiperRef && this.swiperRef.nativeElement && this.filteredLinks.length > 0) {
+        const swiper = this.swiperRef.nativeElement.swiper;
+        if (swiper) {
+          const realIndex = swiper.realIndex ?? swiper.activeIndex;
+          if (this.filteredLinks[realIndex] && this.currentBgImage !== this.filteredLinks[realIndex].imageUrl) {
+            this.currentBgImage = this.filteredLinks[realIndex].imageUrl;
+            this.currentIndex = realIndex;
+            this.cdr.detectChanges();
+          }
+        }
+      }
+    }, 300);
   }
 }
