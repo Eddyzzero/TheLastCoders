@@ -60,14 +60,11 @@ export class RegisterComponent implements OnInit {
         .subscribe({
           next: async (response) => {
             try {
-              console.log('Inscription réussie, UID:', response.user.uid);
-
               // Attendre que l'authentification soit complète
               await new Promise(resolve => setTimeout(resolve, 1000));
 
               // Vérifier si l'utilisateur est bien authentifié
               const currentUser = this.authService.getCurrentUser();
-              console.log('Current user after delay:', currentUser);
 
               if (!currentUser) {
                 throw new Error('User not authenticated after registration');
@@ -90,27 +87,20 @@ export class RegisterComponent implements OnInit {
 
               // Update auth signal before Firestore write
               this.authService.currentUserSignal.set(userData);
-              console.log('Auth signal updated with:', userData);
 
-              console.log('Creating user document...');
               // Create the user document
               await this.firestoreService.CreateDocument(`users/${response.user.uid}`, userData);
-              console.log('User document created successfully');
 
               // C'est un nouvel utilisateur, donc on le redirige directement vers le quiz
-              console.log('Redirecting to skills quiz...');
               this.router.navigate(['/skills']);
 
             } catch (error) {
-              console.error('Error creating user document:', error);
               // Reset auth state and logout on failure
               this.authService.currentUserSignal.set(null);
               this.authService.logOut().subscribe();
-              alert('Error creating user profile. Please try again.');
             }
           },
           error: (error) => {
-            console.error('Registration error:', error);
             alert(error.message || 'Registration failed. Please try again.');
           }
         });

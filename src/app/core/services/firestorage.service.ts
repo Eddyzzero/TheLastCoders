@@ -24,7 +24,6 @@ export class FirestorageService {
     return from(uploadBytes(storageRef, file)).pipe(
       switchMap(snapshot => from(getDownloadURL(snapshot.ref))),
       catchError(error => {
-        console.error('Erreur lors de l\'upload:', error);
         return throwError(() => error);
       })
     );
@@ -39,7 +38,6 @@ export class FirestorageService {
     const storageRef = ref(this.storage, path);
     return from(deleteObject(storageRef)).pipe(
       catchError(error => {
-        console.error('Erreur lors de la suppression:', error);
         return throwError(() => error);
       })
     );

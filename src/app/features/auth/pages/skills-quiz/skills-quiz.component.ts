@@ -50,27 +50,21 @@ export class SkillsQuizComponent {
 
   // if user takes an answer add it
   onSelect(questionId: string, value: string) {
-    console.log('Sélection de réponse:', { questionId, value });
-
     // Pour la première question (choix unique)
     if (questionId === '1') {
       this.answers[questionId] = [value];
-      console.log('Réponse unique définie:', { questionId, value, answers: this.answers[questionId] });
     }
     // Pour les autres questions (choix multiple)
     else {
       if (!this.answers[questionId]) {
         this.answers[questionId] = [];
-        console.log('Initialisation du tableau pour la question:', questionId);
       }
 
       const index = this.answers[questionId].indexOf(value);
       if (index === -1) {
         this.answers[questionId].push(value);
-        console.log('Réponse ajoutée:', { questionId, value, answers: this.answers[questionId] });
       } else {
         this.answers[questionId].splice(index, 1);
-        console.log('Réponse retirée:', { questionId, value, answers: this.answers[questionId] });
       }
     }
   }
@@ -81,21 +75,14 @@ export class SkillsQuizComponent {
 
   async saveAnswers() {
     try {
-      console.log('Début de la sauvegarde des réponses...');
-      console.log('Réponses collectées:', this.answers);
-      console.log('Nombre total de questions:', this.questions.length);
-      console.log('Clés des réponses:', Object.keys(this.answers));
-
       const currentUser = this.authService.getCurrentUser();
       if (!currentUser) {
         throw new Error('Utilisateur non connecté');
       }
-      console.log('Utilisateur connecté:', currentUser.uid);
 
       // Vérifier si toutes les questions ont été répondues
       const answeredQuestions = Object.keys(this.answers).length;
       if (answeredQuestions !== this.questions.length) {
-        console.log('Questions manquantes:', this.questions.length - answeredQuestions);
         this.errorMessage = 'Veuillez répondre à toutes les questions avant de continuer.';
         return;
       }
@@ -103,14 +90,7 @@ export class SkillsQuizComponent {
       // Vérifier que toutes les réponses sont présentes
       for (const question of this.questions) {
         const questionId = question.id;
-        console.log(`Vérification de la question ${questionId}:`, {
-          existe: !!this.answers[questionId],
-          contenu: this.answers[questionId],
-          longueur: this.answers[questionId]?.length
-        });
-
         if (!this.answers[questionId] || this.answers[questionId].length === 0) {
-          console.error(`Question ${questionId} n'a pas de réponse`);
           this.errorMessage = `Veuillez répondre à la question ${questionId} avant de continuer.`;
           return;
         }
@@ -131,16 +111,12 @@ export class SkillsQuizComponent {
         createdAt: new Date()
       };
 
-      console.log('Données à sauvegarder:', quizResponse);
-
       // Sauvegarder dans Firestore
       await this.fireStoreService.CreateDocument(`quiz_responses/${currentUser.uid}`, quizResponse);
-      console.log('Réponses sauvegardées avec succès dans Firestore');
 
       // Rediriger vers la page d'accueil
       this.router.navigate(['/home']);
     } catch (error) {
-      console.error('Erreur lors de la sauvegarde des réponses:', error);
       this.errorMessage = 'Une erreur est survenue lors de la sauvegarde des réponses. Veuillez réessayer.';
     }
   }

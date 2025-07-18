@@ -28,16 +28,12 @@ export class LinksService {
 
     getLinksByUser(userId: string): Observable<Link[]> {
         if (!isPlatformBrowser(this.platformId)) {
-            console.log('Non exécuté côté navigateur');
             return of([]);
         }
 
         if (!userId) {
-            console.error('getLinksByUser: userId non fourni');
             return of([]);
         }
-
-        console.log('Recherche des liens pour userId:', userId);
 
         const linksCollection = collection(this.firestore, 'links');
 
@@ -51,8 +47,6 @@ export class LinksService {
 
         return collectionData(linksQuery, { idField: 'id' }).pipe(
             map((links: any[]) => {
-                console.log(`${links.length} liens trouvés pour l'utilisateur ${userId}`);
-
                 // Trier les liens côté client en attendant que l'index soit créé
                 const sortedLinks = [...links].sort((a, b) => {
                     const dateA = a.createdAt instanceof Date ? a.createdAt : new Date(a.createdAt.seconds * 1000);
@@ -62,12 +56,9 @@ export class LinksService {
 
                 // Si aucun lien n'est trouvé, vérifions tous les liens et leur createdBy
                 if (links.length === 0) {
-                    console.log('Aucun lien trouvé, vérification de tous les liens...');
                     // Cette partie est à des fins de débogage uniquement
                     const allLinksQuery = query(linksCollection);
                     collectionData(allLinksQuery, { idField: 'id' }).subscribe((allLinks: any[]) => {
-                        console.log('Tous les liens:', allLinks.length);
-                        console.log('Valeurs createdBy:', allLinks.map(link => link.createdBy));
                     });
                 }
 
@@ -90,7 +81,6 @@ export class LinksService {
     }
 
     async deleteLink(linkId: string) {
-        console.log(`Suppression du lien avec l'ID: ${linkId}`);
         const user = this.authService.getCurrentUser();
         if (!user) throw new Error("L'utilisateur doit être authentifié");
 
@@ -112,7 +102,6 @@ export class LinksService {
 
             // Supprimer le document
             await deleteDoc(linkRef);
-            console.log("Lien supprimé avec succès");
 
             // Mettre à jour le signal des liens
             const currentLinks = this.linksSignal();
@@ -120,7 +109,6 @@ export class LinksService {
             this.linksSignal.set(updatedLinks);
 
         } catch (error) {
-            console.error("Erreur lors de la suppression du lien:", error);
             throw error;
         }
     }
@@ -181,9 +169,6 @@ export class LinksService {
         const user = this.authService.getCurrentUser();
         if (!user) throw new Error("L'utilisateur doit être authentifié");
 
-        // Debug pour vérifier l'ID utilisateur
-        console.log('Utilisateur créant le lien:', user.uid);
-
         const linkData = {
             ...link,
             imageUrl: base64Image, // Utiliser directement l'image base64
@@ -192,7 +177,6 @@ export class LinksService {
             likes: 0
         };
 
-        console.log('Données du lien créé avec image base64');
         const linksCollection = collection(this.firestore, 'links');
         return addDoc(linksCollection, linkData);
     }
@@ -234,7 +218,6 @@ export class LinksService {
             this.linksSignal.set(updatedLinks);
 
         } catch (error) {
-            console.error('Error toggling like:', error);
             throw error;
         }
     }

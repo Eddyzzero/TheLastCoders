@@ -58,7 +58,6 @@ export class LinkFormComponent {
     }
 
     private convertToBase64Simple(file: File): void {
-        console.log("Conversion simple de l'image en base64");
         const reader = new FileReader();
 
         reader.onload = (e) => {
@@ -67,12 +66,10 @@ export class LinkFormComponent {
                 this.imagePreview = result;
                 this.base64Image = result;
                 this.base64Ready = true;
-                console.log("Image convertie avec succès, taille:", Math.round(result.length / 1024), "KB");
             }
         };
 
         reader.onerror = () => {
-            console.error("Erreur lors de la lecture de l'image");
             this.errorMessage = "Impossible de lire l'image. Veuillez réessayer.";
         };
 
@@ -80,14 +77,6 @@ export class LinkFormComponent {
     }
 
     async onSubmit() {
-        console.log('État du formulaire:', {
-            formValid: this.linkForm.valid,
-            formValue: this.linkForm.value,
-            formErrors: this.getFormValidationErrors(),
-            base64ImageExists: !!this.base64Image,
-            base64Ready: this.base64Ready
-        });
-
         if (this.linkForm.valid && this.base64Ready && this.base64Image) {
             try {
                 await this.linksService.createLinkWithBase64Image(this.linkForm.value as any, this.base64Image);
@@ -95,7 +84,6 @@ export class LinkFormComponent {
                 this.resetForm();
                 this.router.navigate(['/home']);
             } catch (error: any) {
-                console.error("Erreur lors de l'ajout du lien:", error);
                 this.errorMessage = error.message;
             }
         } else if (!this.base64Ready) {

@@ -71,7 +71,6 @@ export class AuthService {
       }))
       .pipe(
         catchError((error: FirebaseError) => {
-          console.error('Erreur lors de l\'inscription:', error.message);
           throw error;
         })
       );
@@ -82,7 +81,6 @@ export class AuthService {
     return from(signInWithEmailAndPassword(this.auth, email, password))
       .pipe(
         catchError((error: FirebaseError) => {
-          console.error('Erreur lors de la connexion:', error.message);
           throw error;
         })
       );
@@ -93,7 +91,6 @@ export class AuthService {
     return from(signOut(this.auth))
       .pipe(
         catchError((error: FirebaseError) => {
-          console.error('Erreur lors de la déconnexion:', error.message);
           throw error;
         })
       );
@@ -104,7 +101,6 @@ export class AuthService {
     return from(sendPasswordResetEmail(this.auth, email))
       .pipe(
         catchError((error: FirebaseError) => {
-          console.error('Erreur lors de la réinitialisation du mot de passe:', error.message);
           throw error;
         })
       );

@@ -76,7 +76,6 @@ export class FirestoreService<T extends DocumentData> {
           observer.next(items);
         },
         (error) => {
-          console.error('Error fetching collection:', error);
           observer.error(error);
         }
       );

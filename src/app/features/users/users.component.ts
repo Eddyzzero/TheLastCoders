@@ -64,14 +64,14 @@ export class UsersComponent implements OnInit, OnDestroy {
   ngOnInit() {
     // Vérifier si l'utilisateur est connecté
     const currentUser = this.authService.currentUserSignal();
-    console.log('Current user from signal:', currentUser);
+    // console.log('Current user from signal:', currentUser);
 
     // Vérifier aussi l'utilisateur via getCurrentUser()
     const firebaseUser = this.authService.getCurrentUser();
-    console.log('Current user from Firebase:', firebaseUser);
+    // console.log('Current user from Firebase:', firebaseUser);
 
     if (!currentUser && !firebaseUser) {
-      console.error('Aucun utilisateur connecté');
+      // console.error('Aucun utilisateur connecté');
       this.router.navigate(['/login']);
       return;
     }
@@ -79,31 +79,31 @@ export class UsersComponent implements OnInit, OnDestroy {
     // Récupérer l'ID de l'utilisateur (préférer d'abord firebaseUser.uid car c'est celui utilisé pour créer les liens)
     if (firebaseUser && firebaseUser.uid) {
       this.userId = firebaseUser.uid;
-      console.log('Utilisation de Firebase UID:', this.userId);
+      // console.log('Utilisation de Firebase UID:', this.userId);
     } else if (currentUser && currentUser.id) {
       this.userId = currentUser.id;
-      console.log('Utilisation de User ID from signal:', this.userId);
+      // console.log('Utilisation de User ID from signal:', this.userId);
     }
 
     if (this.userId) {
       // Afficher tous les liens pour déboguer
       this.linksService.getLinks().subscribe(allLinks => {
         const createdByValues = [...new Set(allLinks.map(link => link.createdBy))];
-        console.log('Tous les liens disponibles:', allLinks.length);
-        console.log('Valeurs uniques de createdBy:', createdByValues);
-        console.log('Notre userId actuel:', this.userId);
-        console.log('Est-ce que notre userId existe dans les liens?', createdByValues.includes(this.userId));
+        // console.log('Tous les liens disponibles:', allLinks.length);
+        // console.log('Valeurs uniques de createdBy:', createdByValues);
+        // console.log('Notre userId actuel:', this.userId);
+        // console.log('Est-ce que notre userId existe dans les liens?', createdByValues.includes(this.userId));
 
         // Afficher les liens de cet utilisateur pour vérification
         const userLinks = allLinks.filter(link => link.createdBy === this.userId);
-        console.log(`Liens avec userId=${this.userId}:`, userLinks);
+        // console.log(`Liens avec userId=${this.userId}:`, userLinks);
       });
 
       this.loadUserData();
       this.loadUserSharedLinks();
       this.checkEditPermission();
     } else {
-      console.error('ID utilisateur non valide');
+      // console.error('ID utilisateur non valide');
       this.isLoading = false;
     }
   }
@@ -122,7 +122,7 @@ export class UsersComponent implements OnInit, OnDestroy {
         }
       },
       error: (error) => {
-        console.error('Error fetching user:', error);
+        // console.error('Error fetching user:', error);
         this.router.navigate(['/login']);
       }
     });
@@ -143,10 +143,10 @@ export class UsersComponent implements OnInit, OnDestroy {
     this.usersService.canModifyUser(this.userId).subscribe({
       next: (canModify) => {
         this.canEdit = canModify;
-        console.log(`Droits de modification pour ce profil: ${canModify ? 'Oui' : 'Non'}`);
+        // console.log(`Droits de modification pour ce profil: ${canModify ? 'Oui' : 'Non'}`);
       },
       error: (error) => {
-        console.error('Erreur lors de la vérification des permissions:', error);
+        // console.error('Erreur lors de la vérification des permissions:', error);
         this.canEdit = false;
       }
     });
@@ -155,7 +155,7 @@ export class UsersComponent implements OnInit, OnDestroy {
   toggleEdit(): void {
     // Vérifier d'abord si l'utilisateur a le droit de modifier ce profil
     if (!this.canEdit) {
-      console.error('Vous n\'avez pas les droits nécessaires pour modifier ce profil');
+      // console.error('Vous n\'avez pas les droits nécessaires pour modifier ce profil');
       alert('Vous n\'avez pas les droits nécessaires pour modifier ce profil');
       return;
     }
@@ -180,13 +180,13 @@ export class UsersComponent implements OnInit, OnDestroy {
 
       // Vérifier si le fichier est une image
       if (!file.type.startsWith('image/')) {
-        console.error('Le fichier doit être une image');
+        // console.error('Le fichier doit être une image');
         return;
       }
 
       // Vérifier la taille du fichier (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        console.error('L\'image ne doit pas dépasser 5MB');
+        // console.error('L\'image ne doit pas dépasser 5MB');
         return;
       }
 
@@ -211,9 +211,9 @@ export class UsersComponent implements OnInit, OnDestroy {
         // Recharger les données utilisateur
         this.loadUserData();
 
-        console.log('Image de profil mise à jour avec succès');
+        // console.log('Image de profil mise à jour avec succès');
       } catch (error) {
-        console.error('Erreur lors du traitement de l\'image:', error);
+        // console.error('Erreur lors du traitement de l\'image:', error);
       }
     }
   }
@@ -247,7 +247,7 @@ export class UsersComponent implements OnInit, OnDestroy {
 
   async updateProfile() {
     if (!this.user || !this.profileForm.valid) {
-      console.error('Formulaire invalide ou utilisateur non défini');
+      // console.error('Formulaire invalide ou utilisateur non défini');
       return;
     }
 
@@ -267,7 +267,7 @@ export class UsersComponent implements OnInit, OnDestroy {
         userImageUrl: this.user.userImageUrl
       };
 
-      console.log('Données à mettre à jour:', updatedData);
+      // console.log('Données à mettre à jour:', updatedData);
 
       // Mettre à jour le profil utilisateur dans Firestore
       await firstValueFrom(this.usersService.updateUserProfile(this.userId, updatedData));
@@ -278,7 +278,7 @@ export class UsersComponent implements OnInit, OnDestroy {
         ...updatedData
       };
 
-      console.log('Profil mis à jour avec succès:', this.user);
+      // console.log('Profil mis à jour avec succès:', this.user);
 
       // Désactiver le mode édition
       this.isEditing = false;
@@ -286,7 +286,7 @@ export class UsersComponent implements OnInit, OnDestroy {
       // Recharger les données utilisateur pour voir les changements
       this.loadUserData();
     } catch (error) {
-      console.error('Erreur lors de la mise à jour du profil:', error);
+      // console.error('Erreur lors de la mise à jour du profil:', error);
     } finally {
       this.isLoading = false;
     }
@@ -309,18 +309,18 @@ export class UsersComponent implements OnInit, OnDestroy {
 
   loadUserSharedLinks() {
     if (!this.userId) {
-      console.error('Impossible de charger les liens: userId manquant');
+      // console.error('Impossible de charger les liens: userId manquant');
       this.isLoading = false;
       return;
     }
 
     this.isLoading = true;
-    console.log('Chargement des liens pour utilisateur avec ID:', this.userId);
+    // console.log('Chargement des liens pour utilisateur avec ID:', this.userId);
 
     // Récupérer TOUS les liens puis filtrer côté client 
     const subscription = this.linksService.getLinks().subscribe({
       next: (allLinks) => {
-        console.log('Total des liens disponibles:', allLinks.length);
+        // console.log('Total des liens disponibles:', allLinks.length);
 
         // Convertir toutes les dates Timestamp en objets Date JavaScript
         const linksWithFixedDates = allLinks.map(link => ({
@@ -330,23 +330,23 @@ export class UsersComponent implements OnInit, OnDestroy {
 
         // Filtrer UNIQUEMENT les liens créés par cet utilisateur spécifique
         const userLinks = linksWithFixedDates.filter(link => link.createdBy === this.userId);
-        console.log(`Liens filtrés pour cet utilisateur (${this.userId}):`, userLinks.length);
+        // console.log(`Liens filtrés pour cet utilisateur (${this.userId}):`, userLinks.length);
 
         if (userLinks.length > 0) {
-          console.log('Liens trouvés pour cet utilisateur:', userLinks);
+          // console.log('Liens trouvés pour cet utilisateur:', userLinks);
           this.userSharedLinks = userLinks;
         } else {
-          console.log('Aucun lien trouvé avec cet ID utilisateur. Valeurs createdBy dans les liens:',
-            [...new Set(allLinks.map(link => link.createdBy))]);
+          // console.log('Aucun lien trouvé avec cet ID utilisateur. Valeurs createdBy dans les liens:',
+          //   [...new Set(allLinks.map(link => link.createdBy))]);
 
           // Si l'utilisateur courant est celui qu'on consulte, essayer avec l'UID Firebase
           const firebaseUser = this.authService.getCurrentUser();
           if (firebaseUser && firebaseUser.uid) {
-            console.log('Tentative avec Firebase UID:', firebaseUser.uid);
+            // console.log('Tentative avec Firebase UID:', firebaseUser.uid);
 
             const firebaseUserLinks = linksWithFixedDates.filter(link => link.createdBy === firebaseUser.uid);
             if (firebaseUserLinks.length > 0) {
-              console.log('Liens trouvés avec Firebase UID:', firebaseUserLinks);
+              // console.log('Liens trouvés avec Firebase UID:', firebaseUserLinks);
               this.userSharedLinks = firebaseUserLinks;
             } else {
               this.userSharedLinks = [];
@@ -359,7 +359,7 @@ export class UsersComponent implements OnInit, OnDestroy {
         this.isLoading = false;
       },
       error: (error) => {
-        console.error('Erreur lors du chargement des liens:', error);
+        // console.error('Erreur lors du chargement des liens:', error);
         this.isLoading = false;
         this.userSharedLinks = [];
       }
@@ -375,7 +375,7 @@ export class UsersComponent implements OnInit, OnDestroy {
   async toggleLinkLike(link: Link) {
     const userId = this.currentUser?.id;
     if (!userId || !link.id) {
-      console.error('Cannot like link: Missing user ID or link ID');
+      // console.error('Cannot like link: Missing user ID or link ID');
       return;
     }
 
@@ -392,7 +392,7 @@ export class UsersComponent implements OnInit, OnDestroy {
 
       link.likes = link.likedBy.length;
     } catch (error) {
-      console.error('Error toggling link like:', error);
+      // console.error('Error toggling link like:', error);
     }
   }
 

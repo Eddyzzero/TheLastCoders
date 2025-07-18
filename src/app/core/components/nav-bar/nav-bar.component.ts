@@ -34,9 +34,6 @@ export class NavBarComponent implements OnInit {
 
     socialLinks: { github?: string; linkedin?: string; twitter?: string } = {};
 
-    constructor() {
-        console.log('NavBarComponent initialized');
-    }
 
     // obtenir l'user et ajouter les liens dans firebase apres ajout
     ngOnInit() {
@@ -50,9 +47,7 @@ export class NavBarComponent implements OnInit {
     }
 
     toggleMenu(): void {
-        console.log('Bouton cliqué!');
         this.isMenuOpen = !this.isMenuOpen;
-        console.log('État du menu:', this.isMenuOpen);
         this.cdr.detectChanges();
     }
 
@@ -86,7 +81,6 @@ export class NavBarComponent implements OnInit {
     logOut(): void {
         this.authService.logOut().subscribe({
             next: () => {
-                console.log('Déconnexion réussie');
                 this.router.navigate(['/login-choice']);
             },
             error: (error) => {

@@ -80,7 +80,6 @@ export class LinkDetailComponent implements OnInit, OnDestroy {
         this.loadComments();
       },
       error: (error) => {
-        console.error('Error loading link:', error);
         this.router.navigate(['/home']);
       }
     });
@@ -177,12 +176,9 @@ export class LinkDetailComponent implements OnInit, OnDestroy {
             ? comment.createdAt.toDate()
             : new Date(comment.createdAt)
         }));
-        console.log('Commentaires chargés:', this.comments);
       },
       error: (error: any) => {
-        console.error('Erreur lors du chargement des commentaires:', error);
         if (error.code === 'permission-denied') {
-          console.error('Permission denied: User may not be authenticated');
           this.router.navigate(['/auth/login']);
         }
       }
