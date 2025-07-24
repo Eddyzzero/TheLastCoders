@@ -1,7 +1,7 @@
 @if (show) {
-<div class="notification-overlay">
+<div class="notification-overlay rounded-xl">
     <div class="fixed top-4 right-4 transform transition-all duration-500" [ngClass]="typeClasses[type]">
-        <div class="px-6 py-3 rounded-lg shadow-lg flex items-center gap-2">
+        <div class="px-6 py-3 rounded-xl shadow-lg flex items-center gap-2">
             <span class="material-symbols-outlined">{{typeIcons[type]}}</span>
             <p>{{message}}</p>
         </div>
