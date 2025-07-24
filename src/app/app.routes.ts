@@ -9,7 +9,7 @@ import { HomeComponent } from './features/home/pages/home/home.component';
 import { LinkFormComponent } from './features/home/pages/link-form/link-form.component';
 import { LinkDetailComponent } from './features/home/pages/link-detail/link-detail.component';
 import { UserManagementComponent } from './features/admin/pages/user-management/user-management.component';
-import { PolicyComponent } from './features/legal/policy/policy.component';
+import { PolicyComponent } from './features/policy/policy.component';
 import { UsersComponent } from './features/users/users.component';
 
 export const routes: Routes = [
