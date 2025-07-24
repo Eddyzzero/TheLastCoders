@@ -16,7 +16,7 @@
 }
 
 <!-- Fond dynamique flou sur toute la page, visible uniquement en mode carrousel -->
-@if (viewMode === 'carousel' && filteredLinks.length > 0) {
+@if (viewMode === 'carousel' && links.length > 0) {
 <div class="fixed inset-0 z-0 pointer-events-none">
     <img *ngIf="currentBgImage" [src]="currentBgImage"
         class="w-full h-full object-cover blur-md transition-all duration-700 opacity-80 fade-bg" />
@@ -40,7 +40,7 @@
     <swiper-container #swiperRef effect="coverflow" grab-cursor="true" centered-slides="true" slides-per-view="2"
         loop="false" coverflow-effect-rotate="50" coverflow-effect-stretch="0" coverflow-effect-depth="100"
         coverflow-effect-modifier="1" coverflow-effect-slide-shadows="false" pagination="false">
-        <swiper-slide *ngFor=" let link of filteredLinks">
+        <swiper-slide *ngFor="let link of links">
             <div class="flex flex-col items-center mb-6">
                 <h3 class="font-primary  text-3xl font-bold mb-20 drop-shadow">{{ link.title }}</h3>
                 <!-- ajoute systeme d'etoiles  -->

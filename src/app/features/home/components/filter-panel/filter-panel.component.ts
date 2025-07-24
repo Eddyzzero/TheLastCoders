@@ -1,13 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
-export interface Filters {
-    niveau: string[];
-    langage: string[];
-    prix: string[];
-    type: string[];
-}
+import { Filters } from '../../interfaces/filter.interface';
 
 @Component({
     selector: 'app-filter-panel',

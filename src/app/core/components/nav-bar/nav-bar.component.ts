@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router, RouterLink } from '@angular/router';
 import { UsersService } from '../../services/users.service';
 import { AuthService } from '../../services/fireAuth.service';
-import { FilterPanelComponent, Filters } from '../../../features/home/components/filter-panel/filter-panel.component';
+import { FilterPanelComponent } from '../../../features/home/components/filter-panel/filter-panel.component';
+import { Filters } from '../../../features/home/interfaces/filter.interface';
 
 @Component({
     selector: 'app-nav-bar',

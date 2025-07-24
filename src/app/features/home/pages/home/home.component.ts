@@ -11,7 +11,6 @@ import { FirestoreService } from '../../../../core/services/firestore.service';
 import { switchMap, combineLatest } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { LinkFormComponent } from '../link-form/link-form.component';
-import { Filters } from '../../components/filter-panel/filter-panel.component';
 import { StarRatingComponent } from '../../components/star-rating/star-rating.component';
 
 @Component({
@@ -36,21 +35,11 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
 
   links: Link[] = [];
-  filteredLinks: Link[] = [];
   currentIndex = 0;
-  searchVisible = false;
-  searchTerm = '';
   viewMode: 'grid' | 'carousel' = 'carousel';
   showAddLinkForm = false;
   userMap: { [key: string]: UserInterface } = {};
   currentBgImage: string | null = null;
-
-  activeFilters: Filters = {
-    niveau: [],
-    langage: [],
-    prix: [],
-    type: []
-  };
 
   navLinks = [
     { route: '/home', icon: 'home', label: 'Accueil' },
@@ -65,6 +54,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
 
   ngOnInit() {
+    // Initialisation des liens si on est dans le navigateur
     if (isPlatformBrowser(this.platformId)) {
       this.loadLinks();
     }
@@ -94,24 +84,11 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       switchMap(links => {
         this.links = links;
 
-        // Suppression des logs de debug
-        // console.log('Tous les liens récupérés sur la page home:', links.length);
-        // console.log('IDs des créateurs de liens:', links.map(link => link.createdBy));
-
-        // Vérifier l'utilisateur actuellement connecté
-        const currentUser = this.authService.getCurrentUser();
-        if (currentUser) {
-          // console.log('ID utilisateur actuel:', currentUser.uid);
-
-          // Filtrer les liens de l'utilisateur actuel
-          const userLinks = links.filter(link => link.createdBy === currentUser.uid);
-          // console.log('Liens de l\'utilisateur actuel sur la page home:', userLinks.length);
-          // console.log('Détails des liens:', userLinks);
-        }
-
-        this.applyFilters();
+        // Configurer le swiper
         setTimeout(() => this.attachSwiperListener(), 0);
         setTimeout(() => this.startSwiperInterval(), 0);
+
+        // Charger les informations des utilisateurs
         const userIds = [...new Set(links.map(link => link.createdBy))];
         const userObservables = userIds.map(userId =>
           this.firestoreService.getDocument(`users/${userId}`)
@@ -136,72 +113,19 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     window.open(url, '_blank', 'noopener,noreferrer');
   }
 
-  // Méthode pour appliquer les filtres sur les liens
-  applyFilters() {
-    // Filtre par terme de recherche
-    let result = this.links.filter(link =>
-      link.title.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-      link.description.toLowerCase().includes(this.searchTerm.toLowerCase())
-    );
 
-    // Appliquer d'autres filtres si nécessaire
-    if (this.hasActiveFilters()) {
-      // Filtrer par niveau
-      if (this.activeFilters.niveau.length > 0) {
-        result = result.filter(link =>
-          link.niveau && this.activeFilters.niveau.includes(link.niveau)
-        );
-      }
-
-      // Filtrer par langage
-      if (this.activeFilters.langage.length > 0) {
-        result = result.filter(link =>
-          link.tags && link.tags.some(tag =>
-            this.activeFilters.langage.includes(tag)
-          )
-        );
-      }
-
-      // Filtrer par prix
-      if (this.activeFilters.prix.length > 0) {
-        result = result.filter(link => {
-          const isPaid = link.isPaid;
-          return (isPaid && this.activeFilters.prix.includes('Payant')) ||
-            (!isPaid && this.activeFilters.prix.includes('Gratuit'));
-        });
-      }
-
-      // Filtrer par type
-      if (this.activeFilters.type.length > 0) {
-        result = result.filter(link =>
-          link.type && this.activeFilters.type.includes(link.type)
-        );
-      }
-    }
-
-    this.filteredLinks = result;
-  }
-
-  hasActiveFilters(): boolean {
-    return Object.values(this.activeFilters).some(filters => filters.length > 0);
-  }
 
   nextSlide() {
-    this.currentIndex = (this.currentIndex + 1) % this.filteredLinks.length;
+    this.currentIndex = (this.currentIndex + 1) % this.links.length;
   }
 
   previousSlide() {
-    this.currentIndex = (this.currentIndex - 1 + this.filteredLinks.length) % this.filteredLinks.length;
+    this.currentIndex = (this.currentIndex - 1 + this.links.length) % this.links.length;
   }
 
   goToSlide(index: number) {
     this.currentIndex = index;
   }
-
-  toggleSearch() {
-    // Ne rien faire ici pour éviter l'ouverture/fermeture automatique du panneau de filtres
-  }
-
 
   toggleView() {
     this.viewMode = this.viewMode === 'grid' ? 'carousel' : 'grid';
@@ -214,10 +138,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   onLinkAdded() {
     this.showAddLinkForm = false;
     this.loadLinks();
-  }
-
-  onSearchChange() {
-    this.applyFilters();
   }
 
   getUserInfo(userId: string): UserInterface | null {
@@ -255,8 +175,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   swiperSlideChangeHandler = (event: any) => {
     const swiper = event.target.swiper;
     const realIndex = swiper.realIndex ?? swiper.activeIndex;
-    if (this.filteredLinks[realIndex]) {
-      this.currentBgImage = this.filteredLinks[realIndex].imageUrl;
+    if (this.links[realIndex]) {
+      this.currentBgImage = this.links[realIndex].imageUrl;
       this.currentIndex = realIndex;
       this.cdr.detectChanges();
     }
@@ -267,12 +187,12 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       clearInterval(this.swiperInterval);
     }
     this.swiperInterval = setInterval(() => {
-      if (this.swiperRef && this.swiperRef.nativeElement && this.filteredLinks.length > 0) {
+      if (this.swiperRef && this.swiperRef.nativeElement && this.links.length > 0) {
         const swiper = this.swiperRef.nativeElement.swiper;
         if (swiper) {
           const realIndex = swiper.realIndex ?? swiper.activeIndex;
-          if (this.filteredLinks[realIndex] && this.currentBgImage !== this.filteredLinks[realIndex].imageUrl) {
-            this.currentBgImage = this.filteredLinks[realIndex].imageUrl;
+          if (this.links[realIndex] && this.currentBgImage !== this.links[realIndex].imageUrl) {
+            this.currentBgImage = this.links[realIndex].imageUrl;
             this.currentIndex = realIndex;
             this.cdr.detectChanges();
           }
