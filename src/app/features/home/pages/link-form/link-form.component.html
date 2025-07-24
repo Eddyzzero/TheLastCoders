@@ -10,11 +10,9 @@
     <!-- Contenu du formulaire avec effet glassmorphism -->
     <div class="relative z-10 backdrop-blur-sm">
         <form [formGroup]="linkForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-4">
-            @if (errorMessage) {
-            <div class="bg-red-100 text-red-700 p-3 rounded">
-                {{ errorMessage }}
-            </div>
-            }
+            <app-notification *ngIf="showNotification" [type]="notificationType" [message]="notificationMessage"
+                (closed)="onNotificationClosed()">
+            </app-notification>
 
 
             <!-- Upload d'image -->
@@ -106,5 +104,14 @@
                 Ajouter
             </button>
         </form>
+
+        <!-- Notification de succès -->
+        @if (showSuccessMessage) {
+        <div
+            class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform transition-all duration-500 flex items-center gap-2">
+            <span class="material-symbols-outlined">check_circle</span>
+            <p>Le lien a été ajouté avec succès!</p>
+        </div>
+        }
     </div>
 </main>

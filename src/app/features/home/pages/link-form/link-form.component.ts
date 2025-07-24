@@ -3,14 +3,17 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LinksService } from '../../../../core/services/links.service';
+import { NotificationComponent } from '../../../../core/components/notification/notification.component';
 
 @Component({
     selector: 'app-link-form',
     imports: [
         CommonModule,
         ReactiveFormsModule,
+        NotificationComponent
     ],
     templateUrl: './link-form.component.html',
+    standalone: true
 })
 export class LinkFormComponent {
     private fb = inject(FormBuilder);
@@ -20,11 +23,15 @@ export class LinkFormComponent {
     @Output() linkAdded = new EventEmitter<void>();
 
     categories = ['Frontend', 'Backend', 'DevOps', 'Mobile', 'Intelligence Artificiel'];
-    errorMessage = '';
     selectedFile: File | null = null;
     imagePreview: string | null = null;
     base64Image: string | null = null;
     base64Ready = false;
+
+    // Notification properties
+    showNotification = false;
+    notificationType: 'success' | 'error' | 'info' | 'warning' = 'error';
+    notificationMessage = '';
 
     // validateur pour l'URL
     // Vérifie si l'URL commence par http:// ou https://
@@ -70,26 +77,46 @@ export class LinkFormComponent {
         };
 
         reader.onerror = () => {
-            this.errorMessage = "Impossible de lire l'image. Veuillez réessayer.";
+            this.showNotification = true;
+            this.notificationType = 'error';
+            this.notificationMessage = "Impossible de lire l'image. Veuillez réessayer.";
         };
 
         reader.readAsDataURL(file);
     }
+
+    showSuccessMessage = false;
 
     async onSubmit() {
         if (this.linkForm.valid && this.base64Ready && this.base64Image) {
             try {
                 await this.linksService.createLinkWithBase64Image(this.linkForm.value as any, this.base64Image);
                 this.linkAdded.emit();
-                this.resetForm();
-                this.router.navigate(['/home']);
+
+                // Show success notification
+                this.showNotification = true;
+                this.notificationType = 'success';
+                this.notificationMessage = 'Le lien a été créé avec succès!';
+
+                // Reset form and redirect after 3 seconds
+                setTimeout(() => {
+                    this.resetForm();
+                    this.router.navigate(['/home']);
+                }, 3000);
+
             } catch (error: any) {
-                this.errorMessage = error.message;
+                this.showNotification = true;
+                this.notificationType = 'error';
+                this.notificationMessage = error.message;
             }
         } else if (!this.base64Ready) {
-            this.errorMessage = "Veuillez sélectionner une image";
+            this.showNotification = true;
+            this.notificationType = 'warning';
+            this.notificationMessage = "Veuillez sélectionner une image";
         } else if (!this.linkForm.valid) {
-            this.errorMessage = "Veuillez remplir tous les champs obligatoires";
+            this.showNotification = true;
+            this.notificationType = 'error';
+            this.notificationMessage = "Veuillez remplir tous les champs obligatoires";
         }
     }
 
@@ -110,6 +137,10 @@ export class LinkFormComponent {
         this.imagePreview = null;
         this.base64Image = null;
         this.base64Ready = false;
-        this.errorMessage = '';
+        this.showNotification = false;
+    }
+
+    onNotificationClosed(): void {
+        this.showNotification = false;
     }
 }

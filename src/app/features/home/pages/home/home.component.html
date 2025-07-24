@@ -24,6 +24,11 @@
 </div>
 }
 
+<!-- Notification -->
+<app-notification [show]="showNotification" [type]="notificationType" [message]="notificationMessage"
+    (closed)="showNotification = false">
+</app-notification>
+
 <!-- Contenu principal -->
 <main class="min-h-screen pb-20 relative overflow-hidden motion-preset-fade motion-duration-2000">
 

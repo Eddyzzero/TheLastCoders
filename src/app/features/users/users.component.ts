@@ -10,10 +10,11 @@ import { RouterModule, Router } from '@angular/router';
 import { Subscription, firstValueFrom } from 'rxjs';
 import { FirestorageService } from '../../core/services/firestorage.service';
 import { effect } from '@angular/core';
+import { NotificationComponent } from '../../core/components/notification/notification.component';
 
 @Component({
   selector: 'app-users',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, NotificationComponent],
   templateUrl: './users.component.html',
 })
 export class UsersComponent implements OnInit, OnDestroy {
@@ -28,6 +29,11 @@ export class UsersComponent implements OnInit, OnDestroy {
   // Propriétés de classe
   user: UserInterface | null = null;
   profileForm: FormGroup;
+
+  // Notification properties
+  showNotification = false;
+  notificationType: 'success' | 'error' | 'info' | 'warning' = 'success';
+  notificationMessage = '';
   selectedFile: File | null = null;
   imagePreview: string | null = null;
   isEditing = false;
@@ -211,6 +217,12 @@ export class UsersComponent implements OnInit, OnDestroy {
         // Recharger les données utilisateur
         this.loadUserData();
 
+        // Show success notification
+        this.showNotification = true;
+        this.notificationType = 'success';
+        this.notificationMessage = 'Photo de profil mise à jour avec succès';
+        setTimeout(() => this.showNotification = false, 3000);
+
         // console.log('Image de profil mise à jour avec succès');
       } catch (error) {
         // console.error('Erreur lors du traitement de l\'image:', error);
@@ -247,7 +259,10 @@ export class UsersComponent implements OnInit, OnDestroy {
 
   async updateProfile() {
     if (!this.user || !this.profileForm.valid) {
-      // console.error('Formulaire invalide ou utilisateur non défini');
+      this.showNotification = true;
+      this.notificationType = 'error';
+      this.notificationMessage = 'Le formulaire est invalide. Veuillez vérifier les champs.';
+      setTimeout(() => this.showNotification = false, 3000);
       return;
     }
 
@@ -278,7 +293,11 @@ export class UsersComponent implements OnInit, OnDestroy {
         ...updatedData
       };
 
-      // console.log('Profil mis à jour avec succès:', this.user);
+      // Afficher une notification de succès
+      this.showNotification = true;
+      this.notificationType = 'success';
+      this.notificationMessage = 'Profil mis à jour avec succès!';
+      setTimeout(() => this.showNotification = false, 3000);
 
       // Désactiver le mode édition
       this.isEditing = false;

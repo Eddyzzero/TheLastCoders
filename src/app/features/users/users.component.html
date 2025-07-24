@@ -1,3 +1,8 @@
+<!-- Notification -->
+<app-notification [show]="showNotification" [type]="notificationType" [message]="notificationMessage"
+    (closed)="showNotification = false">
+</app-notification>
+
 <div class="min-h-screen bg-black p-4 text-soft-white">
     <div class="max-w-2xl mx-auto motion-preset-fade motion-duration-500">
         <!-- En-tête du profil -->
@@ -103,6 +108,8 @@
                         Partager un lien
                     </a>
                 </div>
+
+                <!-- Grille des liens partagés et likés -->
                 <div *ngIf="!isLoading && ((userSharedLinks && userSharedLinks.length > 0) || (likedLinks && likedLinks.length > 0))"
                     class="grid grid-cols-3 md:grid-cols-4 gap-4">
                     <!-- Liens partagés -->

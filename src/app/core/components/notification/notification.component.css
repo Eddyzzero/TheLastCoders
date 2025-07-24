@@ -1,0 +1,19 @@
+/* Styles pour s'assurer que les notifications apparaissent au-dessus de tout */
+:host {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 9999;
+    pointer-events: none;
+    /* Permet de cliquer à travers la notification */
+}
+
+.notification-overlay {
+    position: relative;
+    z-index: 9999;
+}
+
+/* Permettre l'interaction avec la notification elle-même */
+.notification-overlay>div {
+    pointer-events: auto;
+}

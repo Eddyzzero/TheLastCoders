@@ -12,6 +12,7 @@ import { switchMap, combineLatest } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { LinkFormComponent } from '../link-form/link-form.component';
 import { StarRatingComponent } from '../../components/star-rating/star-rating.component';
+import { NotificationComponent } from '../../../../core/components/notification/notification.component';
 
 @Component({
   selector: 'app-home',
@@ -20,7 +21,8 @@ import { StarRatingComponent } from '../../components/star-rating/star-rating.co
     RouterModule,
     FormsModule,
     LinkFormComponent,
-    StarRatingComponent
+    StarRatingComponent,
+    NotificationComponent
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
@@ -28,6 +30,11 @@ import { StarRatingComponent } from '../../components/star-rating/star-rating.co
 })
 export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   public userService = inject(UsersService);
+
+  // Notification properties
+  showNotification = false;
+  notificationType: 'success' | 'error' | 'info' | 'warning' = 'success';
+  notificationMessage = '';
   private linksService = inject(LinksService);
   private authService = inject(AuthService);
   private firestoreService = inject(FirestoreService);
@@ -138,6 +145,16 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   onLinkAdded() {
     this.showAddLinkForm = false;
     this.loadLinks();
+
+    // Show success notification
+    this.showNotification = true;
+    this.notificationType = 'success';
+    this.notificationMessage = 'Le lien a été ajouté avec succès!';
+
+    // Hide notification after 3 seconds
+    setTimeout(() => {
+      this.showNotification = false;
+    }, 3000);
   }
 
   getUserInfo(userId: string): UserInterface | null {
