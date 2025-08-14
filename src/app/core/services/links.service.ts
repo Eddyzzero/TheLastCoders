@@ -1,10 +1,11 @@
 import { Injectable, inject, PLATFORM_ID, Inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Firestore, collection, collectionData, query, orderBy, addDoc, deleteDoc, doc, updateDoc, where, getDoc } from '@angular/fire/firestore';
-import { Observable, of, from, switchMap, map } from 'rxjs';
+import { Observable, of, from, switchMap, map, firstValueFrom } from 'rxjs';
 import { Link } from '../../features/home/interfaces/link.interface';
 import { AuthService } from './fireAuth.service';
 import { FirestorageService } from './firestorage.service';
+import { UsersService } from './users.service';
 
 @Injectable({
     providedIn: 'root'
@@ -13,6 +14,7 @@ export class LinksService {
     private firestore = inject(Firestore);
     private authService = inject(AuthService);
     private firestorageService = inject(FirestorageService);
+    private usersService = inject(UsersService);
     private linksSignal = signal<Link[]>([]);
 
     constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
@@ -95,9 +97,12 @@ export class LinksService {
 
             const linkData = linkDoc.data() as Link;
 
-            // Vérifier que l'utilisateur est bien le propriétaire
+            // Vérifier droits: propriétaire OU administrateur
             if (linkData.createdBy !== user.uid) {
-                throw new Error("Vous n'êtes pas autorisé à supprimer ce lien");
+                const isAdmin = await firstValueFrom(this.usersService.isCurrentUserAdmin());
+                if (!isAdmin) {
+                    throw new Error("Vous n'êtes pas autorisé à supprimer ce lien");
+                }
             }
 
             // Supprimer le document

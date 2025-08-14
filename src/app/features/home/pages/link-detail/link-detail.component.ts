@@ -28,6 +28,7 @@ export class LinkDetailComponent implements OnInit, OnDestroy {
 
   link: Link | null = null;
   isOwner = false;
+  isAdmin = false;
   showDeleteConfirm = false;
   isDeleting = false;
   deleteError: string | null = null;
@@ -52,9 +53,11 @@ export class LinkDetailComponent implements OnInit, OnDestroy {
         // Charger les données complètes de l'utilisateur pour avoir l'image
         this.userService.getUserById(user.id || '').subscribe(fullUser => {
           this.currentUser = fullUser;
+          this.isAdmin = (fullUser?.role === 'admin');
         });
       } else {
         this.currentUser = null;
+        this.isAdmin = false;
       }
     });
   }
