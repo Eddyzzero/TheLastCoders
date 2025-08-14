@@ -13,6 +13,8 @@ import { FormsModule } from '@angular/forms';
 import { LinkFormComponent } from '../link-form/link-form.component';
 import { StarRatingComponent } from '../../components/star-rating/star-rating.component';
 import { NotificationComponent } from '../../../../core/components/notification/notification.component';
+import { FilterPanelComponent } from '../../components/filter-panel/filter-panel.component';
+import { Filters } from '../../interfaces/filter.interface';
 
 @Component({
   selector: 'app-home',
@@ -22,7 +24,8 @@ import { NotificationComponent } from '../../../../core/components/notification/
     FormsModule,
     LinkFormComponent,
     StarRatingComponent,
-    NotificationComponent
+    NotificationComponent,
+    FilterPanelComponent
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
@@ -42,11 +45,13 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
 
   links: Link[] = [];
+  filteredLinks: Link[] = [];
   currentIndex = 0;
   viewMode: 'grid' | 'carousel' = 'carousel';
   showAddLinkForm = false;
   userMap: { [key: string]: UserInterface } = {};
   currentBgImage: string | null = null;
+  activeFilters: Filters | null = null;
 
   navLinks = [
     { route: '/home', icon: 'home', label: 'Accueil' },
@@ -56,6 +61,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   ];
 
   @ViewChild('swiperRef', { static: false }) swiperRef!: ElementRef;
+  @ViewChild('filterPanel') filterPanel!: FilterPanelComponent;
   private swiperInterval: any = null;
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
@@ -90,6 +96,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.linksService.getLinks().pipe(
       switchMap(links => {
         this.links = links;
+        this.filteredLinks = [...links]; // Initialiser filteredLinks avec tous les liens
 
         // Configurer le swiper
         setTimeout(() => this.attachSwiperListener(), 0);
@@ -109,6 +116,71 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       });
     });
+  }
+
+  // Méthode pour appliquer les filtres
+  applyFilters(filters: Filters): void {
+    this.activeFilters = filters;
+
+    // Filtrer les liens selon les critères sélectionnés
+    this.filteredLinks = this.links.filter(link => {
+      // Filtre par niveau
+      if (filters.niveau.length > 0 && !filters.niveau.includes(link.niveau || '')) {
+        return false;
+      }
+
+      // Filtre par langage (vérifier si les tags contiennent au moins un langage sélectionné)
+      if (filters.langage.length > 0) {
+        const hasMatchingLangage = filters.langage.some(lang =>
+          link.tags && link.tags.some(tag =>
+            tag.toLowerCase().includes(lang.toLowerCase())
+          )
+        );
+        if (!hasMatchingLangage) {
+          return false;
+        }
+      }
+
+      // Filtre par prix
+      if (filters.prix.length > 0) {
+        const isPaid = filters.prix.includes('Payant');
+        const isFree = filters.prix.includes('Gratuit');
+        if (isPaid && !link.isPaid) return false;
+        if (isFree && link.isPaid) return false;
+      }
+
+      // Filtre par type
+      if (filters.type.length > 0 && !filters.type.includes(link.type || '')) {
+        return false;
+      }
+
+      return true;
+    });
+
+    // Réinitialiser l'index courant si nécessaire
+    if (this.currentIndex >= this.filteredLinks.length) {
+      this.currentIndex = 0;
+    }
+
+    // Mettre à jour l'image de fond si on a des liens filtrés
+    if (this.filteredLinks.length > 0) {
+      this.currentBgImage = this.filteredLinks[this.currentIndex].imageUrl;
+    } else {
+      this.currentBgImage = null;
+    }
+
+    this.cdr.detectChanges();
+  }
+
+  // Méthode pour réinitialiser les filtres
+  resetFilters(): void {
+    this.activeFilters = null;
+    this.filteredLinks = [...this.links];
+    this.currentIndex = 0;
+    if (this.filteredLinks.length > 0) {
+      this.currentBgImage = this.filteredLinks[0].imageUrl;
+    }
+    this.cdr.detectChanges();
   }
 
   // Méthode pour ouvrir un lien dans un nouvel onglet

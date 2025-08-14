@@ -14,10 +14,9 @@
                 (closed)="onNotificationClosed()">
             </app-notification>
 
-
             <!-- Upload d'image -->
             <div class="form-group">
-                <label class="block mb-1">Image</label>
+                <label class="block mb-1">Image <span class="text-red-500">*</span></label>
                 <div class="flex flex-col items-center gap-2">
                     @if (imagePreview) {
                     <img [src]="imagePreview" alt="Aperçu" class="w-32 h-32 object-cover rounded-lg">
@@ -97,6 +96,79 @@
                     <option [value]="category">{{ category }}</option>
                     }
                 </select>
+            </div>
+
+            <!-- Niveau -->
+            <div class="form-group">
+                <span *ngIf="linkForm.get('niveau')?.invalid && linkForm.get('niveau')?.touched">
+                    <span class="text-red-400 text-xs">Niveau requis</span>
+                </span>
+                <label class="block mb-1">Niveau <span class="text-red-500">*</span></label>
+                <select formControlName="niveau"
+                    class="w-full p-2 rounded border-apple-green border-b text-soft-white/50 selection:bg-deep-green focus:outline-none">
+                    @for (niveau of niveauOptions; track niveau) {
+                    <option [value]="niveau">{{ niveau }}</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Type -->
+            <div class="form-group">
+                <span *ngIf="linkForm.get('type')?.invalid && linkForm.get('type')?.touched">
+                    <span class="text-red-400 text-xs">Type requis</span>
+                </span>
+                <label class="block mb-1">Type <span class="text-red-500">*</span></label>
+                <select formControlName="type"
+                    class="w-full p-2 rounded border-apple-green border-b text-soft-white/50 selection:bg-deep-green focus:outline-none">
+                    @for (type of typeOptions; track type) {
+                    <option [value]="type">{{ type }}</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Prix -->
+            <div class="form-group">
+                <label class="block mb-1">Prix</label>
+                <div class="flex items-center gap-4">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" formControlName="isPaid" [value]="false" class="text-apple-green">
+                        <span>Gratuit</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" formControlName="isPaid" [value]="true" class="text-apple-green">
+                        <span>Payant</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Tags/Langages -->
+            <div class="form-group">
+                <span *ngIf="linkForm.get('tags')?.invalid && linkForm.get('tags')?.touched">
+                    <span class="text-red-400 text-xs">Au moins un langage/technologie requis</span>
+                </span>
+                <label class="block mb-1">Langages/Technologies <span class="text-red-500">*</span></label>
+                <p class="text-xs text-white/60 mb-3">Sélectionnez les langages et technologies utilisés dans ce lien
+                </p>
+                <div class="flex flex-wrap gap-2 max-h-32 overflow-y-auto p-2 border border-apple-green/30 rounded">
+                    @for (langage of langageOptions; track langage) {
+                    <button type="button" (click)="toggleTag(langage)"
+                        class="px-3 py-1 rounded-full text-sm transition-colors"
+                        [class.bg-apple-green]="isTagSelected(langage)" [class.bg-deep-green]="!isTagSelected(langage)"
+                        [class.text-deep-green]="isTagSelected(langage)" [class.text-white]="!isTagSelected(langage)">
+                        {{ langage }}
+                    </button>
+                    }
+                </div>
+                @if (getSelectedTags().length > 0) {
+                <div class="mt-2">
+                    <p class="text-xs text-white/60">Sélectionnés :</p>
+                    <div class="flex flex-wrap gap-1 mt-1">
+                        @for (tag of getSelectedTags(); track tag) {
+                        <span class="px-2 py-1 bg-apple-green text-deep-green text-xs rounded-full">{{ tag }}</span>
+                        }
+                    </div>
+                </div>
+                }
             </div>
 
             <button type="submit" [disabled]="!linkForm.valid || !base64Ready"

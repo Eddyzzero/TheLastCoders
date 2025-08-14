@@ -16,7 +16,7 @@
 }
 
 <!-- Fond dynamique flou sur toute la page, visible uniquement en mode carrousel -->
-@if (viewMode === 'carousel' && links.length > 0) {
+@if (viewMode === 'carousel' && filteredLinks.length > 0) {
 <div class="fixed inset-0 z-0 pointer-events-none">
     <img *ngIf="currentBgImage" [src]="currentBgImage"
         class="w-full h-full object-cover blur-md transition-all duration-700 opacity-80 fade-bg" />
@@ -41,11 +41,30 @@
         </button>
     </header>
 
-    <!-- Carrousel -->
+    <!-- Panneau de filtres -->
+    <app-filter-panel (filterChange)="applyFilters($event)"></app-filter-panel>
+
+    <!-- Message quand aucun lien ne correspond aux filtres -->
+    @if (filteredLinks.length === 0 && activeFilters) {
+    <div class="flex flex-col items-center justify-center min-h-[50vh] text-center px-4">
+        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-apple-green/30">
+            <span class="material-symbols-outlined text-6xl text-apple-green mb-4">search_off</span>
+            <h3 class="text-2xl font-primary text-white mb-2">Aucun lien trouvé</h3>
+            <p class="text-white/70 mb-6">Aucune carte ne correspond aux critères de filtrage sélectionnés.</p>
+            <button (click)="resetFilters()"
+                class="bg-apple-green text-white px-6 py-3 rounded-xl hover:bg-deep-green transition-colors">
+                Réinitialiser les filtres
+            </button>
+        </div>
+    </div>
+    }
+
+    <!-- Carrousel - affiché seulement s'il y a des liens filtrés -->
+    @if (filteredLinks.length > 0) {
     <swiper-container #swiperRef effect="coverflow" grab-cursor="true" centered-slides="true" slides-per-view="2"
         loop="false" coverflow-effect-rotate="50" coverflow-effect-stretch="0" coverflow-effect-depth="100"
         coverflow-effect-modifier="1" coverflow-effect-slide-shadows="false" pagination="false">
-        <swiper-slide *ngFor="let link of links">
+        <swiper-slide *ngFor="let link of filteredLinks">
             <div class="flex flex-col items-center mb-6">
                 <h3 class="font-primary  text-3xl font-bold mb-20 drop-shadow">{{ link.title }}</h3>
                 <!-- ajoute systeme d'etoiles  -->
@@ -71,4 +90,5 @@
             </div>
         </swiper-slide>
     </swiper-container>
+    }
 </main>

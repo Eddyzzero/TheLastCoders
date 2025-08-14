@@ -6,7 +6,7 @@ import { AuthService } from '../../core/services/fireAuth.service';
 import { UsersService } from '../../core/services/users.service';
 import { LinksService } from '../../core/services/links.service';
 import { Link } from '../../features/home/interfaces/link.interface';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { Subscription, firstValueFrom } from 'rxjs';
 import { FirestorageService } from '../../core/services/firestorage.service';
 import { effect } from '@angular/core';
@@ -20,6 +20,7 @@ import { NotificationComponent } from '../../core/components/notification/notifi
 export class UsersComponent implements OnInit, OnDestroy {
   // Injection des services
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
   private usersService = inject(UsersService);
   private linksService = inject(LinksService);
@@ -68,27 +69,26 @@ export class UsersComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // Vérifier si l'utilisateur est connecté
-    const currentUser = this.authService.currentUserSignal();
-    // console.log('Current user from signal:', currentUser);
+    // Si un paramètre d'URL existe, afficher ce profil
+    const routeUserId = this.route.snapshot.paramMap.get('id');
 
-    // Vérifier aussi l'utilisateur via getCurrentUser()
+    // Vérifier si l'utilisateur est connecté (gardé côté client en plus du guard)
+    const currentUser = this.authService.currentUserSignal();
     const firebaseUser = this.authService.getCurrentUser();
-    // console.log('Current user from Firebase:', firebaseUser);
 
     if (!currentUser && !firebaseUser) {
-      // console.error('Aucun utilisateur connecté');
       this.router.navigate(['/login']);
       return;
     }
 
-    // Récupérer l'ID de l'utilisateur (préférer d'abord firebaseUser.uid car c'est celui utilisé pour créer les liens)
-    if (firebaseUser && firebaseUser.uid) {
+    if (routeUserId) {
+      // Priorité à l'ID passé dans l'URL (consultation d'un autre profil)
+      this.userId = routeUserId;
+    } else if (firebaseUser && firebaseUser.uid) {
+      // Sinon, afficher le profil de l'utilisateur courant (UID Firebase)
       this.userId = firebaseUser.uid;
-      // console.log('Utilisation de Firebase UID:', this.userId);
     } else if (currentUser && currentUser.id) {
       this.userId = currentUser.id;
-      // console.log('Utilisation de User ID from signal:', this.userId);
     }
 
     if (this.userId) {

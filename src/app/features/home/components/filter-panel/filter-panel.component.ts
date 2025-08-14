@@ -16,9 +16,9 @@ export class FilterPanelComponent {
     isOpen = false;
 
     niveauOptions = ['Junior', 'Médior', 'Senior'];
-    langageOptions = ['HTML', 'CSS', 'JavaScript', 'Python', 'Git', 'Algorithme', 'C'];
+    langageOptions = ['HTML', 'CSS', 'JavaScript', 'Python', 'Git', 'Algorithme', 'C', 'Java', 'PHP', 'React', 'Angular', 'Vue.js', 'Node.js', 'TypeScript', 'SQL', 'MongoDB', 'Docker', 'Kubernetes', 'AWS', 'Azure'];
     prixOptions = ['Gratuit', 'Payant'];
-    typeOptions = ['Cours', 'Projet', 'Forum', 'Exercice'];
+    typeOptions = ['Cours', 'Projet', 'Forum', 'Exercice', 'Tutoriel', 'Documentation', 'Vidéo', 'Podcast'];
 
     selectedFilters: Filters = {
         niveau: [],

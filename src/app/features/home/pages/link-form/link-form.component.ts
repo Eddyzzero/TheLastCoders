@@ -23,6 +23,12 @@ export class LinkFormComponent {
     @Output() linkAdded = new EventEmitter<void>();
 
     categories = ['Frontend', 'Backend', 'DevOps', 'Mobile', 'Intelligence Artificiel'];
+
+    // Options pour les critères de filtrage
+    niveauOptions = ['Junior', 'Médior', 'Senior'];
+    langageOptions = ['HTML', 'CSS', 'JavaScript', 'Python', 'Git', 'Algorithme', 'C', 'Java', 'PHP', 'React', 'Angular', 'Vue.js', 'Node.js', 'TypeScript', 'SQL', 'MongoDB', 'Docker', 'Kubernetes', 'AWS', 'Azure'];
+    typeOptions = ['Cours', 'Projet', 'Forum', 'Exercice', 'Tutoriel', 'Documentation', 'Vidéo', 'Podcast'];
+
     selectedFile: File | null = null;
     imagePreview: string | null = null;
     base64Image: string | null = null;
@@ -47,11 +53,38 @@ export class LinkFormComponent {
         description: ['', [Validators.required]],
         url: ['', [Validators.required, this.urlValidator]],
         category: ['', [Validators.required]],
-        niveau: ['Junior'],
+        niveau: ['Junior', [Validators.required]],
         isPaid: [false],
-        type: ['Cours'],
-        tags: [[]]
+        type: ['Cours', [Validators.required]],
+        tags: [[''] as string[], [Validators.required, Validators.minLength(1)]]
     });
+
+    // Méthode pour ajouter/supprimer un tag
+    toggleTag(tag: string): void {
+        const currentTags = this.linkForm.get('tags')?.value || [];
+        const index = currentTags.indexOf(tag);
+
+        if (index === -1) {
+            // Ajouter le tag
+            this.linkForm.patchValue({ tags: [...currentTags, tag] });
+        } else {
+            // Supprimer le tag
+            const newTags = currentTags.filter((_, i) => i !== index);
+            this.linkForm.patchValue({ tags: newTags });
+        }
+    }
+
+    // Méthode pour vérifier si un tag est sélectionné
+    isTagSelected(tag: string): boolean {
+        const currentTags = this.linkForm.get('tags')?.value || [];
+        return currentTags.includes(tag);
+    }
+
+    // Méthode pour obtenir les tags sélectionnés de manière sûre
+    getSelectedTags(): string[] {
+        const tags = this.linkForm.get('tags')?.value || [];
+        return tags.filter(tag => tag && tag !== '');
+    }
 
     onFileSelected(event: Event) {
         const input = event.target as HTMLInputElement;
@@ -132,7 +165,12 @@ export class LinkFormComponent {
     }
 
     resetForm(): void {
-        this.linkForm.reset();
+        this.linkForm.reset({
+            niveau: 'Junior',
+            isPaid: false,
+            type: 'Cours',
+            tags: ['']
+        });
         this.selectedFile = null;
         this.imagePreview = null;
         this.base64Image = null;
