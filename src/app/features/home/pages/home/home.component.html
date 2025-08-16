@@ -19,8 +19,8 @@
 @if (viewMode === 'carousel' && filteredLinks.length > 0) {
 <div class="fixed inset-0 z-0 pointer-events-none">
     <img *ngIf="currentBgImage" [src]="currentBgImage"
-        class="w-full h-full object-cover blur-md transition-all duration-700 opacity-80 fade-bg" />
-    <div class="absolute inset-0 bg-soft-white/40"></div>
+        class="w-full h-full object-cover blur-md transition-all duration-900 opacity-80 fade-bg" />
+    <div class="absolute inset-0 bg-soft-white/50"></div>
 </div>
 }
 
@@ -59,6 +59,18 @@
     </div>
     }
 
+    <!-- Message quand il n'y a aucun lien tout court -->
+    @if (filteredLinks.length === 0 && !activeFilters) {
+    <div class="flex flex-col items-center justify-center min-h-[50vh] text-center px-4">
+        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-apple-green/30">
+            <span class="material-symbols-outlined text-6xl text-apple-green mb-4">info</span>
+            <h3 class="text-2xl font-primary text-black mb-2">Aucun lien à afficher</h3>
+            <p class="text-black/70">Il n'y a pas encore de liens. Utilise le bouton <span
+                    class="bg-apple-green text-deep-green rounded-sm px-2 py-1">+</span> pour en ajouter un.</p>
+        </div>
+    </div>
+    }
+
     <!-- Carrousel - affiché seulement s'il y a des liens filtrés -->
     @if (filteredLinks.length > 0) {
     <swiper-container #swiperRef effect="coverflow" grab-cursor="true" centered-slides="true" slides-per-view="2"
@@ -76,13 +88,13 @@
                 <img [src]="link.imageUrl" [alt]="link.title" class="w-full h-full object-cover rounded-4xl">
                 <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/70 to-transparent">
 
-                    <div class="flex justify-between mt-2">
+                    <div class="flex flex-col sm:flex-row justify-between mt-2 gap-2 sm:gap-0">
                         <button (click)="openLink(link.url)"
-                            class="flex justify-center text-black items-center text-sm bg-white/80 rounded-xl px-4 py-1 hover:bg-apple-green hover:text-white transition-colors">
+                            class="flex justify-center text-black items-center text-xs sm:text-sm bg-white/80 rounded-xl px-2 sm:px-4 py-1 hover:bg-apple-green hover:text-white transition-colors w-full sm:w-auto">
                             Lien de la page
                         </button>
                         <button [routerLink]="['/link', link.id]"
-                            class="flex justify-center bg-apple-green text-white text-center py-1 px-6 rounded-xl shadow-xl hover:bg-deep-green transition-colors">
+                            class="flex justify-center bg-apple-green text-white text-center py-1 px-3 sm:px-6 rounded-xl shadow-xl hover:bg-deep-green transition-colors w-full sm:w-auto text-xs sm:text-sm">
                             voir
                         </button>
                     </div>

@@ -84,20 +84,6 @@
                     placeholder="https://example.com">
             </div>
 
-            <div class="form-group">
-                <span *ngIf="linkForm.get('category')?.invalid && linkForm.get('category')?.touched">
-                    <span class="text-red-400 text-xs">Catégorie requise</span>
-                </span>
-                <label class="block mb-1">Catégorie <span class="text-red-500">*</span></label>
-                <select formControlName="category"
-                    class="w-full p-2 rounded border-apple-green border-b text-soft-white/50 selection:bg-deep-green focus:outline-none">
-                    <option value="">Sélectionnez une catégorie</option>
-                    @for (category of categories; track category) {
-                    <option [value]="category">{{ category }}</option>
-                    }
-                </select>
-            </div>
-
             <!-- Niveau -->
             <div class="form-group">
                 <span *ngIf="linkForm.get('niveau')?.invalid && linkForm.get('niveau')?.touched">

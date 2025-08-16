@@ -87,7 +87,7 @@ button:active {
 
 .fade-bg {
     opacity: 0;
-    animation: fadeInBg 0.7s forwards;
+    animation: fadeInBg 0.8s forwards;
 }
 
 @keyframes fadeInBg {

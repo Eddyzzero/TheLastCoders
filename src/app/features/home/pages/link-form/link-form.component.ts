@@ -22,7 +22,6 @@ export class LinkFormComponent {
 
     @Output() linkAdded = new EventEmitter<void>();
 
-    categories = ['Frontend', 'Backend', 'DevOps', 'Mobile', 'Intelligence Artificiel'];
 
     // Options pour les critères de filtrage
     niveauOptions = ['Junior', 'Médior', 'Senior'];
@@ -52,7 +51,6 @@ export class LinkFormComponent {
         title: ['', [Validators.required]],
         description: ['', [Validators.required]],
         url: ['', [Validators.required, this.urlValidator]],
-        category: ['', [Validators.required]],
         niveau: ['Junior', [Validators.required]],
         isPaid: [false],
         type: ['Cours', [Validators.required]],

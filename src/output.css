@@ -11,13 +11,9 @@
     --color-red-900: oklch(39.6% 0.141 25.723);
     --color-amber-500: oklch(76.9% 0.188 70.08);
     --color-yellow-400: oklch(85.2% 0.199 91.936);
-    --color-yellow-500: oklch(79.5% 0.184 86.047);
-    --color-green-400: oklch(79.2% 0.209 151.711);
     --color-green-500: oklch(72.3% 0.219 149.579);
     --color-green-600: oklch(62.7% 0.194 149.214);
-    --color-green-700: oklch(52.7% 0.154 150.069);
     --color-blue-400: oklch(70.7% 0.165 254.624);
-    --color-blue-500: oklch(62.3% 0.214 259.815);
     --color-blue-900: oklch(37.9% 0.146 265.522);
     --color-gray-100: oklch(96.7% 0.003 264.542);
     --color-gray-200: oklch(92.8% 0.006 264.531);
@@ -464,11 +460,17 @@
   .max-h-12 {
     max-height: calc(var(--spacing) * 12);
   }
+  .max-h-32 {
+    max-height: calc(var(--spacing) * 32);
+  }
   .max-h-\[90vh\] {
     max-height: 90vh;
   }
   .min-h-52 {
     min-height: calc(var(--spacing) * 52);
+  }
+  .min-h-\[50vh\] {
+    min-height: 50vh;
   }
   .min-h-screen {
     min-height: 100vh;
@@ -499,9 +501,6 @@
   }
   .w-full {
     width: 100%;
-  }
-  .max-w-1 {
-    max-width: calc(var(--spacing) * 1);
   }
   .max-w-2xl {
     max-width: var(--container-2xl);
@@ -758,9 +757,6 @@
   .bg-blue-400 {
     background-color: var(--color-blue-400);
   }
-  .bg-blue-500 {
-    background-color: var(--color-blue-500);
-  }
   .bg-blue-900 {
     background-color: var(--color-blue-900);
   }
@@ -779,14 +775,8 @@
   .bg-gray-700\/30 {
     background-color: color-mix(in oklab, var(--color-gray-700) 30%, transparent);
   }
-  .bg-green-400 {
-    background-color: var(--color-green-400);
-  }
   .bg-green-500 {
     background-color: var(--color-green-500);
-  }
-  .bg-green-700 {
-    background-color: var(--color-green-700);
   }
   .bg-red-100 {
     background-color: var(--color-red-100);
@@ -797,14 +787,8 @@
   .bg-red-400\/50 {
     background-color: color-mix(in oklab, var(--color-red-400) 50%, transparent);
   }
-  .bg-red-500 {
-    background-color: var(--color-red-500);
-  }
   .bg-red-500\/20 {
     background-color: color-mix(in oklab, var(--color-red-500) 20%, transparent);
-  }
-  .bg-red-600 {
-    background-color: var(--color-red-600);
   }
   .bg-red-600\/20 {
     background-color: color-mix(in oklab, var(--color-red-600) 20%, transparent);
@@ -815,8 +799,8 @@
   .bg-soft-white {
     background-color: var(--color-soft-white);
   }
-  .bg-soft-white\/40 {
-    background-color: color-mix(in oklab, var(--color-soft-white) 40%, transparent);
+  .bg-soft-white\/50 {
+    background-color: color-mix(in oklab, var(--color-soft-white) 50%, transparent);
   }
   .bg-transparent {
     background-color: transparent;
@@ -835,9 +819,6 @@
   }
   .bg-yellow-400 {
     background-color: var(--color-yellow-400);
-  }
-  .bg-yellow-500 {
-    background-color: var(--color-yellow-500);
   }
   .bg-gradient-to-r {
     --tw-gradient-position: to right in oklab;
@@ -891,6 +872,9 @@
   }
   .p-6 {
     padding: calc(var(--spacing) * 6);
+  }
+  .p-8 {
+    padding: calc(var(--spacing) * 8);
   }
   .px-2 {
     padding-inline: calc(var(--spacing) * 2);
@@ -1019,6 +1003,9 @@
   .text-black {
     color: var(--color-black);
   }
+  .text-black\/70 {
+    color: color-mix(in oklab, var(--color-black) 70%, transparent);
+  }
   .text-deep-blue {
     color: var(--color-deep-blue);
   }
@@ -1072,6 +1059,12 @@
   }
   .text-white\/50 {
     color: color-mix(in oklab, var(--color-white) 50%, transparent);
+  }
+  .text-white\/60 {
+    color: color-mix(in oklab, var(--color-white) 60%, transparent);
+  }
+  .text-white\/70 {
+    color: color-mix(in oklab, var(--color-white) 70%, transparent);
   }
   .opacity-0 {
     opacity: 0%;
@@ -1184,9 +1177,9 @@
     --tw-duration: 500ms;
     transition-duration: 500ms;
   }
-  .duration-700 {
-    --tw-duration: 700ms;
-    transition-duration: 700ms;
+  .duration-900 {
+    --tw-duration: 900ms;
+    transition-duration: 900ms;
   }
   .duration-1000 {
     --tw-duration: 1000ms;
@@ -1300,13 +1293,6 @@
     &:hover {
       @media (hover: hover) {
         background-color: color-mix(in oklab, var(--color-red-500) 30%, transparent);
-      }
-    }
-  }
-  .hover\:bg-red-700 {
-    &:hover {
-      @media (hover: hover) {
-        background-color: var(--color-red-700);
       }
     }
   }
@@ -1438,6 +1424,37 @@
       display: inline;
     }
   }
+  .sm\:w-auto {
+    @media (width >= 40rem) {
+      width: auto;
+    }
+  }
+  .sm\:flex-row {
+    @media (width >= 40rem) {
+      flex-direction: row;
+    }
+  }
+  .sm\:gap-0 {
+    @media (width >= 40rem) {
+      gap: calc(var(--spacing) * 0);
+    }
+  }
+  .sm\:px-4 {
+    @media (width >= 40rem) {
+      padding-inline: calc(var(--spacing) * 4);
+    }
+  }
+  .sm\:px-6 {
+    @media (width >= 40rem) {
+      padding-inline: calc(var(--spacing) * 6);
+    }
+  }
+  .sm\:text-sm {
+    @media (width >= 40rem) {
+      font-size: var(--text-sm);
+      line-height: var(--tw-leading, var(--text-sm--line-height));
+    }
+  }
   .md\:grid-cols-4 {
     @media (width >= 48rem) {
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1473,6 +1490,17 @@ h1 {
 p {
   font-family: var(--font-secondary);
   font-size: 1rem;
+}
+html, body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar {
+  display: none;
+}
+html, body {
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 @layer base {
   @property --motion-bounce {

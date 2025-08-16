@@ -54,3 +54,26 @@ p {
     font-family: var(--font-secondary);
     font-size: 1rem;
 }
+
+/* Masquer la barre de défilement verticale */
+html,
+body {
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* Internet Explorer 10+ */
+}
+
+/* Masquer la barre de défilement pour WebKit (Chrome, Safari, Edge) */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+    display: none;
+}
+
+/* S'assurer que le défilement fonctionne toujours */
+html,
+body {
+    overflow-y: auto;
+    overflow-x: hidden;
+}
