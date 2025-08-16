@@ -16,7 +16,7 @@
 }
 
 <!-- Fond dynamique flou sur toute la page, visible uniquement en mode carrousel -->
-@if (viewMode === 'carousel' && filteredLinks.length > 0) {
+@if ((viewMode$ | async) === 'carousel' && filteredLinks.length > 0) {
 <div class="fixed inset-0 z-0 pointer-events-none">
     <img *ngIf="currentBgImage" [src]="currentBgImage"
         class="w-full h-full object-cover blur-md transition-all duration-900 opacity-80 fade-bg" />
@@ -71,8 +71,8 @@
     </div>
     }
 
-    <!-- Carrousel - affiché seulement s'il y a des liens filtrés -->
-    @if (filteredLinks.length > 0) {
+    <!-- Vue Carousel - affichée seulement s'il y a des liens filtrés et que viewMode est 'carousel' -->
+    @if (filteredLinks.length > 0 && (viewMode$ | async) === 'carousel') {
     <swiper-container #swiperRef effect="coverflow" grab-cursor="true" centered-slides="true" slides-per-view="2"
         loop="false" coverflow-effect-rotate="50" coverflow-effect-stretch="0" coverflow-effect-depth="100"
         coverflow-effect-modifier="1" coverflow-effect-slide-shadows="false" pagination="false">
@@ -102,5 +102,50 @@
             </div>
         </swiper-slide>
     </swiper-container>
+    }
+
+    <!-- Vue Grille - affichée seulement s'il y a des liens filtrés et que viewMode est 'grid' -->
+    @if (filteredLinks.length > 0 && (viewMode$ | async) === 'grid') {
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4 max-w-7xl mx-auto">
+        <div *ngFor="let link of filteredLinks"
+            class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+            <img [src]="link.imageUrl" [alt]="link.title" class="w-full h-48 object-cover">
+            <div class="p-4">
+                <h3 class="font-primary text-xl font-bold text-deep-green mb-2 line-clamp-2">{{ link.title }}</h3>
+                <p class="text-gray-600 text-sm mb-3 line-clamp-3">{{ link.description }}</p>
+
+                <!-- Système d'étoiles -->
+                <div class="mb-3">
+                    <app-star-rating [rating]="link.averageRating || 0" [totalRatings]="link.totalRatings || 0"
+                        (ratingChange)="onRatingChange(link, $event)">
+                    </app-star-rating>
+                </div>
+
+                <!-- Métadonnées -->
+                <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
+                    <span class="flex items-center">
+                        <span class="material-symbols-outlined text-xs mr-1">schedule</span>
+                        {{ link.createdAt | date:'dd/MM/yyyy' }}
+                    </span>
+                    <span class="flex items-center">
+                        <span class="material-symbols-outlined text-xs mr-1">visibility</span>
+                        {{ link.views || 0 }}
+                    </span>
+                </div>
+
+                <!-- Boutons d'action -->
+                <div class="flex gap-2">
+                    <button (click)="openLink(link.url)"
+                        class="flex-1 bg-apple-green text-white py-2 px-3 rounded-lg text-sm hover:bg-deep-green transition-colors">
+                        Visiter
+                    </button>
+                    <button [routerLink]="['/link', link.id]"
+                        class="flex-1 bg-deep-green text-white py-2 px-3 rounded-lg text-sm hover:bg-apple-green transition-colors">
+                        Détails
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
     }
 </main>

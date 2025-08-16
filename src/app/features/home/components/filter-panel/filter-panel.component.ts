@@ -5,6 +5,7 @@ import { Filters } from '../../interfaces/filter.interface';
 
 @Component({
     selector: 'app-filter-panel',
+    standalone: true,
     imports: [CommonModule, FormsModule],
     templateUrl: './filter-panel.component.html',
     styleUrls: ['./filter-panel.component.css']
@@ -40,8 +41,10 @@ export class FilterPanelComponent {
         const index = this.selectedFilters[category].indexOf(value);
         if (index === -1) {
             this.selectedFilters[category].push(value);
+            console.log('FilterPanel: Ajout du filtre', category, value, 'Nouveaux filtres:', this.selectedFilters);
         } else {
             this.selectedFilters[category].splice(index, 1);
+            console.log('FilterPanel: Suppression du filtre', category, value, 'Nouveaux filtres:', this.selectedFilters);
         }
     }
 
@@ -59,6 +62,7 @@ export class FilterPanelComponent {
     }
 
     applyFilters(): void {
+        console.log('FilterPanel: Émission des filtres:', this.selectedFilters);
         this.filterChange.emit({ ...this.selectedFilters });
         this.closeFilters();
     }

@@ -15,6 +15,7 @@ import { StarRatingComponent } from '../../components/star-rating/star-rating.co
 import { NotificationComponent } from '../../../../core/components/notification/notification.component';
 import { FilterPanelComponent } from '../../components/filter-panel/filter-panel.component';
 import { Filters } from '../../interfaces/filter.interface';
+import { ViewModeService, ViewMode } from '../../../../core/services/view-mode.service';
 
 @Component({
   selector: 'app-home',
@@ -47,7 +48,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   links: Link[] = [];
   filteredLinks: Link[] = [];
   currentIndex = 0;
-  viewMode: 'grid' | 'carousel' = 'carousel';
+  private viewModeService = inject(ViewModeService);
+  public viewMode$ = this.viewModeService.viewMode$;
   showAddLinkForm = false;
   userMap: { [key: string]: UserInterface } = {};
   currentBgImage: string | null = null;
@@ -95,8 +97,16 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   loadLinks() {
     this.linksService.getLinks().pipe(
       switchMap(links => {
-        this.links = links;
-        this.filteredLinks = [...links]; // Initialiser filteredLinks avec tous les liens
+        console.log('Liens chargés depuis Firestore:', links);
+
+        // Convertir les timestamps Firestore en objets Date JavaScript
+        const convertedLinks = links.map(link => ({
+          ...link,
+          createdAt: this.convertFirestoreTimestamp(link.createdAt)
+        }));
+
+        this.links = convertedLinks;
+        this.filteredLinks = [...convertedLinks]; // Initialiser filteredLinks avec tous les liens
 
         // Configurer le swiper
         setTimeout(() => this.attachSwiperListener(), 0);
@@ -118,44 +128,114 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  // Méthode pour convertir les timestamps Firestore en objets Date JavaScript
+  private convertFirestoreTimestamp(timestamp: any): Date {
+    if (!timestamp) return new Date();
+
+    // Si c'est déjà un objet Date, le retourner tel quel
+    if (timestamp instanceof Date) return timestamp;
+
+    // Si c'est un timestamp Firestore avec seconds et nanoseconds
+    if (timestamp && typeof timestamp === 'object' && 'seconds' in timestamp) {
+      return new Date(timestamp.seconds * 1000);
+    }
+
+    // Si c'est un timestamp Unix en millisecondes
+    if (typeof timestamp === 'number') {
+      return new Date(timestamp);
+    }
+
+    // Si c'est une chaîne de caractères, essayer de la parser
+    if (typeof timestamp === 'string') {
+      const parsed = new Date(timestamp);
+      if (!isNaN(parsed.getTime())) return parsed;
+    }
+
+    // Fallback: retourner la date actuelle
+    console.warn('Impossible de convertir le timestamp:', timestamp);
+    return new Date();
+  }
+
   // Méthode pour appliquer les filtres
   applyFilters(filters: Filters): void {
+    console.log('Filtres reçus:', filters);
+    console.log('Liens avant filtrage:', this.links);
+
     this.activeFilters = filters;
 
-    // Filtrer les liens selon les critères sélectionnés
-    this.filteredLinks = this.links.filter(link => {
-      // Filtre par niveau
-      if (filters.niveau.length > 0 && !filters.niveau.includes(link.niveau || '')) {
-        return false;
-      }
+    // Vérifier si des filtres sont actifs
+    const hasActiveFilters = filters.niveau.length > 0 || filters.langage.length > 0 ||
+      filters.prix.length > 0 || filters.type.length > 0;
 
-      // Filtre par langage (vérifier si les tags contiennent au moins un langage sélectionné)
-      if (filters.langage.length > 0) {
-        const hasMatchingLangage = filters.langage.some(lang =>
-          link.tags && link.tags.some(tag =>
-            tag.toLowerCase().includes(lang.toLowerCase())
-          )
-        );
-        if (!hasMatchingLangage) {
-          return false;
+    console.log('Filtres actifs:', hasActiveFilters);
+
+    if (!hasActiveFilters) {
+      // Si aucun filtre n'est sélectionné, afficher tous les liens
+      this.filteredLinks = [...this.links];
+      console.log('Aucun filtre actif, affichage de tous les liens');
+    } else {
+      // Filtrer les liens selon les critères sélectionnés
+      this.filteredLinks = this.links.filter(link => {
+        console.log('Filtrage du lien:', link.title, 'Propriétés:', {
+          niveau: link.niveau,
+          type: link.type,
+          tags: link.tags,
+          isPaid: link.isPaid
+        });
+
+        // Filtre par niveau
+        if (filters.niveau.length > 0) {
+          const linkNiveau = link.niveau || '';
+          if (!filters.niveau.includes(linkNiveau)) {
+            console.log('Lien rejeté par niveau:', link.title, 'niveau:', linkNiveau, 'filtres:', filters.niveau);
+            return false;
+          }
         }
-      }
 
-      // Filtre par prix
-      if (filters.prix.length > 0) {
-        const isPaid = filters.prix.includes('Payant');
-        const isFree = filters.prix.includes('Gratuit');
-        if (isPaid && !link.isPaid) return false;
-        if (isFree && link.isPaid) return false;
-      }
+        // Filtre par langage (vérifier si les tags contiennent au moins un langage sélectionné)
+        if (filters.langage.length > 0) {
+          const linkTags = link.tags || [];
+          const hasMatchingLangage = filters.langage.some(lang =>
+            linkTags.some(tag => tag && tag.toLowerCase().includes(lang.toLowerCase()))
+          );
+          if (!hasMatchingLangage) {
+            console.log('Lien rejeté par langage:', link.title, 'tags:', linkTags, 'filtres:', filters.langage);
+            return false;
+          }
+        }
 
-      // Filtre par type
-      if (filters.type.length > 0 && !filters.type.includes(link.type || '')) {
-        return false;
-      }
+        // Filtre par prix
+        if (filters.prix.length > 0) {
+          const linkIsPaid = link.isPaid || false;
+          const isPaidSelected = filters.prix.includes('Payant');
+          const isFreeSelected = filters.prix.includes('Gratuit');
 
-      return true;
-    });
+          if (isPaidSelected && !linkIsPaid) {
+            console.log('Lien rejeté par prix (payant):', link.title, 'isPaid:', linkIsPaid);
+            return false;
+          }
+          if (isFreeSelected && linkIsPaid) {
+            console.log('Lien rejeté par prix (gratuit):', link.title, 'isPaid:', linkIsPaid);
+            return false;
+          }
+        }
+
+        // Filtre par type
+        if (filters.type.length > 0) {
+          const linkType = link.type || '';
+          if (!filters.type.includes(linkType)) {
+            console.log('Lien rejeté par type:', link.title, 'type:', linkType, 'filtres:', filters.type);
+            return false;
+          }
+        }
+
+        console.log('Lien accepté:', link.title);
+        return true;
+      });
+    }
+
+    console.log('Liens après filtrage:', this.filteredLinks);
+    console.log('Nombre de liens filtrés:', this.filteredLinks.length);
 
     // Réinitialiser l'index courant si nécessaire
     if (this.currentIndex >= this.filteredLinks.length) {
@@ -204,10 +284,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   goToSlide(index: number) {
     this.currentIndex = index;
-  }
-
-  toggleView() {
-    this.viewMode = this.viewMode === 'grid' ? 'carousel' : 'grid';
   }
 
   toggleAddLinkForm() {

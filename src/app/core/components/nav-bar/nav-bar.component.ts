@@ -5,6 +5,7 @@ import { UsersService } from '../../services/users.service';
 import { AuthService } from '../../services/fireAuth.service';
 import { FilterPanelComponent } from '../../../features/home/components/filter-panel/filter-panel.component';
 import { Filters } from '../../../features/home/interfaces/filter.interface';
+import { ViewModeService, ViewMode } from '../../services/view-mode.service';
 
 @Component({
     selector: 'app-nav-bar',
@@ -21,12 +22,12 @@ export class NavBarComponent implements OnInit {
     private authService = inject(AuthService);
     private router = inject(Router);
 
-    @Output() viewModeChange = new EventEmitter<'grid' | 'carousel'>();
     @Output() searchToggle = new EventEmitter<void>();
     @Output() filterChange = new EventEmitter<Filters>();
 
     public isMenuOpen = false;
-    viewMode: 'grid' | 'carousel' = 'carousel';
+    private viewModeService = inject(ViewModeService);
+    public viewMode$ = this.viewModeService.viewMode$;
 
     menuItems = [
         { label: 'CARDS', route: '/home' },
@@ -53,11 +54,10 @@ export class NavBarComponent implements OnInit {
     }
 
     toggleView(): void {
-        this.viewMode = this.viewMode === 'grid' ? 'carousel' : 'grid';
-        this.viewModeChange.emit(this.viewMode);
+        this.viewModeService.toggleViewMode();
 
         // Si le mode de vue est carrousel, rediriger vers la page d'accueil
-        if (this.viewMode === 'carousel') {
+        if (this.viewModeService.getCurrentViewMode() === 'carousel') {
             this.router.navigate(['/home']);
         }
     }

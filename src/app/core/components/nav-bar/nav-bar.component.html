@@ -56,10 +56,10 @@
             </li>
             <li class="flex justify-between gap-2 bg-apple-green shadow-lg py-1 px-2 rounded-3xl max-w-52 max-h-12">
                 <button type="button" (click)="toggleView()"
-                    title="{{ viewMode === 'grid' ? 'Vue carrousel (retour à l\'accueil)' : 'Vue grille' }}"
+                    title="{{ (viewMode$ | async) === 'grid' ? 'Vue carrousel (retour à l\'accueil)' : 'Vue grille' }}"
                     class="py-2 px-4 bg-white/30 rounded-2xl shadow hover:bg-light-green transition-colors">
                     <span class="material-symbols-outlined text-deep-green">
-                        {{ viewMode === 'grid' ? 'view_carousel' : 'grid_view' }}
+                        {{ (viewMode$ | async) === 'grid' ? 'view_carousel' : 'grid_view' }}
                     </span>
                 </button>
                 <button type="button" (click)="toggleSearch()" class="transition-colors">
