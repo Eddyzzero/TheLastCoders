@@ -1,8 +1,14 @@
-@import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Athiti:wght@200;300;400;500;600;700&family=Delius&display=swap');
+
 /* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+
+
+/* ajoute de la bibliotheque tailwind motion  */
+@plugin "tailwindcss-motion";
 
 /* creation of color palette */
+
 :root {
     --font-primary: 'Amatic SC', sans-serif;
     --font-secondary: 'athiti', sans-serif;
@@ -10,13 +16,11 @@
 }
 
 @theme {
-
     --color-black: #0D0A0B;
     --color-deep-blue: #22333B;
     --color-deep-green: #3F7D20;
     --color-apple-green: #72B01D;
     --color-soft-white: #EAE0D5;
-
 }
 
 .font-primary {
@@ -29,4 +33,47 @@
 
 .font-tertiary {
     font-family: var(--font-tertiary);
+}
+
+.color-back {
+    background-color: var(--color-black);
+}
+
+h3 {
+    font-family: var(--font-secondary);
+    text-transform: uppercase;
+}
+
+h1 {
+    font-family: var(--font-primary);
+    font-size: 2rem;
+    text-transform: uppercase;
+}
+
+p {
+    font-family: var(--font-secondary);
+    font-size: 1rem;
+}
+
+/* Masquer la barre de défilement verticale */
+html,
+body {
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* Internet Explorer 10+ */
+}
+
+/* Masquer la barre de défilement pour WebKit (Chrome, Safari, Edge) */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+    display: none;
+}
+
+/* S'assurer que le défilement fonctionne toujours */
+html,
+body {
+    overflow-y: auto;
+    overflow-x: hidden;
 }

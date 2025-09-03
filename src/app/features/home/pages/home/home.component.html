@@ -1,0 +1,153 @@
+<!-- Overlay du popup -->
+@if (showAddLinkForm) {
+<div class="fixed inset-0 z-40">
+    <!-- Fond sombre -->
+    <div class="absolute inset-0 bg-black/50 motion-preset-fade motion-duration-500"></div>
+
+    <!-- Contenu du modal -->
+    <div class="absolute inset-0 flex items-center justify-center">
+        <div class="bg-black rounded-xl shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto relative">
+            <div class="sticky top-0 bg-black p-4 border-b border-deep-green flex justify-between items-center">
+                <h2 class="text-3xl font-semibold font-primary text-apple-green">Ajouter un nouveau lien</h2>
+                <button (click)="toggleAddLinkForm()" class="text-white hover:text-gray-700">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="p-4">
+                <app-link-form (linkAdded)="onLinkAdded()"></app-link-form>
+            </div>
+        </div>
+    </div>
+</div>
+}
+
+<!-- Fond dynamique flou sur toute la page, visible uniquement en mode carrousel -->
+@if ((viewMode$ | async) === 'carousel' && filteredLinks.length > 0) {
+<div class="fixed inset-0 z-0 pointer-events-none">
+    <img *ngIf="currentBgImage" [src]="currentBgImage"
+        class="w-full h-full object-cover blur-md transition-all duration-900 opacity-80 fade-bg" />
+    <div class="absolute inset-0 bg-soft-white/50"></div>
+</div>
+}
+
+<!-- Notification -->
+<app-notification [show]="showNotification" [type]="notificationType" [message]="notificationMessage"
+    (closed)="showNotification = false">
+</app-notification>
+
+<!-- Contenu principal -->
+<main class="min-h-screen pb-20 relative overflow-hidden motion-preset-fade motion-duration-2000">
+
+    <!-- Titre -->
+    <header class="pt-20 pb-4 text-center relative">
+        <!-- Bouton d'ajout -->
+        <button (click)="toggleAddLinkForm()"
+            class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-apple-green text-deep-green rounded-xl p-3 shadow-lg hover:bg-deep-green hover:text-apple-green transition-colors flex items-center">
+            <span class="material-symbols-outlined">add</span>
+        </button>
+    </header>
+
+    <!-- Panneau de filtres -->
+    <app-filter-panel (filterChange)="applyFilters($event)"></app-filter-panel>
+
+    <!-- Message quand aucun lien ne correspond aux filtres -->
+    @if (filteredLinks.length === 0 && activeFilters) {
+    <div class="flex flex-col items-center justify-center min-h-[50vh] text-center px-4">
+        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-apple-green/30">
+            <span class="material-symbols-outlined text-6xl text-apple-green mb-4">search_off</span>
+            <h3 class="text-2xl font-primary text-white mb-2">Aucun lien trouvé</h3>
+            <p class="text-white/70 mb-6">Aucune carte ne correspond aux critères de filtrage sélectionnés.</p>
+            <button (click)="resetFilters()"
+                class="bg-apple-green text-white px-6 py-3 rounded-xl hover:bg-deep-green transition-colors">
+                Réinitialiser les filtres
+            </button>
+        </div>
+    </div>
+    }
+
+    <!-- Message quand il n'y a aucun lien tout court -->
+    @if (filteredLinks.length === 0 && !activeFilters) {
+    <div class="flex flex-col items-center justify-center min-h-[50vh] text-center px-4">
+        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-apple-green/30">
+            <span class="material-symbols-outlined text-6xl text-apple-green mb-4">info</span>
+            <h3 class="text-2xl font-primary text-black mb-2">Aucun lien à afficher</h3>
+            <p class="text-black/70">Il n'y a pas encore de liens. Utilise le bouton <span
+                    class="bg-apple-green text-deep-green rounded-sm px-2 py-1">+</span> pour en ajouter un.</p>
+        </div>
+    </div>
+    }
+
+    <!-- Vue Carousel - affichée seulement s'il y a des liens filtrés et que viewMode est 'carousel' -->
+    @if (filteredLinks.length > 0 && (viewMode$ | async) === 'carousel') {
+    <swiper-container #swiperRef effect="coverflow" grab-cursor="true" centered-slides="true" slides-per-view="2"
+        loop="false" coverflow-effect-rotate="50" coverflow-effect-stretch="0" coverflow-effect-depth="100"
+        coverflow-effect-modifier="1" coverflow-effect-slide-shadows="false" pagination="false">
+        <swiper-slide *ngFor="let link of filteredLinks">
+            <div class="flex flex-col items-center mb-6">
+                <h3 class="font-primary  text-3xl font-bold mb-20 drop-shadow">{{ link.title }}</h3>
+                <!-- ajoute systeme d'etoiles  -->
+                <app-star-rating [rating]="link.averageRating || 0" [totalRatings]="link.totalRatings || 0"
+                    (ratingChange)="onRatingChange(link, $event)">
+                </app-star-rating>
+            </div>
+            <div class="max-w-2xs mx-auto rounded-4xl shadow-lg overflow-hidden relative bg-white">
+                <img [src]="link.imageUrl" [alt]="link.title" class="w-full h-full object-cover rounded-4xl">
+                <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/70 to-transparent">
+
+                    <div class="flex flex-col sm:flex-row justify-between mt-2 gap-2 sm:gap-0">
+                        <button (click)="openLink(link.url)"
+                            class="flex justify-center text-black items-center text-xs sm:text-sm bg-white/80 rounded-xl px-2 sm:px-4 py-1 hover:bg-apple-green hover:text-white transition-colors w-full sm:w-auto">
+                            Lien de la page
+                        </button>
+                        <button [routerLink]="['/link', link.id]"
+                            class="flex justify-center bg-apple-green text-white text-center py-1 px-3 sm:px-6 rounded-xl shadow-xl hover:bg-deep-green transition-colors w-full sm:w-auto text-xs sm:text-sm">
+                            voir
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </swiper-slide>
+    </swiper-container>
+    }
+
+    <!-- Vue Grille - affichée seulement s'il y a des liens filtrés et que viewMode est 'grid' -->
+    @if (filteredLinks.length > 0 && (viewMode$ | async) === 'grid') {
+    <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4 max-w-7xl mx-auto">
+        <div *ngFor="let link of filteredLinks"
+            class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+            <img [src]="link.imageUrl" [alt]="link.title" class="w-full h-48 object-cover">
+            <div class="p-4">
+                <h3 class="font-primary text-xl font-bold text-deep-green mb-2 line-clamp-2">{{ link.title }}</h3>
+                <p class="text-gray-600 text-xs mb-3 line-clamp-3 sm:text-xs md:text-xs">{{ link.description }}</p>
+
+                <!-- Système d'étoiles -->
+                <div class="mb-3">
+                    <app-star-rating [rating]="link.averageRating || 0" [totalRatings]="link.totalRatings || 0"
+                        (ratingChange)="onRatingChange(link, $event)">
+                    </app-star-rating>
+                </div>
+
+                <!-- Métadonnées -->
+                <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
+                    <span class="flex items-center">
+                        <span class="material-symbols-outlined text-xs mr-1 md:text-sm">schedule</span>
+                        {{ link.createdAt | date:'dd/MM/yyyy' }}
+                    </span>
+                </div>
+
+                <!-- Boutons d'action -->
+                <div class="flex flex-col gap-2">
+                    <button (click)="openLink(link.url)"
+                        class="flex-1 bg-apple-green text-white py-2 px-3 rounded-lg text-sm hover:bg-deep-green transition-colors sm:text-xs md:text-xs">
+                        Lien de la page
+                    </button>
+                    <button [routerLink]="['/link', link.id]"
+                        class="flex-1 bg-deep-green text-white py-2 px-3 rounded-lg text-sm hover:bg-apple-green transition-colors sm:text-xs md:text-xs">
+                        voir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+</main>

@@ -1,0 +1,12 @@
+<div class="flex items-center">
+    @for (star of stars; track star; let i = $index) {
+    <button (click)="rate(i + 1)" (mouseenter)="hover(i + 1)" (mouseleave)="hover(0)"
+        class="material-symbols-outlined text-2xl transition-colors" [class.text-apple-green]="star.filled"
+        [class.text-gray-100]="!star.filled">
+        kid_star
+    </button>
+    }
+    @if (showRatingCount) {
+    <span class="ml-2 text-sm text-white/50">({{ totalRatings }})</span>
+    }
+</div>

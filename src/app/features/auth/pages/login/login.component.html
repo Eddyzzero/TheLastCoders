@@ -1,40 +1,59 @@
-<section class="flex flex-col justify-around items-center h-screen">
-    <section class="font-primary flex flex-col items-center">
-        <p class="text-xl">The Last of</p>
-        <h1 class="text-5xl font-bold">Coders</h1>
-    </section>
-    <section>
-        @if (errorMessage) {
-        <div class="font-primary text-3xl flex justify-center items-center py-4 bg-red-600 rounded-2xl">
-            <p>Il s'est produit une error </p>
-        </div>
-        }
-    </section>
-
-    <section class="flex flex-col gap-5">
-        <div>
-            <h1 class="font-primary text-2xl">Se connecter</h1>
-        </div>
-        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col items-center gap-5">
-            <div class="flex">
-                <span class="material-symbols-outlined">person</span>
-                <input class="input underline invalid: border-red-500 invalid:text-red-500 " type=" text"
-                    formControlName="email" placeholder="john@doe.com" />
-            </div>
-            <div class="flex">
-                <span class="material-symbols-outlined">lock</span>
-                <input class="input" type="password" formControlName="password" placeholder="Mot de passe" />
-            </div>
-            <div class="font-primary ">
-                <p>Oublié mot de passe</p>
-            </div>
-            <button type="submit"
-                class="text-2xl bg-deep-green transition-colors hover:bg-apple-green px-30 py-1.5 rounded-xl cursor-pointer font-primary btn">
-                Se connecter
-            </button>
-        </form>
-        <section class="font-primary flex justify-center text-xl">
-            <a routerLink="/register" routerLinkActive="active">pas encore un compte?</a>
+<section class="min-h-screen">
+    <div
+        class="max-w-2xl mx-auto flex flex-col items-center justify-around h-screen px-4 text-soft-white motion-preset-fade motion-duration-1000">
+        <section class="font-primary flex flex-col items-center">
+            <p class="text-xl">The Last of</p>
+            <h1 class="text-5xl font-bold">Coders</h1>
         </section>
-    </section>
+        <section>
+            <!-- message d'erreur pour les champs non completés  -->
+            <div *ngIf="errorMessage" class="font-primary text-red-500 text-center bg-red-100 p-3 rounded-lg mb-4">
+                {{ errorMessage }}
+            </div>
+
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-5 w-full max-w-md">
+                <div class="flex font-primary">
+                    <p class="text-xl">Se connecter</p>
+                </div>
+
+                <div class="w-full max-w-md">
+                    <input type="email" formControlName="email" placeholder="Email"
+                        class="input w-full border-b-white border-b-2 opacity-50 focus:outline-none focus:border-apple-green" />
+                    <div *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.errors"
+                        class="text-apple-green text-xs mt-1">
+                        <p *ngIf="loginForm.get('email')?.errors?.['required']">L'email est requis</p>
+                        <p *ngIf="loginForm.get('email')?.errors?.['email']">L'email n'est pas valide</p>
+                    </div>
+                </div>
+
+                <div class="w-full max-w-md">
+                    <input type="password" formControlName="password" placeholder="Mot de passe"
+                        class="input w-full border-b-white border-b-2 opacity-50 focus:outline-none focus:border-apple-green" />
+                    <div *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.errors"
+                        class="text-apple-green text-xs mt-1">
+                        <p *ngIf="loginForm.get('password')?.errors?.['required']">Le mot de passe est requis</p>
+                    </div>
+                </div>
+
+                <div class="font-primary text-sm text-gray-500 hover:text-apple-green cursor-pointer">
+                    <p>Mot de passe oublié ?</p>
+                </div>
+
+                <button type="submit" [disabled]="!loginForm.valid"
+                    class="text-2xl bg-deep-green transition-colors hover:bg-apple-green px-4 py-1.5 rounded-xl cursor-pointer font-primary btn disabled:opacity-50 disabled:cursor-not-allowed">
+                    Se connecter
+                </button>
+
+                <div class="flex gap-2 font-secondary mt-12">
+                    <p class="text-sm">Pas encore de compte ?</p>
+                    <a routerLink="/register" class="text-sm text-apple-green hover:text-deep-green">S'enregistrer</a>
+                </div>
+            </form>
+        </section>
+
+        <!-- les doits de la page et mise à jour des dates automatiquement -->
+        <section class="text-center text-xs text-gray-500 font-primary">
+            <p>&copy; {{currentYear}} <span class="text-apple-green">The Last Coders.</span> Tous droits réservés.</p>
+        </section>
+    </div>
 </section>

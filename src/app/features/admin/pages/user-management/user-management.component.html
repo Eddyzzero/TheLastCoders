@@ -1,0 +1,102 @@
+<section class=" bg-black p-4 text-soft-white">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="font-bold mb-6 text-apple-green font-primary ">Administration des utilisateurs</h1>
+
+        <!-- Indicateur de chargement -->
+        <div *ngIf="loading" class="flex justify-center my-8">
+            <div class="animate-spin rounded-full h-12 w-12 buser-b-2 buser-apple-green"></div>
+        </div>
+
+        <!-- Message d'erreur pour les non-admins -->
+        <div *ngIf="!loading && !isAdmin" class="bg-red-900/30 p-4 rounded-lg text-center">
+            <p class="text-xl text-red-400">Accès refusé</p>
+            <p class="mt-2 text-soft-white">Vous n'avez pas les droits d'administrateur nécessaires pour accéder à cette
+                page.</p>
+            <button (click)="navigateToHome()"
+                class="mt-4 bg-apple-green text-black px-6 py-2 rounded-lg hover:bg-deep-green transition-colors">
+                Retour à l'accueil
+            </button>
+        </div>
+
+        <!-- tous les utilisateurs -->
+        <div *ngFor="let user of users" class=" border border-gray-500 rounded-lg shadow-lg p-4 flex flex-col m-2">
+            <div class="flex justify-between items-center pb-3">
+                <div class="flex-shrink-0">
+                    <img [src]="user.userImageUrl?.base64 || user.userImageUrl?.url || 'assets/images/icons/UserIcon.png'"
+                        alt="User" class="w-10 h-10 rounded-full object-cover" />
+                </div>
+                <div class="flex-shrink-0">
+                    <button (click)="openRoleModal(user)" class="px-2 py-1 text-xs rounded-lg cursor-pointer" [ngClass]="
+                    {
+                        'bg-apple-green text-deep-blue': user.role === 'admin',
+                        'bg-soft-white text-black': user.role === 'reader',
+                        'bg-amber-500 text-white': user.role === 'author',
+                        }">{{ user.role }}
+                    </button>
+                </div>
+            </div>
+            <div class="flex-1">
+                <div class="flex justify-between items-center ">
+                    <p class="text-xs text-white">ID</p>
+                    <span class="text-sm text-gray-500"> {{ user.id }}</span>
+                </div>
+                <div class="flex justify-between items-center ">
+                    <p class="text-xs text-white">User</p>
+                    <span class="text-sm text-gray-500">{{ user.userName }}</span>
+                </div>
+                <div class="flex justify-between items-center ">
+                    <p class="text-xs text-white">Address </p>
+                    <span class="text-sm text-gray-500">{{ user.email }}</span>
+                </div>
+            </div>
+
+            <div class="pt-3">
+                <div class="flex justify-end gap-5">
+                    <button (click)="viewUserProfile(user.id!)"
+                        class="action-button text-apple-green hover:text-deep-green mr-3 bg bg-apple-green/10 hover:bg-apple-green/20 px-5 rounded-lg flex items-center justify-center">
+                        <span class="material-symbols-outlined">visibility</span>
+                    </button>
+                    <button (click)="deleteUser(user.id!)"
+                        class="action-button bg-red-400/50 p-1 text-white px-5 text-xs  rounded-lg flex items-center justify-center">
+                        <span class="material-symbols-outlined">delete</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+</section>
+
+<!-- Modal pour changer le rôle -->
+<div *ngIf="showRoleModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-dark-gray rounded-lg p-6 w-96 relative">
+        <h2 class="text-2xl font-bold mb-4 text-apple-green font-primary">Changer le rôle</h2>
+        <p class="text-soft-white mb-4">Utilisateur: {{ selectedUser?.userName }}</p>
+
+        <div class="space-y-2">
+            <button (click)="updateRole('reader')"
+                class="w-full text-left px-4 py-2 rounded hover:bg-apple-green text-soft-white"
+                [class.bg-apple-green]="selectedUser?.role === 'reader'">
+                Reader
+            </button>
+            <button (click)="updateRole('author')"
+                class="w-full text-left px-4 py-2 rounded hover:bg-apple-green text-soft-white"
+                [class.bg-apple-green]="selectedUser?.role === 'author'">
+                Author
+            </button>
+            <button (click)="updateRole('admin')"
+                class="w-full text-left px-4 py-2 rounded hover:bg-apple-green text-soft-white"
+                [class.bg-apple-green]="selectedUser?.role === 'admin'">
+                Admin
+            </button>
+        </div>
+
+        <button (click)="closeRoleModal()" class="absolute top-2 right-2 text-gray-400 hover:text-white">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+    </div>
+</div>

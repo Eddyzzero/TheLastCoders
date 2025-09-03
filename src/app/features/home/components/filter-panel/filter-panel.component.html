@@ -1,0 +1,82 @@
+<div class="filter-panel fixed inset-x-0 bottom-0 bg-apple-green rounded-t-3xl shadow-lg transition-transform duration-500 ease-in-out transform z-40 pb-5"
+    [class.translate-y-full]="!isOpen" [class.motion-preset-slide-up]="isOpen">
+    <div class="p-5 font-primary text-white">
+        <!-- Header -->
+        <div class="flex justify-center items-center mb-6">
+            <div class="flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined">filter_alt</span>
+                <h2 class="text-4xl">FILTRER</h2>
+            </div>
+        </div>
+
+        <!-- Niveau -->
+        <div class="mb-6">
+            <h3 class="text-2xl mb-3">Niveau</h3>
+            <div class="border border-deep-green"></div>
+            <div class="flex flex-wrap gap-3 pt-1">
+                <button *ngFor="let item of niveauOptions" (click)="toggleFilter('niveau', item)"
+                    class="px-4 rounded-lg text-xl transition-colors shadow-lg"
+                    [class.bg-deep-green]="!isSelected('niveau', item)"
+                    [class.bg-deep-blue]="isSelected('niveau', item)">
+                    {{ item }}
+                </button>
+            </div>
+        </div>
+
+        <!-- Langage -->
+        <div class="mb-6">
+            <h3 class="text-2xl mb-3">Langage</h3>
+            <div class="border border-deep-green"></div>
+            <div class="flex flex-wrap gap-3 pt-1">
+                <button *ngFor="let item of langageOptions" (click)="toggleFilter('langage', item)"
+                    class="px-4 rounded-lg text-xl transition-colors shadow-lg"
+                    [class.bg-deep-green]="!isSelected('langage', item)"
+                    [class.bg-deep-blue]="isSelected('langage', item)">
+                    {{ item }}
+                </button>
+            </div>
+        </div>
+
+        <!-- Prix -->
+        <div class="mb-6">
+            <h3 class="text-2xl mb-3">Prix</h3>
+            <div class="border border-deep-green"></div>
+            <div class="flex flex-wrap gap-3 pt-1">
+                <button *ngFor="let item of prixOptions" (click)="toggleFilter('prix', item)"
+                    class="px-4 rounded-lg text-xl transition-colors shadow-lg"
+                    [class.bg-deep-green]="!isSelected('prix', item)" [class.bg-deep-blue]="isSelected('prix', item)">
+                    {{ item }}
+                </button>
+            </div>
+        </div>
+
+        <!-- Type -->
+        <div class="mb-6">
+            <h3 class="text-2xl mb-3">Type</h3>
+            <div class="border border-deep-green"></div>
+            <div class="flex flex-wrap gap-3 pt-1">
+                <button *ngFor="let item of typeOptions" (click)="toggleFilter('type', item)"
+                    class="px-4 rounded-lg text-xl transition-colors shadow-lg"
+                    [class.bg-deep-green]="!isSelected('type', item)" [class.bg-deep-blue]="isSelected('type', item)">
+                    {{ item }}
+                </button>
+            </div>
+        </div>
+
+        <!-- Boutons d'action -->
+        <div class="flex justify-between mt-20">
+            <button type="button" (click)="resetFilters()"
+                class="px-12 bg-deep-green text-white rounded-sm text-xl shadow-xl hover:bg-deep-blue">
+                Réinitialiser
+            </button>
+            <button type="button" (click)="applyFilters()"
+                class="px-12 bg-deep-blue text-white rounded-sm text-xl shadow-xl">
+                Appliquer
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Overlay -->
+<div *ngIf="isOpen" class="fixed inset-0 bg-black/50 z-30" (click)="closeFilters()">
+</div>

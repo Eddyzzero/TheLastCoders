@@ -1,0 +1,175 @@
+<main class="min-h-52 p-4 relative overflow-hidden text-white/50">
+    <!-- Cercles flous pour l'effet glassmorphism -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <!-- Cercle en haut à droite -->
+        <div class="absolute -top-20 -right-20 w-96 h-96 bg-apple-green rounded-full opacity-30 blur-3xl"></div>
+        <!-- Cercle en bas à gauche -->
+        <div class="absolute -bottom-20 -left-40 w-96 h-96 bg-blue-900 rounded-full opacity-30 blur-3xl"></div>
+    </div>
+
+    <!-- Contenu du formulaire avec effet glassmorphism -->
+    <div class="relative z-10 backdrop-blur-sm">
+        <form [formGroup]="linkForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-4">
+            <app-notification *ngIf="showNotification" [type]="notificationType" [message]="notificationMessage"
+                (closed)="onNotificationClosed()">
+            </app-notification>
+
+            <!-- Upload d'image -->
+            <div class="form-group">
+                <label class="block mb-1">Image <span class="text-red-500">*</span></label>
+                <div class="flex flex-col items-center gap-2">
+                    @if (imagePreview) {
+                    <img [src]="imagePreview" alt="Aperçu" class="w-32 h-32 object-cover rounded-lg">
+                    <div class="text-xs" [class.text-green-600]="base64Ready" [class.text-red-600]="!base64Ready">
+                        @if (base64Ready) {
+                        <div class="flex items-center gap-1">
+                            <span class="material-symbols-outlined opacity-70">
+                                priority
+                            </span>
+                            <span>Image prête</span>
+                        </div>
+                        } @else {
+                        <div>
+                            <span class="material-symbols-outlined">
+                                hourglass_empty
+                            </span>
+                            <span>Image en traitement...</span>
+                        </div>
+                        }
+                    </div>
+                    }
+                    <div class="w-full">
+                        <input type="file" accept="image/*" (change)="onFileSelected($event)" class="hidden" #fileInput>
+                        <button type="button" (click)="fileInput.click()"
+                            class="w-full p-2 border-2 border-dashed border-apple-green rounded-lg text-center hover:bg-apple-green/10 transition-colors">
+                            @if (!imagePreview) {
+                            <span>Choisir une image</span>
+                            } @else {
+                            <span>Changer l'image</span>
+                            }
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <span *ngIf="linkForm.get('title')?.invalid && linkForm.get('title')?.touched">
+                    <span class="text-red-400 text-xs">Titre requis</span>
+                </span>
+                <label class="block mb-1">Titre <span class="text-red-500">*</span></label>
+                <input type="text" formControlName="title"
+                    class="w-full p-2 rounded border-apple-green border-b text-soft-white/70 placeholder:border-soft-white/50 selection:bg-deep-green focus:outline-none focus:border-apple-green">
+            </div>
+
+            <div class="form-group">
+                <span *ngIf="linkForm.get('description')?.invalid && linkForm.get('description')?.touched">
+                    <span class="text-red-400 text-xs">Description requise</span>
+                </span>
+                <label class="block mb-1">Description <span class="text-red-500">*</span></label>
+                <textarea formControlName="description" rows="3"
+                    class="w-full p-2 rounded bg-dark-gray border border-apple-green text-soft-white focus:outline-none focus:border-apple-green"></textarea>
+            </div>
+
+            <div class="form-group">
+                <span *ngIf="linkForm.get('url')?.invalid && linkForm.get('url')?.touched">
+                    <span class="text-red-400 text-xs" *ngIf="linkForm.get('url')?.errors?.['required']">URL
+                        requise</span>
+                    <span class="text-red-400 text-xs" *ngIf="linkForm.get('url')?.errors?.['invalidUrlFormat']">L'URL
+                        doit
+                        commencer par http:// ou https://</span>
+                </span>
+                <label class="block mb-1">URL du site <span class="text-red-500">*</span></label>
+                <input type="url" formControlName="url"
+                    class="w-full p-2 rounded border-apple-green border-b text-soft-white/50 selection:bg-deep-green focus:outline-none"
+                    placeholder="https://example.com">
+            </div>
+
+            <!-- Niveau -->
+            <div class="form-group">
+                <span *ngIf="linkForm.get('niveau')?.invalid && linkForm.get('niveau')?.touched">
+                    <span class="text-red-400 text-xs">Niveau requis</span>
+                </span>
+                <label class="block mb-1">Niveau <span class="text-red-500">*</span></label>
+                <select formControlName="niveau"
+                    class="w-full p-2 rounded border-apple-green border-b text-soft-white/50 selection:bg-deep-green focus:outline-none">
+                    @for (niveau of niveauOptions; track niveau) {
+                    <option [value]="niveau">{{ niveau }}</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Type -->
+            <div class="form-group">
+                <span *ngIf="linkForm.get('type')?.invalid && linkForm.get('type')?.touched">
+                    <span class="text-red-400 text-xs">Type requis</span>
+                </span>
+                <label class="block mb-1">Type <span class="text-red-500">*</span></label>
+                <select formControlName="type"
+                    class="w-full p-2 rounded border-apple-green border-b text-soft-white/50 selection:bg-deep-green focus:outline-none">
+                    @for (type of typeOptions; track type) {
+                    <option [value]="type">{{ type }}</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Prix -->
+            <div class="form-group">
+                <label class="block mb-1">Prix</label>
+                <div class="flex items-center gap-4">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" formControlName="isPaid" [value]="false" class="text-apple-green">
+                        <span>Gratuit</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" formControlName="isPaid" [value]="true" class="text-apple-green">
+                        <span>Payant</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Tags/Langages -->
+            <div class="form-group">
+                <span *ngIf="linkForm.get('tags')?.invalid && linkForm.get('tags')?.touched">
+                    <span class="text-red-400 text-xs">Au moins un langage/technologie requis</span>
+                </span>
+                <label class="block mb-1">Langages/Technologies <span class="text-red-500">*</span></label>
+                <p class="text-xs text-white/60 mb-3">Sélectionnez les langages et technologies utilisés dans ce lien
+                </p>
+                <div class="flex flex-wrap gap-2 max-h-32 overflow-y-auto p-2 border border-apple-green/30 rounded">
+                    @for (langage of langageOptions; track langage) {
+                    <button type="button" (click)="toggleTag(langage)"
+                        class="px-3 py-1 rounded-full text-sm transition-colors"
+                        [class.bg-apple-green]="isTagSelected(langage)" [class.bg-deep-green]="!isTagSelected(langage)"
+                        [class.text-deep-green]="isTagSelected(langage)" [class.text-white]="!isTagSelected(langage)">
+                        {{ langage }}
+                    </button>
+                    }
+                </div>
+                @if (getSelectedTags().length > 0) {
+                <div class="mt-2">
+                    <p class="text-xs text-white/60">Sélectionnés :</p>
+                    <div class="flex flex-wrap gap-1 mt-1">
+                        @for (tag of getSelectedTags(); track tag) {
+                        <span class="px-2 py-1 bg-apple-green text-deep-green text-xs rounded-full">{{ tag }}</span>
+                        }
+                    </div>
+                </div>
+                }
+            </div>
+
+            <button type="submit" [disabled]="!linkForm.valid || !base64Ready"
+                class="bg-apple-green text-white py-2 px-4 rounded mt-4 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-deep-green transition-colors">
+                Ajouter
+            </button>
+        </form>
+
+        <!-- Notification de succès -->
+        @if (showSuccessMessage) {
+        <div
+            class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform transition-all duration-500 flex items-center gap-2">
+            <span class="material-symbols-outlined">check_circle</span>
+            <p>Le lien a été ajouté avec succès!</p>
+        </div>
+        }
+    </div>
+</main>

@@ -1,0 +1,172 @@
+<!-- Notification -->
+<app-notification [show]="showNotification" [type]="notificationType" [message]="notificationMessage"
+    (closed)="showNotification = false">
+</app-notification>
+
+<div class="min-h-screen bg-black p-4 text-soft-white">
+    <div class="max-w-2xl mx-auto motion-preset-fade motion-duration-500">
+        <!-- En-tête du profil -->
+        <div class="flex flex-col items-center">
+            <!-- Image de profil et bouton modifier -->
+            <div class="relative w-32 h-32 mb-4">
+                <img [src]="imagePreview || getUserProfileImage()" alt="Profile"
+                    class="w-full h-full rounded-full object-cover bg-soft-white ring-2 ring-apple-green">
+                <label *ngIf="isEditing"
+                    class="absolute bottom-0 right-0 bg-apple-green p-2 rounded-full cursor-pointer hover:bg-deep-green transition-colors shadow-lg">
+                    <input type="file" accept="image/*" (change)="onFileSelected($event)" class="hidden">
+                    <span class="material-symbols-outlined text-white">photo_camera</span>
+                </label>
+
+            </div>
+
+
+            <div *ngIf="isEditing" class="text-xs mb-2 text-red-400/50">
+                <p>La photo de profil ne peux pas dépasser 80kb</p>
+            </div>
+
+            <!-- Formulaire de profil -->
+            <form [formGroup]="profileForm" class="w-full max-w-md ">
+                <!-- Nom d'utilisateur -->
+                <div class="mb-4 text-center">
+                    <h1 class="text-2xl font-bold mb-2 text-soft-white" *ngIf="!isEditing">{{ user?.userName }}</h1>
+
+                    <input *ngIf="isEditing" type="text" formControlName="userName"
+                        class="text-2xl font-bold text-center border-b-2 bg-transparent text-soft-white focus:outline-none focus:border-apple-green">
+                    <span class="bg-apple-green text-white px-3 py-1 rounded-full text-sm">{{ user?.role }}</span>
+
+                    <div class="mt-2 font-secondary text-gray-400">
+                        <span class="text-sm"> {{user?.bio}} </span>
+                    </div>
+                </div>
+
+                <!-- Champs additionnels en mode édition -->
+                <div *ngIf="isEditing" class="space-y-4 mt-6 px-4">
+                    <div>
+                        <label for="bio" class="block text-sm font-medium text-gray-400 mb-1">Bio</label>
+                        <textarea id="bio" formControlName="bio"
+                            class="w-full px-3 py-2 bg-dark-gray border border-gray-700 rounded-lg text-soft-white focus:outline-none focus:border-apple-green"
+                            rows="3"></textarea>
+                    </div>
+
+                    <div>
+                        <label for="github" class="block text-sm font-medium text-gray-400 mb-1">Github</label>
+                        <input id="github" type="text" formControlName="github"
+                            class="w-full px-3 py-2 bg-dark-gray border border-gray-700 rounded-lg text-soft-white focus:outline-none focus:border-apple-green">
+                    </div>
+
+                    <div>
+                        <label for="linkedin" class="block text-sm font-medium text-gray-400 mb-1">LinkedIn</label>
+                        <input id="linkedin" type="text" formControlName="linkedin"
+                            class="w-full px-3 py-2 bg-dark-gray border border-gray-700 rounded-lg text-soft-white focus:outline-none focus:border-apple-green">
+                    </div>
+
+                    <div>
+                        <label for="twitter" class="block text-sm font-medium text-gray-400 mb-1">Twitter</label>
+                        <input id="twitter" type="text" formControlName="twitter"
+                            class="w-full px-3 py-2 bg-dark-gray border border-gray-700 rounded-lg text-soft-white focus:outline-none focus:border-apple-green">
+                    </div>
+                </div>
+            </form>
+
+            <!-- Bouton Modifier/Sauvegarder - uniquement visible pour les utilisateurs autorisés -->
+            <button *ngIf="canEdit && !isEditing" (click)="toggleEdit()"
+                class="mt-4 bg-apple-green text-black px-6 py-1 rounded-3xl font-bold text-xs hover:bg-deep-green transition-colors ">
+                Editer profil
+            </button>
+
+            <div *ngIf="isEditing" class="flex gap-3 mt-6">
+                <button (click)="toggleEdit()"
+                    class="bg-gray-700 text-soft-white px-6 py-1 rounded-3xl font-bold text-xs hover:bg-gray-600 transition-colors">
+                    Annuler
+                </button>
+                <button (click)="updateProfile()"
+                    class="bg-apple-green text-black px-6 py-1 rounded-3xl font-bold text-xs hover:bg-deep-green transition-colors">
+                    Sauvegarder
+                </button>
+            </div>
+
+            <!-- Lien vers l'administration - visible uniquement pour les admins -->
+            <div *ngIf="canEdit && currentUser?.role === 'admin'" class="mt-4 text-center">
+                <a [routerLink]="['/admin/users']" class="text-apple-green hover:text-deep-green text-sm">
+                    Administration des utilisateurs
+                </a>
+            </div>
+
+            <!-- Grille des liens -->
+            <div class="w-full mb-6 mt-20">
+                <h2 class="text-lg font-semibold mb-4 text-soft-white font-secondary">Liens</h2>
+
+                <!-- etat de chargement si pas des liens encoré ajoutés-->
+                <div *ngIf="isLoading" class="flex justify-center items-center py-8">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-apple-green"></div>
+                </div>
+                <div *ngIf="!isLoading && (!userSharedLinks || userSharedLinks.length === 0) && (!likedLinks || likedLinks.length === 0)"
+                    class="text-center py-8 ">
+                    <p class="text-gray-400">Aucun lien pour le moment</p>
+                    <a [routerLink]="['/home/add']"
+                        class="inline-block mt-4 px-6 py-2 bg-apple-green text-black rounded-lg hover:bg-deep-green transition-colors">
+                        Partager un lien
+                    </a>
+                </div>
+
+                <!-- Grille des liens partagés et likés -->
+                <div *ngIf="!isLoading && ((userSharedLinks && userSharedLinks.length > 0) || (likedLinks && likedLinks.length > 0))"
+                    class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-4">
+                    <!-- Liens partagés -->
+                    <div *ngFor="let link of userSharedLinks; trackBy: trackById"
+                        class="bg-gray-600/50 rounded-lg p-2 sm:p-4 hover:bg-gray-800 transition-colors">
+                        <a [routerLink]="['/link', link.id]" class="block">
+                            <div class="mb-2">
+                                <img [src]="link.imageUrl || 'assets/images/default-link.png'" [alt]="link.title"
+                                    class="w-[50px] h-[50px] object-cover rounded-lg">
+                            </div>
+                            <h3 class="text-xs text-apple-green mb-2">{{ link.title }}</h3>
+                            <div class="flex items-center justify-between text-xs text-gray-400">
+                                <div class="flex items-center">
+                                    <span class="material-symbols-outlined text-xs mr-1">schedule</span>
+                                    {{ link.createdAt | date:'d MMM yyyy' }}
+                                </div>
+                                <button (click)="toggleLinkLike(link)"
+                                    class="flex items-center hover:text-apple-green transition-colors">
+                                    <span class="material-symbols-outlined text-sm mr-1"
+                                        [class.text-apple-green]="isLinkLikedByCurrentUser(link)"
+                                        [class.material-symbols-filled]="isLinkLikedByCurrentUser(link)">
+                                        favorite
+                                    </span>
+                                    {{ link.likes || 0 }}
+                                </button>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- Liens likés -->
+                    <div *ngFor="let link of likedLinks; trackBy: trackById"
+                        class="bg-gray-600/50 rounded-lg p-2 sm:p-4 hover:bg-gray-800 transition-colors">
+                        <a [routerLink]="['/link', link.id]" class="block">
+                            <div class="mb-2">
+                                <img [src]="link.imageUrl || 'assets/images/default-link.png'" [alt]="link.title"
+                                    class="w-[50px] h-[50px] object-cover rounded-lg">
+                            </div>
+                            <h3 class="text-xs text-apple-green mb-2">{{ link.title }}</h3>
+                            <div class="flex items-center justify-between text-xs text-gray-400">
+                                <div class="flex flex-col items-center">
+                                    <span class="material-symbols-outlined text-xs mr-1">schedule</span>
+                                    {{ link.createdAt | date:'d MMM yyyy' }}
+                                </div>
+                                <button (click)="toggleLinkLike(link)"
+                                    class="flex items-center hover:text-apple-green transition-colors">
+                                    <span class="material-symbols-outlined text-sm mr-1"
+                                        [class.text-apple-green]="isLinkLikedByCurrentUser(link)"
+                                        [class.material-symbols-filled]="isLinkLikedByCurrentUser(link)">
+                                        favorite
+                                    </span>
+                                    {{ link.likes || 0 }}
+                                </button>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
