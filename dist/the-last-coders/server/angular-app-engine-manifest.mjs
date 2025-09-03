@@ -1,6 +1,6 @@
 
 export default {
-  basePath: '/',
+  basePath: '/TheLastCoders',
   supportedLocales: {
   "en-US": ""
 },

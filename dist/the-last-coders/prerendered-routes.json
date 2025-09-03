@@ -1,13 +1,13 @@
 {
   "routes": {
-    "/": {},
-    "/admin/users": {},
-    "/home": {},
-    "/login": {},
-    "/login-choice": {},
-    "/policy": {},
-    "/register": {},
-    "/skills": {},
-    "/users": {}
+    "/TheLastCoders": {},
+    "/TheLastCoders/admin/users": {},
+    "/TheLastCoders/home": {},
+    "/TheLastCoders/login": {},
+    "/TheLastCoders/login-choice": {},
+    "/TheLastCoders/policy": {},
+    "/TheLastCoders/register": {},
+    "/TheLastCoders/skills": {},
+    "/TheLastCoders/users": {}
   }
 }
