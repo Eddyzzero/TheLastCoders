@@ -1,0 +1,13 @@
+{
+  "routes": {
+    "/": {},
+    "/admin/users": {},
+    "/home": {},
+    "/login": {},
+    "/login-choice": {},
+    "/policy": {},
+    "/register": {},
+    "/skills": {},
+    "/users": {}
+  }
+}
