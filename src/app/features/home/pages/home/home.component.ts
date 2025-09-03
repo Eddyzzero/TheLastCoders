@@ -108,9 +108,21 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         this.links = convertedLinks;
         this.filteredLinks = [...convertedLinks]; // Initialiser filteredLinks avec tous les liens
 
+        // Si des filtres sont actifs, réappliquer les filtres
+        if (this.activeFilters) {
+          this.applyFilters(this.activeFilters);
+        }
+
         // Configurer le swiper
-        setTimeout(() => this.attachSwiperListener(), 0);
-        setTimeout(() => this.startSwiperInterval(), 0);
+        setTimeout(() => {
+          this.attachSwiperListener();
+          this.startSwiperInterval();
+          // Mettre à jour l'image de fond
+          if (this.filteredLinks.length > 0) {
+            this.currentBgImage = this.filteredLinks[this.currentIndex].imageUrl;
+            this.cdr.detectChanges();
+          }
+        }, 0);
 
         // Charger les informations des utilisateurs
         const userIds = [...new Set(links.map(link => link.createdBy))];
@@ -275,11 +287,15 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   nextSlide() {
-    this.currentIndex = (this.currentIndex + 1) % this.links.length;
+    this.currentIndex = (this.currentIndex + 1) % this.filteredLinks.length;
+    this.currentBgImage = this.filteredLinks[this.currentIndex].imageUrl;
+    this.cdr.detectChanges();
   }
 
   previousSlide() {
-    this.currentIndex = (this.currentIndex - 1 + this.links.length) % this.links.length;
+    this.currentIndex = (this.currentIndex - 1 + this.filteredLinks.length) % this.filteredLinks.length;
+    this.currentBgImage = this.filteredLinks[this.currentIndex].imageUrl;
+    this.cdr.detectChanges();
   }
 
   goToSlide(index: number) {
@@ -340,8 +356,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   swiperSlideChangeHandler = (event: any) => {
     const swiper = event.target.swiper;
     const realIndex = swiper.realIndex ?? swiper.activeIndex;
-    if (this.links[realIndex]) {
-      this.currentBgImage = this.links[realIndex].imageUrl;
+    if (this.filteredLinks[realIndex]) {
+      this.currentBgImage = this.filteredLinks[realIndex].imageUrl;
       this.currentIndex = realIndex;
       this.cdr.detectChanges();
     }
@@ -352,12 +368,12 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       clearInterval(this.swiperInterval);
     }
     this.swiperInterval = setInterval(() => {
-      if (this.swiperRef && this.swiperRef.nativeElement && this.links.length > 0) {
+      if (this.swiperRef && this.swiperRef.nativeElement && this.filteredLinks.length > 0) {
         const swiper = this.swiperRef.nativeElement.swiper;
         if (swiper) {
           const realIndex = swiper.realIndex ?? swiper.activeIndex;
-          if (this.links[realIndex] && this.currentBgImage !== this.links[realIndex].imageUrl) {
-            this.currentBgImage = this.links[realIndex].imageUrl;
+          if (this.filteredLinks[realIndex] && this.currentBgImage !== this.filteredLinks[realIndex].imageUrl) {
+            this.currentBgImage = this.filteredLinks[realIndex].imageUrl;
             this.currentIndex = realIndex;
             this.cdr.detectChanges();
           }

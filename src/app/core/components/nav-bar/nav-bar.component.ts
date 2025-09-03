@@ -31,7 +31,7 @@ export class NavBarComponent implements OnInit {
 
     menuItems = [
         { label: 'CARDS', route: '/home' },
-        { label: 'POLICY PRIVACY', route: '/policy' }
+        { label: 'POLITIQUE DE CONFIDENTIALITÉ', route: '/policy' }
     ];
 
     socialLinks: { github?: string; linkedin?: string; twitter?: string } = {};

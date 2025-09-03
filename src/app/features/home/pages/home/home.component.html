@@ -1,15 +1,21 @@
 <!-- Overlay du popup -->
 @if (showAddLinkForm) {
-<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 motion-preset-fade motion-duration-500">
-    <div class="bg-black rounded-xl shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
-        <div class="sticky top-0 bg-black p-4 border-b border-deep-green flex justify-between items-center">
-            <h2 class="text-3xl font-semibold font-primary text-apple-green">Ajouter un nouveau lien</h2>
-            <button (click)="toggleAddLinkForm()" class="text-white hover:text-gray-700">
-                <span class="material-symbols-outlined">close</span>
-            </button>
-        </div>
-        <div class="p-4">
-            <app-link-form (linkAdded)="onLinkAdded()"></app-link-form>
+<div class="fixed inset-0 z-40">
+    <!-- Fond sombre -->
+    <div class="absolute inset-0 bg-black/50 motion-preset-fade motion-duration-500"></div>
+
+    <!-- Contenu du modal -->
+    <div class="absolute inset-0 flex items-center justify-center">
+        <div class="bg-black rounded-xl shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto relative">
+            <div class="sticky top-0 bg-black p-4 border-b border-deep-green flex justify-between items-center">
+                <h2 class="text-3xl font-semibold font-primary text-apple-green">Ajouter un nouveau lien</h2>
+                <button (click)="toggleAddLinkForm()" class="text-white hover:text-gray-700">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="p-4">
+                <app-link-form (linkAdded)="onLinkAdded()"></app-link-form>
+            </div>
         </div>
     </div>
 </div>
@@ -106,7 +112,7 @@
 
     <!-- Vue Grille - affichée seulement s'il y a des liens filtrés et que viewMode est 'grid' -->
     @if (filteredLinks.length > 0 && (viewMode$ | async) === 'grid') {
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4 max-w-7xl mx-auto">
+    <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4 max-w-7xl mx-auto">
         <div *ngFor="let link of filteredLinks"
             class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
             <img [src]="link.imageUrl" [alt]="link.title" class="w-full h-48 object-cover">
@@ -127,21 +133,17 @@
                         <span class="material-symbols-outlined text-xs mr-1">schedule</span>
                         {{ link.createdAt | date:'dd/MM/yyyy' }}
                     </span>
-                    <span class="flex items-center">
-                        <span class="material-symbols-outlined text-xs mr-1">visibility</span>
-                        {{ link.views || 0 }}
-                    </span>
                 </div>
 
                 <!-- Boutons d'action -->
-                <div class="flex gap-2">
+                <div class="flex flex-col gap-2">
                     <button (click)="openLink(link.url)"
                         class="flex-1 bg-apple-green text-white py-2 px-3 rounded-lg text-sm hover:bg-deep-green transition-colors">
-                        Visiter
+                        Lien de la page
                     </button>
                     <button [routerLink]="['/link', link.id]"
                         class="flex-1 bg-deep-green text-white py-2 px-3 rounded-lg text-sm hover:bg-apple-green transition-colors">
-                        Détails
+                        voir
                     </button>
                 </div>
             </div>
