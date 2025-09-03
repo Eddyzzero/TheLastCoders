@@ -145,7 +145,5 @@ Ce projet est sous licence MIT
 
 ## 🌟 Remerciements
 
-- Équipe de développement
-- Contributeurs
 - Communauté Angular
 - Firebase team
