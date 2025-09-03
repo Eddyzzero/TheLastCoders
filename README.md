@@ -1,59 +1,151 @@
 # TheLastCoders
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.1.5.
+TheLastCoders est une application web moderne développée avec Angular 19, permettant aux utilisateurs de partager et gérer des ressources d'apprentissage en programmation. L'application utilise Firebase pour l'authentification et le stockage des données, et intègre Tailwind CSS pour le style.
 
-## Development server
+## 🚀 Fonctionnalités
 
-To start a local development server, run:
+- **Authentification Multi-méthodes**
+
+  - Connexion par email/mot de passe
+  - Connexion via Google
+  - Système de gestion des rôles (reader, author, admin)
+
+- **Gestion des Ressources**
+
+  - Partage de liens et ressources
+  - Système de notation (étoiles)
+  - Commentaires sur les ressources
+  - Filtrage et recherche avancée
+
+- **Administration**
+
+  - Gestion des utilisateurs
+  - Contrôle des rôles
+  - Modération du contenu
+
+- **Interface Utilisateur**
+  - Design responsive avec Tailwind CSS
+  - Notifications en temps réel
+  - Navigation intuitive
+
+## 🛠️ Technologies Utilisées
+
+- **Frontend**: Angular 19
+- **Backend**: Firebase
+- **Base de données**: Firestore
+- **Authentification**: Firebase Auth
+- **Styles**: Tailwind CSS
+- **SSR**: Angular Universal
+
+## 📋 Prérequis
+
+- Node.js (version recommandée : 20.x ou supérieure)
+- npm (version 10.x ou supérieure)
+- Angular CLI (version 19.x)
+
+## 🔧 Installation
+
+1. Cloner le repository :
 
 ```bash
-ng serve
+git clone https://github.com/Eddyzzero/TheLastCoders.git
+cd TheLastCoders
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+2. Installer les dépendances :
 
 ```bash
-ng generate component component-name
+npm install
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+3. Lancer l'application en mode développement :
 
 ```bash
-ng generate --help
+npm start
 ```
 
-## Building
-
-To build the project run:
+4. Pour le style Tailwind (dans un terminal séparé) :
 
 ```bash
-ng build
+npm run tailwind
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+L'application sera accessible à l'adresse `http://localhost:4200/`
 
-## Running unit tests
+## 📦 Build Production
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+Pour créer une version de production :
 
 ```bash
-ng test
+npm run build
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+Pour démarrer le serveur SSR :
 
 ```bash
-ng e2e
+npm run serve:ssr:TheLastCoders
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## 🏗️ Structure du Projet
 
-## Additional Resources
+```
+src/
+├── app/
+│   ├── core/             # Services, guards et composants partagés
+│   ├── features/         # Modules fonctionnels
+│   │   ├── admin/       # Administration
+│   │   ├── auth/        # Authentification
+│   │   ├── home/        # Page d'accueil et gestion des liens
+│   │   ├── users/       # Gestion des utilisateurs
+│   │   └── policy/      # Politiques et conditions
+│   └── shared/          # Composants et utilities partagés
+├── assets/              # Images et ressources statiques
+└── styles/             # Fichiers de style globaux
+```
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## 👥 Rôles Utilisateurs
+
+- **Reader**: Peut consulter et commenter les ressources
+- **Author**: Peut créer et gérer ses propres ressources
+- **Admin**: A accès à toutes les fonctionnalités d'administration
+
+## 🔐 Sécurité
+
+- Authentification sécurisée via Firebase
+- Protection des routes par rôles
+- Validation des données côté client et serveur
+- Gestion sécurisée des tokens
+
+## ⚡ Performance
+
+- Server-Side Rendering avec Angular Universal
+- Lazy loading des modules
+- Optimisation des images
+- Mise en cache des ressources statiques
+
+## 📱 Compatibilité
+
+- Fonctionne sur tous les navigateurs modernes
+- Design responsive pour mobile et desktop
+- PWA ready
+
+## 🤝 Contribution
+
+Les contributions sont les bienvenues ! N'hésitez pas à :
+
+1. Fork le projet
+2. Créer une branche pour votre fonctionnalité
+3. Commiter vos changements
+4. Push sur la branche
+5. Ouvrir une Pull Request
+
+## 📄 Licence
+
+Ce projet est sous licence MIT
+
+## 🌟 Remerciements
+
+- Équipe de développement
+- Contributeurs
+- Communauté Angular
+- Firebase team
