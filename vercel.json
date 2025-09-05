@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "dist/the-last-coders/server/server.mjs",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "dist/the-last-coders/browser/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/assets/(.*)",
+      "dest": "/dist/the-last-coders/browser/assets/$1"
+    },
+    {
+      "src": "/(.*).(jpg|jpeg|png|gif|ico|svg|css|js|txt)",
+      "dest": "/dist/the-last-coders/browser/$1.$2"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/dist/the-last-coders/server/server.mjs"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
+}

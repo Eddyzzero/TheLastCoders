@@ -9,7 +9,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:TheLastCoders": "node dist/the-last-coders/server/server.mjs",
-    "deploy:gh-pages": "ng build --configuration production && npx angular-cli-ghpages --dir=dist/the-last-coders/browser"
+    "deploy:gh-pages": "ng build --configuration production && npx angular-cli-ghpages --dir=dist/the-last-coders/browser",
+    "vercel-build": "ng build --configuration production && npm run tailwind"
   },
   "private": true,
   "dependencies": {
@@ -27,7 +28,7 @@
     "@angular/router": "^19.1.0",
     "@angular/ssr": "^19.1.5",
     "@tailwindcss/postcss": "^4.1.4",
-    "express": "^4.18.2",
+    "express": "^4.21.2",
     "firebase": "^11.3.1",
     "gsap": "^3.13.0",
     "material-icons": "^1.13.14",
