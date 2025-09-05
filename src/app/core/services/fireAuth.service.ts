@@ -29,32 +29,39 @@ export class AuthService {
   currentUserSignal = signal<UserInterface | null | undefined>(undefined);
 
   constructor() {
-    // Initialisation de l'état de l'utilisateur
-    const currentUser = this.auth.currentUser;
-    if (currentUser) {
-      this.userSubject.next(currentUser);
-      this.currentUserSignal.set({
-        id: currentUser.uid,
-        email: currentUser.email!,
-        userName: currentUser.displayName!,
-        createdAt: new Date(),
-      });
-    }
-
-    // Écoute les changements d'état de l'utilisateur
-    onAuthStateChanged(this.auth, (user) => {
-      this.userSubject.next(user);
-      if (user) {
+    try {
+      // Initialisation de l'état de l'utilisateur
+      const currentUser = this.auth.currentUser;
+      if (currentUser) {
+        this.userSubject.next(currentUser);
         this.currentUserSignal.set({
-          id: user.uid,
-          email: user.email!,
-          userName: user.displayName!,
+          id: currentUser.uid,
+          email: currentUser.email!,
+          userName: currentUser.displayName!,
           createdAt: new Date(),
         });
-      } else {
-        this.currentUserSignal.set(null);
       }
-    });
+
+      // Écoute les changements d'état de l'utilisateur
+      onAuthStateChanged(this.auth, (user) => {
+        this.userSubject.next(user);
+        if (user) {
+          this.currentUserSignal.set({
+            id: user.uid,
+            email: user.email!,
+            userName: user.displayName!,
+            createdAt: new Date(),
+          });
+        } else {
+          this.currentUserSignal.set(null);
+        }
+      });
+    } catch (error) {
+      console.error('Erreur d\'initialisation Firebase Auth:', error);
+      // En cas d'erreur, on considère que l'utilisateur n'est pas connecté
+      this.userSubject.next(null);
+      this.currentUserSignal.set(null);
+    }
   }
 
   // Retourne l'utilisateur actuellement authentifié
