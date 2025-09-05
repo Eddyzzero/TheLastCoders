@@ -9,7 +9,7 @@
     "dev:ssr": "ng run TheLastCoders:serve-ssr",
     "serve:ssr": "node dist/the-last-coders/server/server.mjs",
     "prerender": "ng run TheLastCoders:prerender",
-    "vercel-build": "npx ng build",
+    "vercel-build": "ng build",
     "analyze-bundle": "node scripts/analyze-bundle.js",
     "tailwind": "npx tailwindcss -i ./src/styles.css -o ./src/output.css --watch",
     "watch": "ng build --watch --configuration development",
