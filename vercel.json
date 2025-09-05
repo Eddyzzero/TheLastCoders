@@ -1,12 +1,27 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist/the-last-coders/browser",
-  "framework": "angular",
-  "rewrites": [
+  "builds": [
     {
-      "source": "/(.*)",
-      "destination": "/api/server"
+      "src": "dist/the-last-coders/server/server.mjs",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "dist/the-last-coders/browser/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/assets/(.*)",
+      "dest": "/dist/the-last-coders/browser/assets/$1"
+    },
+    {
+      "src": "/(.*)\\.(.+)",
+      "dest": "/dist/the-last-coders/browser/$1.$2"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/dist/the-last-coders/server/server.mjs"
     }
   ]
 }

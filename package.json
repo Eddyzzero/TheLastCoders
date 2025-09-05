@@ -4,12 +4,14 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --configuration production && npm run tailwind",
-    "tailwind": "npx tailwindcss -i ./src/styles.css -o ./src/output.css",
+    "build": "ng build",
+    "build:ssr": "ng build && ng run TheLastCoders:server",
+    "dev:ssr": "ng run TheLastCoders:serve-ssr",
+    "serve:ssr": "node dist/the-last-coders/server/server.mjs",
+    "prerender": "ng run TheLastCoders:prerender",
+    "tailwind": "npx tailwindcss -i ./src/styles.css -o ./src/output.css --watch",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "serve:ssr:TheLastCoders": "node dist/the-last-coders/server/server.mjs",
-    "deploy:gh-pages": "ng build --configuration production && npx angular-cli-ghpages --dir=dist/the-last-coders/browser"
+    "test": "ng test"
   },
   "private": true,
   "dependencies": {
