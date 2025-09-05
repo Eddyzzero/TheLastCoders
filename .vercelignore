@@ -1,0 +1,10 @@
+node_modules
+.git
+.vercel
+*.log
+src
+angular.json
+tsconfig*.json
+karma.conf.js
+*.spec.ts
+e2e

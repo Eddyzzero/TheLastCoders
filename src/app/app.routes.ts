@@ -4,13 +4,6 @@ import { authRedirectGuard } from './core/guards/auth-redirect.guard';
 import { LoginChoiceComponent } from './features/auth/pages/login-choice/login-choice.component';
 import { LoginComponent } from './features/auth/pages/login/login.component';
 import { RegisterComponent } from './features/auth/pages/register/register.component';
-import { SkillsQuizComponent } from './features/auth/pages/skills-quiz/skills-quiz.component';
-import { HomeComponent } from './features/home/pages/home/home.component';
-import { LinkFormComponent } from './features/home/pages/link-form/link-form.component';
-import { LinkDetailComponent } from './features/home/pages/link-detail/link-detail.component';
-import { UserManagementComponent } from './features/admin/pages/user-management/user-management.component';
-import { PolicyComponent } from './features/policy/policy.component';
-import { UsersComponent } from './features/users/users.component';
 
 export const routes: Routes = [
     {
@@ -35,46 +28,36 @@ export const routes: Routes = [
     },
     {
         path: 'skills',
-        component: SkillsQuizComponent,
+        loadComponent: () => import('./features/auth/pages/skills-quiz/skills-quiz.component').then(m => m.SkillsQuizComponent),
         canActivate: [authGuard]
     },
     {
         path: 'users',
-        component: UsersComponent
+        loadComponent: () => import('./features/users/users.component').then(m => m.UsersComponent)
     },
     {
         path: 'user-profile/:id',
-        component: UsersComponent,
+        loadComponent: () => import('./features/users/users.component').then(m => m.UsersComponent),
         canActivate: [authGuard]
     },
     {
-        path: 'admin/users',
-        component: UserManagementComponent,
+        path: 'admin',
+        loadChildren: () => import('./features/admin/admin.module').then(m => m.AdminModule),
         canActivate: [authGuard]
     },
     {
         path: 'home',
-        component: HomeComponent,
-        canActivate: [authGuard]
-    },
-    {
-        path: 'home/add',
-        component: LinkFormComponent,
-        canActivate: [authGuard]
-    },
-    {
-        path: 'home/:id',
-        component: LinkDetailComponent,
-        canActivate: [authGuard]
-    },
-    {
-        path: 'link/:id',
-        component: LinkDetailComponent,
+        loadChildren: () => import('./features/home/home.module').then(m => m.HomeModule),
         canActivate: [authGuard]
     },
     {
         path: 'policy',
-        component: PolicyComponent,
+        loadComponent: () => import('./features/policy/policy.component').then(m => m.PolicyComponent),
+        canActivate: [authGuard]
+    },
+    {
+        path: 'link/:id',
+        loadComponent: () => import('./features/home/pages/link-detail/link-detail.component').then(m => m.LinkDetailComponent),
         canActivate: [authGuard]
     },
     {
