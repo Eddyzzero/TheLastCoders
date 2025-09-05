@@ -9,13 +9,10 @@ export const authGuard = () => {
 
   return authService.isLoggedIn$.pipe(
     map(isLoggedIn => {
-      console.log('AuthGuard: isLoggedIn =', isLoggedIn);
       if (!isLoggedIn) {
-        console.log('AuthGuard: Redirecting to login');
         router.navigate(['/login']);
         return false;
       }
-      console.log('AuthGuard: Access granted');
       return true;
     })
   );
