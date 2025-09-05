@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "node vercel-build.js",
+  "buildCommand": "npm run build",
   "outputDirectory": "dist/the-last-coders/browser",
   "framework": "angular",
   "rewrites": [

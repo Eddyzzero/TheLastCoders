@@ -6,6 +6,18 @@ const path = require("path");
 
 console.log("🔨 Building Angular application for Vercel...");
 
+// Afficher le répertoire de travail actuel
+console.log("📁 Current working directory:", process.cwd());
+
+// Lister les fichiers dans le répertoire actuel
+console.log("📋 Files in current directory:");
+try {
+  const files = fs.readdirSync(process.cwd());
+  console.log(files.slice(0, 10).join(", "), files.length > 10 ? "..." : "");
+} catch (error) {
+  console.error("❌ Error listing directory:", error.message);
+}
+
 // Vérifier que nous sommes dans le bon répertoire
 if (!fs.existsSync("angular.json")) {
   console.error(
