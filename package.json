@@ -4,13 +4,12 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
-    "tailwind": "npx tailwindcss -i ./src/styles.css -o ./src/output.css --watch",
+    "build": "ng build --configuration production && npm run tailwind",
+    "tailwind": "npx tailwindcss -i ./src/styles.css -o ./src/output.css",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:TheLastCoders": "node dist/the-last-coders/server/server.mjs",
-    "deploy:gh-pages": "ng build --configuration production && npx angular-cli-ghpages --dir=dist/the-last-coders/browser",
-    "vercel-build": "ng build --configuration production && npm run tailwind"
+    "deploy:gh-pages": "ng build --configuration production && npx angular-cli-ghpages --dir=dist/the-last-coders/browser"
   },
   "private": true,
   "dependencies": {
@@ -28,6 +27,7 @@
     "@angular/router": "^19.1.0",
     "@angular/ssr": "^19.1.5",
     "@tailwindcss/postcss": "^4.1.4",
+    "@vercel/node": "^5.3.21",
     "express": "^4.21.2",
     "firebase": "^11.3.1",
     "gsap": "^3.13.0",
