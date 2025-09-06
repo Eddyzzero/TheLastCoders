@@ -112,7 +112,7 @@ export class SkillsQuizComponent {
       };
 
       // Sauvegarder dans Firestore
-      await this.fireStoreService.CreateDocument(`quiz_responses/${currentUser.uid}`, quizResponse);
+      await this.fireStoreService.createDocument(`quiz_responses/${currentUser.uid}`, quizResponse);
 
       // Rediriger vers la page d'accueil
       this.router.navigate(['/home']);

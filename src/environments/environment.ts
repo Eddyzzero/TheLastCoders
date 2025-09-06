@@ -1,3 +1,11 @@
+/**
+ * Configuration de l'environnement de développement
+ * 
+ * Cette configuration contient :
+ * - Les paramètres Firebase pour le développement
+ * - Les flags de production (false pour le dev)
+ * - Les identifiants de mesure Google Analytics
+ */
 export const environment = {
     production: false,
     firebase: {

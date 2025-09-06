@@ -15,54 +15,86 @@ import { UserInterface } from '../../features/auth/interfaces/user.interface';
 import { FirestoreService } from './firestore.service';
 import { FirebaseError } from 'firebase/app';
 
+/**
+ * Service d'authentification Firebase
+ * 
+ * Ce service gère :
+ * - L'inscription et la connexion des utilisateurs
+ * - La déconnexion et la réinitialisation de mot de passe
+ * - L'état d'authentification en temps réel
+ * - La synchronisation avec Firestore pour les données utilisateur
+ */
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-
-
+  // Services injectés
   private fireStoreService = inject(FirestoreService);
-  private userSubject = new BehaviorSubject<User | null>(null);
-  user$ = this.userSubject.asObservable();
-  isLoggedIn$ = this.user$.pipe(map(user => !!user));
   private auth = inject(Auth);
-  currentUserSignal = signal<UserInterface | null | undefined>(undefined);
+
+  // Observables pour l'état d'authentification
+  private userSubject = new BehaviorSubject<User | null>(null);
+  public user$ = this.userSubject.asObservable();
+  public isLoggedIn$ = this.user$.pipe(map(user => !!user));
+
+  // Signal pour l'utilisateur actuel (format personnalisé)
+  public currentUserSignal = signal<UserInterface | null | undefined>(undefined);
 
   constructor() {
-    // Initialisation de l'état de l'utilisateur
+    this.initializeAuthState();
+  }
+
+  /**
+   * Initialise l'état d'authentification au démarrage
+   * Configure les observateurs Firebase Auth
+   */
+  private initializeAuthState(): void {
+    // Initialisation de l'utilisateur actuel
     const currentUser = this.auth.currentUser;
     if (currentUser) {
       this.userSubject.next(currentUser);
-      this.currentUserSignal.set({
-        id: currentUser.uid,
-        email: currentUser.email!,
-        userName: currentUser.displayName!,
-        createdAt: new Date(),
-      });
+      this.updateCurrentUserSignal(currentUser);
     }
 
-    // Écoute les changements d'état de l'utilisateur
+    // Écoute les changements d'état d'authentification
     onAuthStateChanged(this.auth, (user) => {
       this.userSubject.next(user);
       if (user) {
-        this.currentUserSignal.set({
-          id: user.uid,
-          email: user.email!,
-          userName: user.displayName!,
-          createdAt: new Date(),
-        });
+        this.updateCurrentUserSignal(user);
       } else {
         this.currentUserSignal.set(null);
       }
     });
   }
 
-  // Retourne l'utilisateur actuellement authentifié
-  getCurrentUser() {
+  /**
+   * Met à jour le signal de l'utilisateur actuel
+   * @param user - Utilisateur Firebase
+   */
+  private updateCurrentUserSignal(user: User): void {
+    this.currentUserSignal.set({
+      id: user.uid,
+      email: user.email!,
+      userName: user.displayName || '',
+      createdAt: new Date(),
+    });
+  }
+
+  /**
+   * Retourne l'utilisateur actuellement authentifié
+   * @returns User Firebase ou null
+   */
+  getCurrentUser(): User | null {
     return this.userSubject.value;
   }
 
-  // Inscription de l'utilisateur
+  /**
+   * Inscription d'un nouvel utilisateur
+   * @param email - Email de l'utilisateur
+   * @param userName - Nom d'utilisateur
+   * @param password - Mot de passe
+   * @returns Observable<UserCredential>
+   */
   register(email: string, userName: string, password: string): Observable<UserCredential> {
     return from(createUserWithEmailAndPassword(this.auth, email, password)
       .then(async (response) => {
@@ -76,7 +108,12 @@ export class AuthService {
       );
   }
 
-  // Connexion de l'utilisateur
+  /**
+   * Connexion d'un utilisateur existant
+   * @param email - Email de l'utilisateur
+   * @param password - Mot de passe
+   * @returns Observable<UserCredential>
+   */
   login(email: string, password: string): Observable<UserCredential> {
     return from(signInWithEmailAndPassword(this.auth, email, password))
       .pipe(
@@ -86,7 +123,10 @@ export class AuthService {
       );
   }
 
-  // Déconnexion de l'utilisateur
+  /**
+   * Déconnexion de l'utilisateur actuel
+   * @returns Observable<void>
+   */
   logOut(): Observable<void> {
     return from(signOut(this.auth))
       .pipe(
@@ -96,7 +136,11 @@ export class AuthService {
       );
   }
 
-  // Envoi de l'email de réinitialisation du mot de passe
+  /**
+   * Envoie un email de réinitialisation de mot de passe
+   * @param email - Email de l'utilisateur
+   * @returns Observable<void>
+   */
   sendPasswordResetEmail(email: string): Observable<void> {
     return from(sendPasswordResetEmail(this.auth, email))
       .pipe(

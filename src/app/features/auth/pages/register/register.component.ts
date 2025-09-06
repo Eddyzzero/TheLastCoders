@@ -89,7 +89,7 @@ export class RegisterComponent implements OnInit {
               this.authService.currentUserSignal.set(userData);
 
               // Create the user document
-              await this.firestoreService.CreateDocument(`users/${response.user.uid}`, userData);
+              await this.firestoreService.createDocument(`users/${response.user.uid}`, userData);
 
               // C'est un nouvel utilisateur, donc on le redirige directement vers le quiz
               this.router.navigate(['/skills']);

@@ -1,3 +1,11 @@
+/**
+ * Configuration de l'environnement de production
+ * 
+ * Cette configuration contient :
+ * - Les paramètres Firebase pour la production
+ * - Les flags de production (true pour la prod)
+ * - Les identifiants de mesure Google Analytics
+ */
 export const environment = {
     production: true,
     firebase: {
