@@ -46,5 +46,4 @@ coverage/
 
 # Testing
 /cypress/videos/
-/cypress/screenshots/
-.vercel
+/cypress/screenshots/on

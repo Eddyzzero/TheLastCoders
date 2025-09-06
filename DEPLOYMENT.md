@@ -1,10 +1,10 @@
-# Guide de déploiement Vercel
+# Guide de déploiement Firebase
 
 ## Configuration actuelle
 
 ✅ **Firebase** : Configuré et prêt
 ✅ **Angular** : Version 19 avec SSR
-✅ **Build** : Optimisé pour Vercel
+✅ **Build** : Optimisé pour Firebase Hosting
 
 ## Étapes de déploiement
 
@@ -15,55 +15,28 @@
 npm install
 
 # Tester le build local
-npm run vercel-build
+npm run build
 ```
 
-### 2. Déploiement sur Vercel
+### 2. Déploiement sur Firebase Hosting
 
-#### Option A : Via l'interface Vercel
-
-1. Aller sur [vercel.com](https://vercel.com)
-2. Connecter votre compte GitHub
-3. Importer le repository `TheLastCoders`
-4. Vercel détectera automatiquement Angular
-5. Les paramètres sont déjà configurés dans `vercel.json`
-
-#### Option B : Via CLI Vercel
-
-```bash
-# Installer Vercel CLI
-npm i -g vercel
-
-# Déployer
-vercel
-
-# Pour la production
-vercel --prod
-```
-
-### 3. Variables d'environnement (si nécessaire)
-
-Dans le dashboard Vercel, ajouter :
-
-- `NODE_ENV=production`
-- Variables Firebase (si vous voulez les externaliser)
-
-### 4. Configuration Firebase
-
-#### Firebase Hosting (optionnel)
-
-Si vous voulez aussi utiliser Firebase Hosting :
+#### Via CLI Firebase
 
 ```bash
 # Installer Firebase CLI
 npm install -g firebase-tools
 
-# Initialiser
-firebase init hosting
+# Se connecter
+firebase login
+
+# Construire l'application
+npm run build
 
 # Déployer
-firebase deploy
+firebase deploy --only hosting
 ```
+
+### 3. Configuration Firebase
 
 #### Firebase Functions (pour l'API)
 
@@ -73,6 +46,16 @@ firebase init functions
 
 # Déployer les fonctions
 firebase deploy --only functions
+```
+
+#### Firebase Firestore (base de données)
+
+```bash
+# Déployer les règles Firestore
+firebase deploy --only firestore
+
+# Déployer les règles Storage
+firebase deploy --only storage
 ```
 
 ## Structure du projet
@@ -89,19 +72,18 @@ src/
 
 ## URLs de déploiement
 
-- **Vercel** : `https://the-last-coders.vercel.app`
-- **Firebase** : `https://thelastcoders-a40c9.web.app`
+- **Firebase Hosting** : `https://thelastcoders-a40c9.web.app`
+- **Console Firebase** : `https://console.firebase.google.com/project/thelastcoders-a40c9/overview`
 
 ## Monitoring
 
-- **Vercel Analytics** : Activé automatiquement
-- **Firebase Analytics** : Configuré dans l'app
-- **Performance** : Monitoring via Vercel et Firebase
+- **Firebase Analytics** : Activé automatiquement
+- **Performance** : Monitoring via Firebase
+- **Logs** : Logs d'erreur et de debug dans la console Firebase
 
 ## Support
 
 Pour toute question sur le déploiement, consultez :
 
-- [Documentation Vercel](https://vercel.com/docs)
 - [Documentation Firebase](https://firebase.google.com/docs)
 - [Documentation Angular](https://angular.dev)
