@@ -5,16 +5,17 @@ import { FirestoreService } from '../../../../core/services/firestore.service';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { UserInterface } from '../../interfaces/user.interface';
+import { LoadingSpinnerComponent } from '../../../../core/components/loading-spinner/loading-spinner.component';
 
 @Component({
   selector: 'app-register',
   imports: [
     ReactiveFormsModule,
     RouterModule,
-    CommonModule
+    CommonModule,
+    LoadingSpinnerComponent
   ],
   templateUrl: './register.component.html',
-  styleUrl: './register.component.css'
 })
 export class RegisterComponent implements OnInit {
   private authService = inject(AuthService);
@@ -25,6 +26,7 @@ export class RegisterComponent implements OnInit {
   registerForm: FormGroup;
   errorMessage: string = '';
   currentYear: number = new Date().getFullYear();
+  isLoading: boolean = false;
 
   constructor() {
     this.registerForm = this.fb.group({
@@ -52,6 +54,9 @@ export class RegisterComponent implements OnInit {
 
   onSubmit() {
     if (this.registerForm.valid) {
+      this.isLoading = true;
+      this.errorMessage = '';
+
       const email = this.registerForm.get('email')?.value;
       const userName = this.registerForm.get('userName')?.value;
       const password = this.registerForm.get('password')?.value;
@@ -60,8 +65,8 @@ export class RegisterComponent implements OnInit {
         .subscribe({
           next: async (response) => {
             try {
-              // Attendre que l'authentification soit complète
-              await new Promise(resolve => setTimeout(resolve, 1000));
+              // Attendre que l'authentification soit complète (délai plus long)
+              await new Promise(resolve => setTimeout(resolve, 2000));
 
               // Vérifier si l'utilisateur est bien authentifié
               const currentUser = this.authService.getCurrentUser();
@@ -85,23 +90,29 @@ export class RegisterComponent implements OnInit {
                 }
               };
 
-              // Update auth signal before Firestore write
+              // met à jour le signal de l'utilisateur actuel
               this.authService.currentUserSignal.set(userData);
 
-              // Create the user document
+              // creation du document utilisateur
               await this.firestoreService.createDocument(`users/${response.user.uid}`, userData);
 
-              // C'est un nouvel utilisateur, donc on le redirige directement vers le quiz
+              // Attendre encore un peu pour s'assurer que tout est synchronisé
+              await new Promise(resolve => setTimeout(resolve, 1000));
+
+              // Redirection directe vers le quiz pour les nouveaux utilisateurs
               this.router.navigate(['/skills']);
 
             } catch (error) {
-              // Reset auth state and logout on failure
+              this.isLoading = false;
+              this.errorMessage = 'Erreur lors de la création du compte. Veuillez réessayer.';
+              // réinitialisation de l'état d'authentification et déconnexion en cas d'échec
               this.authService.currentUserSignal.set(null);
               this.authService.logOut().subscribe();
             }
           },
           error: (error) => {
-            alert(error.message || 'Registration failed. Please try again.');
+            this.isLoading = false;
+            this.errorMessage = error.message || 'Erreur lors de l\'inscription. Veuillez réessayer.';
           }
         });
     }

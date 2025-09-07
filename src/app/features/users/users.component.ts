@@ -11,6 +11,7 @@ import { Subscription, firstValueFrom } from 'rxjs';
 import { FirestorageService } from '../../core/services/firestorage.service';
 import { effect } from '@angular/core';
 import { NotificationComponent } from '../../core/components/notification/notification.component';
+import { deleteUser, EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
 
 @Component({
   selector: 'app-users',
@@ -45,6 +46,9 @@ export class UsersComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   canEdit: boolean = false;
   currentUser: UserInterface | null = null;
+  isDeleting: boolean = false;
+  showDeleteAccountConfirm: boolean = false;
+  deleteAccountError: string = '';
 
   constructor() {
     this.profileForm = this.fb.group({
@@ -417,5 +421,103 @@ export class UsersComponent implements OnInit, OnDestroy {
 
   isLinkLikedByCurrentUser(link: Link): boolean {
     return link.likedBy?.includes(this.currentUser?.id || '') || false;
+  }
+
+  // Ouvrir/fermer la modale de confirmation
+  toggleDeleteAccountConfirm(): void {
+    if (!this.currentUser || this.currentUser.id !== this.userId) {
+      alert('Vous ne pouvez supprimer que votre propre compte.');
+      return;
+    }
+    this.deleteAccountError = '';
+    this.showDeleteAccountConfirm = !this.showDeleteAccountConfirm;
+  }
+
+  // Handler du bouton dans la modale
+  async confirmDeleteAccount(): Promise<void> {
+    if (!this.currentUser || this.currentUser.id !== this.userId) {
+      alert('Vous ne pouvez supprimer que votre propre compte.');
+      return;
+    }
+    await this.performAccountDeletion();
+  }
+
+  // Ancienne logique de suppression (sans confirm() navigateur)
+  private async performAccountDeletion(): Promise<void> {
+    console.log('deleteAccount() déclenché');
+    this.showNotification = true;
+    this.notificationType = 'info';
+    this.notificationMessage = 'Demande de suppression en cours...';
+    setTimeout(() => this.showNotification = false, 2000);
+
+    try {
+      this.isDeleting = true;
+
+      // 1) Supprimer d'abord les documents Firestore
+      console.log('[Delete] Suppression quiz_responses…');
+      this.notificationMessage = 'Suppression des données de quiz…';
+      this.notificationType = 'info';
+      this.showNotification = true;
+      await this.usersService.deleteOwnQuizResponse(this.userId);
+
+      console.log('[Delete] Suppression du document utilisateur…');
+      this.notificationMessage = 'Suppression du profil…';
+      this.notificationType = 'info';
+      this.showNotification = true;
+      await this.usersService.deleteOwnUserDocument(this.userId);
+
+      // 2) Ensuite supprimer le compte Firebase Auth
+      const firebaseUser = this.authService.getCurrentUser();
+      if (!firebaseUser) throw new Error('Utilisateur non authentifié');
+      try {
+        console.log('[Delete] Suppression Firebase Auth…');
+        this.notificationMessage = 'Suppression du compte…';
+        this.notificationType = 'info';
+        this.showNotification = true;
+        await deleteUser(firebaseUser);
+      } catch (err: any) {
+        if (err?.code === 'auth/requires-recent-login') {
+          console.warn('[Delete] Ré-authentification requise');
+          const email = firebaseUser.email || '';
+          const password = prompt('Veuillez saisir votre mot de passe pour confirmer la suppression :');
+          if (!password) throw err;
+          try {
+            const credential = EmailAuthProvider.credential(email, password);
+            await reauthenticateWithCredential(firebaseUser, credential);
+            console.log('[Delete] Ré-auth OK, on retente deleteUser');
+            await deleteUser(firebaseUser);
+          } catch (reauthErr) {
+            console.error('[Delete] Échec ré-authentification:', reauthErr);
+            this.notificationType = 'error';
+            this.notificationMessage = 'Ré-authentification échouée. Reconnectez-vous puis réessayez.';
+            this.showNotification = true;
+            throw reauthErr;
+          }
+        } else {
+          console.error('[Delete] Erreur deleteUser:', err);
+          throw err;
+        }
+      }
+
+      // 3) Nettoyer l’état local et rediriger
+      this.authService.currentUserSignal.set(null);
+      this.showNotification = true;
+      this.notificationType = 'success';
+      this.notificationMessage = 'Compte supprimé avec succès.';
+      setTimeout(() => {
+        this.showNotification = false;
+        this.router.navigate(['/login']);
+      }, 1500);
+    } catch (error) {
+      console.error('[Delete] Echec suppression compte:', error);
+      this.showNotification = true;
+      this.notificationType = 'error';
+      this.notificationMessage = 'Échec de la suppression du compte. Consultez la console et réessayez.';
+      setTimeout(() => this.showNotification = false, 3000);
+      this.deleteAccountError = 'La suppression a échoué. Vérifiez vos identifiants et réessayez.';
+    } finally {
+      this.isDeleting = false;
+      this.showDeleteAccountConfirm = false;
+    }
   }
 }

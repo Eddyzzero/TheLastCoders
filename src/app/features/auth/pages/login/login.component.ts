@@ -4,13 +4,15 @@ import { AuthService } from '../../../../core/services/fireAuth.service';
 import { Router, RouterModule } from '@angular/router';
 import { FirebaseError } from 'firebase/app';
 import { CommonModule } from '@angular/common';
+import { LoadingSpinnerComponent } from '../../../../core/components/loading-spinner/loading-spinner.component';
 
 @Component({
   selector: 'app-login',
   imports: [
     ReactiveFormsModule,
     RouterModule,
-    CommonModule
+    CommonModule,
+    LoadingSpinnerComponent
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
@@ -23,6 +25,7 @@ export class LoginComponent {
   loginForm: FormGroup;
   errorMessage: string = '';
   currentYear: number = new Date().getFullYear();
+  isLoading: boolean = false;
 
   constructor() {
     this.loginForm = this.fb.group({
@@ -33,15 +36,19 @@ export class LoginComponent {
 
   onSubmit() {
     if (this.loginForm.valid) {
-      const { email, password } = this.loginForm.value;
+      this.isLoading = true;
       this.errorMessage = '';
+
+      const { email, password } = this.loginForm.value;
 
       this.authService.login(email, password).subscribe({
         next: () => {
           console.log('Connexion réussie');
-          this.router.navigate(['/home']);
+          // La redirection sera gérée par InitialNavigationService
+          // qui vérifiera si l'utilisateur a complété le quiz
         },
         error: (error: FirebaseError) => {
+          this.isLoading = false;
           console.error('Erreur lors de la connexion:', error);
 
           switch (error.code) {

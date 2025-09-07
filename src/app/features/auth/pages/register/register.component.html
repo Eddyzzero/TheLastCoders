@@ -11,7 +11,17 @@
             <div *ngIf="errorMessage" class="font-primary text-red-500 text-center bg-red-100 p-3 rounded-lg mb-4">
                 {{ errorMessage }}
             </div>
-            <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-5 w-full max-w-md">
+
+            <!-- Animation de chargement -->
+            <div *ngIf="isLoading" class="flex flex-col items-center justify-center py-8">
+                <app-loading-spinner message="Création de votre compte et configuration..." size="large"
+                    color="primary">
+                </app-loading-spinner>
+            </div>
+
+            <!-- Formulaire d'inscription -->
+            <form *ngIf="!isLoading" [formGroup]="registerForm" (ngSubmit)="onSubmit()"
+                class="flex flex-col gap-5 w-full max-w-md">
 
                 <div class="flex font-primary">
                     <p class="text-xl">S'enregistrer</p>

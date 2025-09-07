@@ -144,6 +144,24 @@ export class UsersService {
     );
   }
 
+  // Suppression du document utilisateur pour l'utilisateur courant (sans exigence admin)
+  deleteOwnUserDocument(userId: string): Promise<void> {
+    if (!userId) {
+      return Promise.reject(new Error('User ID is required'));
+    }
+    const userDocRef = doc(this.usersFirestore, `users/${userId}`);
+    return deleteDoc(userDocRef);
+  }
+
+  // Supprimer la réponse de quiz de l'utilisateur si elle existe
+  deleteOwnQuizResponse(userId: string): Promise<void> {
+    if (!userId) {
+      return Promise.reject(new Error('User ID is required'));
+    }
+    const quizDocRef = doc(this.usersFirestore, `quiz_responses/${userId}`);
+    return deleteDoc(quizDocRef).catch(() => Promise.resolve());
+  }
+
   // Vérifier si l'utilisateur actuel est administrateur
   isCurrentUserAdmin(): Observable<boolean> {
     const currentUser = this.authService.getCurrentUser();

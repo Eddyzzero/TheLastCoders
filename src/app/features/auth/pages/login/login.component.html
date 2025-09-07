@@ -11,7 +11,15 @@
                 {{ errorMessage }}
             </div>
 
-            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-5 w-full max-w-md">
+            <!-- Animation de chargement -->
+            <div *ngIf="isLoading" class="flex flex-col items-center justify-center py-8">
+                <app-loading-spinner message="Connexion en cours..." size="large" color="primary">
+                </app-loading-spinner>
+            </div>
+
+            <!-- Formulaire de connexion -->
+            <form *ngIf="!isLoading" [formGroup]="loginForm" (ngSubmit)="onSubmit()"
+                class="flex flex-col gap-5 w-full max-w-md">
                 <div class="flex font-primary">
                     <p class="text-xl">Se connecter</p>
                 </div>
