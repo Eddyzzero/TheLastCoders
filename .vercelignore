@@ -1,7 +1,0 @@
-node_modules
-.git
-.vercel
-*.log
-e2e
-*.spec.ts
-karma.conf.js

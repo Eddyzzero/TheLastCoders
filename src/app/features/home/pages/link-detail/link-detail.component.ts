@@ -98,19 +98,16 @@ export class LinkDetailComponent implements OnInit, OnDestroy {
     // Vérifier si l'utilisateur est authentifié avec Firebase
     const firebaseUser = this.authService.getCurrentUser();
     if (!firebaseUser) {
-      console.error('User must be authenticated to add comments');
       // Rediriger vers la page de connexion
       this.router.navigate(['/auth/login']);
       return;
     }
 
     if (!this.commentForm.valid || this.isSubmitting || !this.currentUser || !this.link) {
-      console.error('Form validation failed or missing required data');
       return;
     }
 
     if (!this.currentUser.id || !this.link.id) {
-      console.error('Missing required IDs');
       return;
     }
 
@@ -137,24 +134,17 @@ export class LinkDetailComponent implements OnInit, OnDestroy {
         ...(this.currentUser.userImageUrl?.base64 && { senderImage: this.currentUser.userImageUrl.base64 })
       };
 
-      console.log('Attempting to add comment with data:', {
-        senderId: commentData.senderId,
-        linkId: commentData.linkId
-      });
-
       const commentId = await this.firestoreService.addDocument('comments', commentData);
 
       if (!commentId) {
         throw new Error('Failed to create comment');
       }
 
-      console.log('Comment added successfully with ID:', commentId);
 
       this.commentForm.reset();
       // Attendre un peu avant de recharger pour laisser Firestore se mettre à jour
       setTimeout(() => this.loadComments(), 500);
     } catch (error) {
-      console.error('Error adding comment:', error);
       // Afficher un message d'erreur à l'utilisateur
       this.deleteError = "Erreur lors de l'ajout du commentaire. Veuillez réessayer.";
     } finally {
@@ -192,7 +182,6 @@ export class LinkDetailComponent implements OnInit, OnDestroy {
 
   async toggleLike(comment: Comment) {
     if (!this.currentUser?.id || !comment.id) {
-      console.error('Cannot like comment: Missing user ID or comment ID');
       return;
     }
 
@@ -214,7 +203,6 @@ export class LinkDetailComponent implements OnInit, OnDestroy {
       comment.likedBy = updatedLikedBy;
       comment.likes = updatedLikedBy.length;
     } catch (error) {
-      console.error('Error toggling like:', error);
     }
   }
 
@@ -228,12 +216,10 @@ export class LinkDetailComponent implements OnInit, OnDestroy {
 
   async deleteComment(comment: Comment) {
     if (!this.canDeleteComment(comment)) {
-      console.error('User does not have permission to delete this comment');
       return;
     }
 
     if (!comment.id) {
-      console.error('Cannot delete comment: Comment ID is missing');
       return;
     }
 
@@ -241,13 +227,11 @@ export class LinkDetailComponent implements OnInit, OnDestroy {
       // Vérifier si le commentaire existe toujours
       const commentRef = await this.firestoreService.getDocument(`comments/${comment.id}`);
       if (!commentRef) {
-        console.error('Comment not found in database');
         return;
       }
 
       // Supprimer le commentaire de Firebase
       await this.firestoreService.deleteDocument(`comments/${comment.id}`);
-      console.log('Commentaire supprimé avec succès:', comment.id);
 
       // Mettre à jour la liste locale immédiatement
       this.comments = this.comments.filter(c => c.id !== comment.id);
@@ -255,10 +239,8 @@ export class LinkDetailComponent implements OnInit, OnDestroy {
       // Fermer la modale
       this.toggleCommentDeleteConfirm();
     } catch (error: any) {
-      console.error('Error deleting comment:', error);
       // Vérifier si l'erreur est liée à l'authentification
       if (error.code === 'permission-denied') {
-        console.error('Permission denied: User may not be authenticated');
         // Rediriger vers la page de connexion si nécessaire
         this.router.navigate(['/auth/login']);
       }
@@ -268,29 +250,22 @@ export class LinkDetailComponent implements OnInit, OnDestroy {
   }
 
   toggleDeleteConfirm() {
-    console.log('Toggle delete confirm, état actuel:', this.showDeleteConfirm);
     this.showDeleteConfirm = !this.showDeleteConfirm;
     this.deleteError = null;
-    console.log('Nouvel état:', this.showDeleteConfirm);
   }
 
   async deleteLink() {
-    console.log('Début de la suppression du lien');
     if (!this.link?.id) {
-      console.error('ID de lien manquant');
       this.deleteError = "Impossible de supprimer: ID de lien invalide";
       return;
     }
 
     this.isDeleting = true;
     try {
-      console.log('Tentative de suppression du lien:', this.link.id);
       await this.linksService.deleteLink(this.link.id);
-      console.log('Lien supprimé avec succès');
       // Rediriger vers la page d'accueil après suppression
       this.router.navigate(['/home']);
     } catch (error: any) {
-      console.error("Erreur détaillée lors de la suppression:", error);
       this.isDeleting = false;
       this.deleteError = error.message || "Une erreur s'est produite lors de la suppression";
     }
@@ -319,7 +294,6 @@ export class LinkDetailComponent implements OnInit, OnDestroy {
   async toggleLinkLike() {
     const userId = this.currentUser?.id;
     if (!userId || !this.link?.id) {
-      console.error('Cannot like link: Missing user ID or link ID');
       return;
     }
 
@@ -338,7 +312,6 @@ export class LinkDetailComponent implements OnInit, OnDestroy {
         this.link.likes = this.link.likedBy.length;
       }
     } catch (error) {
-      console.error('Error toggling link like:', error);
     }
   }
 

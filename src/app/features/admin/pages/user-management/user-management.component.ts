@@ -73,7 +73,6 @@ export class UserManagementComponent implements OnInit {
             },
             error: (error) => {
                 this.loading = false;
-                console.error('Erreur lors du changement de rôle:', error);
                 alert(`Erreur: ${error.message}`);
             }
         });
@@ -89,13 +88,11 @@ export class UserManagementComponent implements OnInit {
 
         this.usersService.deleteUser(userId).subscribe({
             next: () => {
-                console.log(`Utilisateur ${userId} supprimé`);
                 // Recharger la liste des utilisateurs
                 this.loadUsers();
             },
             error: (error) => {
                 this.loading = false;
-                console.error('Erreur lors de la suppression:', error);
                 alert(`Erreur: ${error.message}`);
             }
         });
@@ -127,7 +124,6 @@ export class UserManagementComponent implements OnInit {
             this.loading = true;
             this.usersService.changeUserRole(this.selectedUser.id, newRole).subscribe({
                 next: () => {
-                    console.log(`Rôle de l'utilisateur ${this.selectedUser?.id} changé en ${newRole}`);
                     // Mettre à jour le rôle dans la liste locale
                     if (this.selectedUser) {
                         this.selectedUser.role = newRole;
@@ -137,7 +133,6 @@ export class UserManagementComponent implements OnInit {
                     this.loadUsers();
                 },
                 error: (error) => {
-                    console.error('Erreur lors du changement de rôle:', error);
                     this.errorMessage = `Erreur: ${error.message}`;
                     this.loading = false;
                 }

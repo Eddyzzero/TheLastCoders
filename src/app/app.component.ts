@@ -23,7 +23,6 @@ import { InitialNavigationService } from './core/services/initial-navigation.ser
     AsyncPipe
   ],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit {
   // Services injectés

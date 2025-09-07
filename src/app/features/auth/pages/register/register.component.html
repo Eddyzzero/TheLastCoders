@@ -8,7 +8,8 @@
         <section>
 
             <!-- message d'erreur pour les champs non completés  -->
-            <div *ngIf="errorMessage" class="font-primary text-red-500 text-center bg-red-100 p-3 rounded-lg mb-4">
+            <div *ngIf="errorMessage"
+                class="font-primary text-xl text-black text-center bg-apple-green p-3 rounded-lg mb-4">
                 {{ errorMessage }}
             </div>
 
@@ -36,8 +37,8 @@
                         <p *ngIf="registerForm.get('userName')?.errors?.['required']">Le nom d'utilisateur est requis
                         </p>
                         <p *ngIf="registerForm.get('userName')?.errors?.['minlength']">Le nom d'utilisateur doit
-                            contenir au
-                            moins 7 caractères</p>
+                            contenir
+                            au moins 7 caractères</p>
                     </div>
                 </div>
 
@@ -68,7 +69,7 @@
                     S'enregistrer
                 </button>
 
-                <div class="flex gap-2 font-secondary mt-12">
+                <div class="flex gap-2 font-secondary mt-12 justify-center">
                     <p class="text-sm">Déjà un compte ?</p>
                     <a routerLink="/login" class="text-sm text-apple-green hover:text-deep-green">Se connecter</a>
                 </div>

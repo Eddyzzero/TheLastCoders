@@ -43,8 +43,8 @@ export class LinksService {
         // À remplacer une fois que l'index est créé
         const linksQuery = query(
             linksCollection,
-            where('createdBy', '==', userId)
-            // orderBy('createdAt', 'desc') - temporairement commenté
+            where('createdBy', '==', userId),
+            orderBy('createdAt', 'desc')
         );
 
         return collectionData(linksQuery, { idField: 'id' }).pipe(

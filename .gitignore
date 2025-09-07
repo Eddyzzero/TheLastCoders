@@ -35,9 +35,6 @@ logs
 firebase-debug.log
 firestore-debug.log
 
-# Vercel
-.vercel/
-
 # Coverage
 coverage/
 

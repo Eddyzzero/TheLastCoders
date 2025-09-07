@@ -97,7 +97,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   loadLinks() {
     this.linksService.getLinks().pipe(
       switchMap(links => {
-        console.log('Liens chargés depuis Firestore:', links);
 
         // Convertir les timestamps Firestore en objets Date JavaScript
         const convertedLinks = links.map(link => ({
@@ -164,14 +163,12 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     // Fallback: retourner la date actuelle
-    console.warn('Impossible de convertir le timestamp:', timestamp);
+
     return new Date();
   }
 
   // Méthode pour appliquer les filtres
   applyFilters(filters: Filters): void {
-    console.log('Filtres reçus:', filters);
-    console.log('Liens avant filtrage:', this.links);
 
     this.activeFilters = filters;
 
@@ -179,27 +176,18 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     const hasActiveFilters = filters.niveau.length > 0 || filters.langage.length > 0 ||
       filters.prix.length > 0 || filters.type.length > 0;
 
-    console.log('Filtres actifs:', hasActiveFilters);
 
     if (!hasActiveFilters) {
       // Si aucun filtre n'est sélectionné, afficher tous les liens
       this.filteredLinks = [...this.links];
-      console.log('Aucun filtre actif, affichage de tous les liens');
     } else {
       // Filtrer les liens selon les critères sélectionnés
       this.filteredLinks = this.links.filter(link => {
-        console.log('Filtrage du lien:', link.title, 'Propriétés:', {
-          niveau: link.niveau,
-          type: link.type,
-          tags: link.tags,
-          isPaid: link.isPaid
-        });
 
         // Filtre par niveau
         if (filters.niveau.length > 0) {
           const linkNiveau = link.niveau || '';
           if (!filters.niveau.includes(linkNiveau)) {
-            console.log('Lien rejeté par niveau:', link.title, 'niveau:', linkNiveau, 'filtres:', filters.niveau);
             return false;
           }
         }
@@ -211,7 +199,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
             linkTags.some(tag => tag && tag.toLowerCase().includes(lang.toLowerCase()))
           );
           if (!hasMatchingLangage) {
-            console.log('Lien rejeté par langage:', link.title, 'tags:', linkTags, 'filtres:', filters.langage);
             return false;
           }
         }
@@ -223,11 +210,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
           const isFreeSelected = filters.prix.includes('Gratuit');
 
           if (isPaidSelected && !linkIsPaid) {
-            console.log('Lien rejeté par prix (payant):', link.title, 'isPaid:', linkIsPaid);
             return false;
           }
           if (isFreeSelected && linkIsPaid) {
-            console.log('Lien rejeté par prix (gratuit):', link.title, 'isPaid:', linkIsPaid);
             return false;
           }
         }
@@ -236,18 +221,14 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         if (filters.type.length > 0) {
           const linkType = link.type || '';
           if (!filters.type.includes(linkType)) {
-            console.log('Lien rejeté par type:', link.title, 'type:', linkType, 'filtres:', filters.type);
             return false;
           }
         }
 
-        console.log('Lien accepté:', link.title);
         return true;
       });
     }
 
-    console.log('Liens après filtrage:', this.filteredLinks);
-    console.log('Nombre de liens filtrés:', this.filteredLinks.length);
 
     // Réinitialiser l'index courant si nécessaire
     if (this.currentIndex >= this.filteredLinks.length) {

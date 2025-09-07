@@ -66,13 +66,13 @@ export class RegisterComponent implements OnInit {
           next: async (response) => {
             try {
               // Attendre que l'authentification soit complète (délai plus long)
-              await new Promise(resolve => setTimeout(resolve, 2000));
+              await new Promise(resolve => setTimeout(resolve, 500));
 
               // Vérifier si l'utilisateur est bien authentifié
               const currentUser = this.authService.getCurrentUser();
 
               if (!currentUser) {
-                throw new Error('User not authenticated after registration');
+                throw new Error('utilisateur non authentifié après l\'inscription');
               }
 
               // Créer l'objet utilisateur

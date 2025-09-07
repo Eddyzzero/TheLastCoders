@@ -15,7 +15,6 @@ import { LoadingSpinnerComponent } from '../../../../core/components/loading-spi
     LoadingSpinnerComponent
   ],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
 })
 export class LoginComponent {
   private fb = inject(FormBuilder);
@@ -43,13 +42,11 @@ export class LoginComponent {
 
       this.authService.login(email, password).subscribe({
         next: () => {
-          console.log('Connexion réussie');
           // La redirection sera gérée par InitialNavigationService
           // qui vérifiera si l'utilisateur a complété le quiz
         },
         error: (error: FirebaseError) => {
           this.isLoading = false;
-          console.error('Erreur lors de la connexion:', error);
 
           switch (error.code) {
             case 'auth/invalid-email':
