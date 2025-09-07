@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { authRedirectGuard } from './core/guards/auth-redirect.guard';
+import { quizCompletionGuard } from './core/guards/quiz-completion.guard';
 import { LoginChoiceComponent } from './features/auth/pages/login-choice/login-choice.component';
 import { LoginComponent } from './features/auth/pages/login/login.component';
 import { RegisterComponent } from './features/auth/pages/register/register.component';
@@ -52,7 +53,7 @@ export const routes: Routes = [
     {
         path: 'home',
         loadChildren: () => import('./features/home/home.module').then(m => m.HomeModule),
-        canActivate: [authGuard],
+        canActivate: [authGuard, quizCompletionGuard],
         title: 'Accueil - TheLastCoders'
     },
     {

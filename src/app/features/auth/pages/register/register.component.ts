@@ -98,7 +98,7 @@ export class RegisterComponent implements OnInit {
               await this.firestoreService.createDocument(`users/${response.user.uid}`, userData);
 
               // Attendre encore un peu pour s'assurer que tout est synchronisé
-              await new Promise(resolve => setTimeout(resolve, 1000));
+              await new Promise(resolve => setTimeout(resolve, 100));
 
               // Redirection directe vers le quiz pour les nouveaux utilisateurs
               this.router.navigate(['/skills']);

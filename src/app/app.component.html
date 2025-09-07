@@ -1,4 +1,4 @@
 <section [class]="(authService.isLoggedIn$ | async) ? 'min-h-screen bg-black' : 'min-h-screen color-back'">
     <router-outlet></router-outlet>
-    <app-nav-bar *ngIf="authService.isLoggedIn$ | async"></app-nav-bar>
+    <app-nav-bar *ngIf="(showNavbar$ | async) === true"></app-nav-bar>
 </section>

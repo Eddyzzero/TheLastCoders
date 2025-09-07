@@ -1,9 +1,10 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { CommonModule, AsyncPipe } from '@angular/common';
 import { NavBarComponent } from './core/components/nav-bar/nav-bar.component';
 import { AuthService } from './core/services/fireAuth.service';
 import { InitialNavigationService } from './core/services/initial-navigation.service';
+import { filter, map } from 'rxjs/operators';
 
 /**
  * Composant racine de l'application TheLastCoders
@@ -28,14 +29,19 @@ export class AppComponent implements OnInit {
   // Services injectés
   protected authService = inject(AuthService);
   private initialNavigationService = inject(InitialNavigationService);
+  private router = inject(Router);
+
+  protected showNavbar$ = this.router.events.pipe(
+    filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+    map(() => {
+      return this.authService.getCurrentUser() !== null && !this.router.url.includes('/skills');
+    })
+  );
 
   // Propriétés du composant
   readonly title = 'TheLastCoders';
 
-  /**
-   * Initialise l'application au démarrage
-   * Configure la navigation initiale selon l'état d'authentification
-   */
+
   ngOnInit(): void {
     this.initialNavigationService.initializeNavigation();
   }

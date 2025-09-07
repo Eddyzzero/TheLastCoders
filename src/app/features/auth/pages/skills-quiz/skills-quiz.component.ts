@@ -115,8 +115,25 @@ export class SkillsQuizComponent {
       // Sauvegarder dans Firestore
       await this.fireStoreService.createDocument(`quiz_responses/${currentUser.uid}`, quizResponse);
 
+      // Mettre à jour le profil utilisateur avec les compétences sélectionnées
+      const userData = this.authService.currentUserSignal();
+      if (userData) {
+        const updatedUserData = {
+          ...userData,
+          skills: quizResponse.languages || [],
+          domain: quizResponse.domain,
+          experience: quizResponse.experience
+        };
+
+        // Mettre à jour le document utilisateur dans Firestore
+        await this.fireStoreService.updateDocument(`users/${currentUser.uid}`, updatedUserData);
+
+        // Mettre à jour le signal de l'utilisateur
+        this.authService.currentUserSignal.set(updatedUserData);
+      }
+
       // Rediriger vers la page d'accueil
-      this.router.navigate(['/home']);
+      await this.router.navigate(['/home']);
     } catch (error) {
       this.errorMessage = 'Une erreur est survenue lors de la sauvegarde des réponses. Veuillez réessayer.';
     }
