@@ -1,8 +1,26 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
+import { AngularNodeAppEngine, createNodeRequestHandler } from '@angular/ssr/node';
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
 
 // Initialiser Firebase Admin
 admin.initializeApp();
+
+// Configuration pour Angular SSR
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const distFolder = resolve(__dirname, '../../../dist/the-last-coders');
+const angularApp = new AngularNodeAppEngine();
+
+// Cloud Function pour SSR
+export const ssr = functions.https.onRequest(
+    createNodeRequestHandler(angularApp, {
+        distFolder,
+        indexHtml: resolve(distFolder, 'browser/index.html'),
+        serverBundle: resolve(distFolder, 'server/main.js'),
+    })
+);
 
 // Exemple de fonction pour créer un utilisateur
 export const createUser = functions.https.onCall(async (data, context) => {

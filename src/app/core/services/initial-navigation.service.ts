@@ -2,8 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from './fireAuth.service';
 import { FirestoreService } from './firestore.service';
-import { take, switchMap } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root'
