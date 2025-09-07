@@ -52,7 +52,7 @@ export class LoadingSpinnerComponent {
             case 'danger':
                 return '#e74c3c';
             default:
-                return '#3498db';
+                return '#efe9f4';
         }
     }
 }
