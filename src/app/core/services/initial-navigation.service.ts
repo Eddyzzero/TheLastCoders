@@ -64,7 +64,6 @@ export class InitialNavigationService {
                 this.router.navigate(['/skills']);
             }
         } catch (error) {
-            console.error('Erreur lors de la vérification du quiz:', error);
             // En cas d'erreur, rediriger vers l'accueil par défaut
             this.router.navigate(['/home']);
         }

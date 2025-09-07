@@ -53,7 +53,7 @@ export const routes: Routes = [
     {
         path: 'home',
         loadChildren: () => import('./features/home/home.module').then(m => m.HomeModule),
-        canActivate: [authGuard, quizCompletionGuard],
+        canActivate: [authGuard], // Suppression de quizCompletionGuard - géré par InitialNavigationService
         title: 'Accueil - TheLastCoders'
     },
     {

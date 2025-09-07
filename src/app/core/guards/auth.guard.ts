@@ -1,6 +1,7 @@
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/fireAuth.service';
+import { InitialNavigationService } from '../services/initial-navigation.service';
 import { map } from 'rxjs/operators';
 
 /**
@@ -14,6 +15,7 @@ import { map } from 'rxjs/operators';
 export const authGuard = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
+  const initialNavigationService = inject(InitialNavigationService);
 
   return authService.isLoggedIn$.pipe(
     map(isLoggedIn => {
@@ -21,6 +23,17 @@ export const authGuard = () => {
         router.navigate(['/login']);
         return false;
       }
+
+      // Si l'utilisateur est connecté et tente d'accéder à /home
+      // Vérifier s'il a complété le quiz
+      const currentUrl = router.url;
+      if (currentUrl === '/home') {
+        // Déclencher la vérification du quiz de manière asynchrone
+        setTimeout(() => {
+          initialNavigationService.initializeNavigation();
+        }, 100);
+      }
+
       return true;
     })
   );

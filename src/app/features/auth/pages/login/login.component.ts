@@ -5,6 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { FirebaseError } from 'firebase/app';
 import { CommonModule } from '@angular/common';
 import { LoadingSpinnerComponent } from '../../../../core/components/loading-spinner/loading-spinner.component';
+import { InitialNavigationService } from '../../../../core/services/initial-navigation.service';
 
 @Component({
   selector: 'app-login',
@@ -21,6 +22,7 @@ export class LoginComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private initialNavigationService = inject(InitialNavigationService);
 
   loginForm: FormGroup;
   errorMessage: string = '';
@@ -43,8 +45,9 @@ export class LoginComponent {
 
       this.authService.login(email, password).subscribe({
         next: () => {
-          // La redirection sera gérée par InitialNavigationService
-          // qui vérifiera si l'utilisateur a complété le quiz
+          this.isLoading = false;
+          // Appeler InitialNavigationService pour vérifier le quiz
+          this.initialNavigationService.initializeNavigation();
         },
         error: (error: FirebaseError) => {
           this.isLoading = false;

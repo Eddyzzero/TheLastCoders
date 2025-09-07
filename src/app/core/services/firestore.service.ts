@@ -60,13 +60,18 @@ export class FirestoreService<T extends DocumentData> {
    * @returns Données du document ou null si inexistant
    */
   public async getDocument(docPath: string): Promise<T | null> {
-    const docReference = doc(this.firestore, docPath);
-    const docSnap = await getDocFromServer(docReference);
+    try {
+      const docReference = doc(this.firestore, docPath);
+      const docSnap = await getDocFromServer(docReference);
 
-    if (docSnap.exists()) {
-      return docSnap.data() as T;
+      if (docSnap.exists()) {
+        return docSnap.data() as T;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      return null;
     }
-    return null;
   }
 
   /**
