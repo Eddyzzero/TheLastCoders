@@ -10,6 +10,7 @@ import { QuizResponse } from '../../../auth/interfaces/quiz.interface';
 
 @Component({
   selector: 'app-skills-quiz',
+  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule

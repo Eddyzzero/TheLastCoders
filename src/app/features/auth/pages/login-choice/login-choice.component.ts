@@ -5,6 +5,7 @@ import { AuthService } from '../../../../core/services/fireAuth.service';
 
 @Component({
   selector: 'app-login-choice',
+  standalone: true,
   imports: [
     RouterModule,
   ],

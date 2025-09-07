@@ -9,6 +9,7 @@ import { LoadingSpinnerComponent } from '../../../../core/components/loading-spi
 
 @Component({
   selector: 'app-register',
+  standalone: true,
   imports: [
     ReactiveFormsModule,
     RouterModule,
@@ -112,7 +113,11 @@ export class RegisterComponent implements OnInit {
           },
           error: (error) => {
             this.isLoading = false;
-            this.errorMessage = error.message || 'Erreur lors de l\'inscription. Veuillez réessayer.';
+            if (error.code === 'auth/email-already-in-use') {
+              this.errorMessage = 'Cette adresse email est déjà utilisée';
+            } else {
+              this.errorMessage = error.message || 'Erreur lors de l\'inscription. Veuillez réessayer.';
+            }
           }
         });
     }

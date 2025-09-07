@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 
 @Component({
     selector: 'app-policy',
+    standalone: true,
     imports: [CommonModule, RouterModule],
     templateUrl: './policy.component.html'
 })

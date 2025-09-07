@@ -15,6 +15,7 @@ import { deleteUser, EmailAuthProvider, reauthenticateWithCredential } from 'fir
 
 @Component({
   selector: 'app-users',
+  standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, NotificationComponent],
   templateUrl: './users.component.html',
 })

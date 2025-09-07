@@ -7,13 +7,13 @@ import { NotificationComponent } from '../../../../core/components/notification/
 
 @Component({
     selector: 'app-link-form',
+    standalone: true,
     imports: [
         CommonModule,
         ReactiveFormsModule,
         NotificationComponent
     ],
     templateUrl: './link-form.component.html',
-    standalone: true
 })
 export class LinkFormComponent {
     private fb = inject(FormBuilder);

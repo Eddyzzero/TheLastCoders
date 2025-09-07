@@ -46,7 +46,7 @@ export class LoadingSpinnerComponent {
     get spinnerColor(): string {
         switch (this.color) {
             case 'success':
-                return '#2ecc71';
+                return '#72B01D';
             case 'warning':
                 return '#f39c12';
             case 'danger':

@@ -14,6 +14,7 @@ import { Timestamp, query, where, orderBy } from 'firebase/firestore';
 
 @Component({
   selector: 'app-link-detail',
+  standalone: true,
   imports: [CommonModule, RouterModule, ReactiveFormsModule],
   templateUrl: './link-detail.component.html'
 })

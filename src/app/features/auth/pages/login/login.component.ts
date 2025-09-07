@@ -8,6 +8,7 @@ import { LoadingSpinnerComponent } from '../../../../core/components/loading-spi
 
 @Component({
   selector: 'app-login',
+  standalone: true,
   imports: [
     ReactiveFormsModule,
     RouterModule,

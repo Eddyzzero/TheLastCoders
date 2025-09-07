@@ -19,6 +19,7 @@ import { ViewModeService, ViewMode } from '../../../../core/services/view-mode.s
 
 @Component({
   selector: 'app-home',
+  standalone: true,
   imports: [
     CommonModule,
     RouterModule,
