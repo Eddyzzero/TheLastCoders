@@ -23,17 +23,6 @@ export const authGuard = () => {
         router.navigate(['/login']);
         return false;
       }
-
-      // Si l'utilisateur est connecté et tente d'accéder à /home
-      // Vérifier s'il a complété le quiz
-      const currentUrl = router.url;
-      if (currentUrl === '/home') {
-        // Déclencher la vérification du quiz de manière asynchrone
-        setTimeout(() => {
-          initialNavigationService.initializeNavigation();
-        }, 100);
-      }
-
       return true;
     })
   );
